@@ -21,7 +21,7 @@ void LegendOverlay::paintEvent(QPaintEvent *)
     p.setBrush(QColor(0, 0, 0, 80));
     p.drawRoundedRect(rect().adjusted(0, 0, -1, -1), 8, 8);
 
-    p.setPen(QColor(220, 220, 220)); // 高对比浅灰字
+    p.setPen(QColor(220, 220, 220)); 
     int y = 24;
 
     auto drawItem = [&](const QColor &c, const QString &txt)

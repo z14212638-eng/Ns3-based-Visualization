@@ -113,7 +113,7 @@ void PpduTimelineView::clear()
     update();
 }
 
-/* ======================== 冲突检测 ======================== */
+/* ======================== Conflict detection ======================== */
 
 bool PpduTimelineView::hasOverlap(int idx) const
 {
@@ -138,7 +138,7 @@ bool PpduTimelineView::hasOverlap(int idx) const
     return false;
 }
 
-/* ======================== 绘制 ======================== */
+/* ======================== Paint ======================== */
 
 TimeRangeStats PpduTimelineView::computeStats(uint64_t startNs, uint64_t endNs) const
 {
@@ -207,13 +207,11 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
 
     int apCnt = apCount();
 
-    /* === 动态行高 === */
     int availH = height() - m_topMargin - kBottomMargin;
     int rowH = effectiveRowHeight();
 
     int topY = timelineTopY();
 
-    /* ---------- hover 行背景 ---------- */
     if (m_hoverIndex >= 0 && m_hoverIndex < m_items.size())
     {
         int ap = m_items[m_hoverIndex].nodeId;
@@ -224,7 +222,6 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
                          QColor(255, 235, 205, 120));
     }
 
-    /* ---------- 行分隔线 ---------- */
     painter.setPen(QColor(200, 200, 200));
     for (int ap = 0; ap <= apCnt; ++ap)
     {
@@ -232,7 +229,6 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
         painter.drawLine(m_leftMargin, y, width(), y);
     }
 
-    /* ---------- AP 标签 ---------- */
     painter.setPen(Qt::black);
     for (int ap = 1; ap <= apCnt; ++ap)
     {
@@ -246,7 +242,6 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
                      m_leftMargin - 8,
                      topY + apCnt * rowH);
 
-    /* ---------- 单 AP 多 lane ---------- */
     struct LaneItem
     {
         int index;
@@ -329,7 +324,6 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
         }
     }
 
-    /* ---------- 时间轴（虚线） ---------- */
     uint64_t startNs = m_viewStartNs;
     uint64_t endNs = m_viewStartNs + width() / m_nsToPixel;
 
@@ -348,7 +342,6 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
                          QString::number(ns / 1e6, 'f', 2) + " ms");
     }
 
-    /* ---------- 右键时间框选可视化 ---------- */
     if (m_selecting)
     {
         int x1 = m_selectStart.x();
@@ -432,7 +425,6 @@ void PpduTimelineView::onToggleLegend()
         return;
     }
 
-    // 右上角对齐
     QPoint globalTopRight = mapToGlobal(rect().topRight());
 
     QSize sz = m_legendOverlay->sizeHint();
@@ -475,7 +467,6 @@ void PpduTimelineView::onSetTimeRange()
     if (!ok2 || endMs <= startMs)
         return;
 
-    /* ===== 核心数学 ===== */
     int64_t startNs = startMs * 1e6;
     int64_t endNs = endMs * 1e6;
     int64_t rangeNs = endNs - startNs;
@@ -487,7 +478,6 @@ void PpduTimelineView::onSetTimeRange()
     m_viewStartNs = startNs;
     m_nsToPixel = double(usableWidth) / double(rangeNs);
 
-    /* 防止缩放过头 */
     m_nsToPixel = std::clamp(m_nsToPixel, 1e-9, 1e-4);
 
     m_hoverIndex = -1;
@@ -495,7 +485,7 @@ void PpduTimelineView::onSetTimeRange()
     update();
 }
 
-/* ======================== 交互 ======================== */
+/* ======================== Interaction ======================== */
 
 void PpduTimelineView::wheelEvent(QWheelEvent *event)
 {
@@ -513,7 +503,7 @@ void PpduTimelineView::mousePressEvent(QMouseEvent *e)
         childAt(e->pos()) == m_btnSave ||
         childAt(e->pos()) == m_btnSetTimeRange)
     {
-        QWidget::mousePressEvent(e); // ✅ 关键
+        QWidget::mousePressEvent(e);
         return;
     }
 
@@ -533,7 +523,6 @@ void PpduTimelineView::mousePressEvent(QMouseEvent *e)
 
 void PpduTimelineView::mouseMoveEvent(QMouseEvent *e)
 {
-    /* ===== 右键框选（最高优先级） ===== */
     if (m_showingStats)
         return;
 
@@ -544,13 +533,12 @@ void PpduTimelineView::mouseMoveEvent(QMouseEvent *e)
         return;
     }
 
-    /* ===== 左键拖拽（平移） ===== */
     if (m_dragging)
     {
         int dx = e->pos().x() - m_lastMousePos.x();
         m_lastMousePos = e->pos();
 
-        if (qAbs((int)dx) > 0) // 👈 关键：真的移动才算拖拽
+        if (qAbs((int)dx) > 0)
         {
             m_viewStartNs = std::max<int64_t>(
                 0, m_viewStartNs - dx / m_nsToPixel);
@@ -561,7 +549,7 @@ void PpduTimelineView::mouseMoveEvent(QMouseEvent *e)
         return;
     }
 
-    /* ===== hover（默认态） ===== */
+    /* ===== hover ===== */
     int idx = hitTest(e->pos());
 
     m_hoverIndex = idx;
@@ -596,7 +584,7 @@ void PpduTimelineView::mouseMoveEvent(QMouseEvent *e)
 
 void PpduTimelineView::mouseReleaseEvent(QMouseEvent *e)
 {
-    /* ===== 结束左键拖拽 ===== */
+
     if (e->button() == Qt::LeftButton && m_dragging)
     {
         m_dragging = false;
@@ -604,7 +592,6 @@ void PpduTimelineView::mouseReleaseEvent(QMouseEvent *e)
         return;
     }
 
-    /* ===== 完成右键时间框选 ===== */
     if (e->button() == Qt::RightButton && m_selecting)
     {
         m_selecting = false;
@@ -613,20 +600,17 @@ void PpduTimelineView::mouseReleaseEvent(QMouseEvent *e)
         int x1 = std::min(m_selectStart.x(), m_selectEnd.x());
         int x2 = std::max(m_selectStart.x(), m_selectEnd.x());
 
-        /* 忽略过小选择 */
         if (x2 - x1 < 10)
         {
             update();
             return;
         }
 
-        /* 限制在时间轴区域 */
         int left = m_leftMargin;
         int right = width() - 5;
         x1 = std::clamp(x1, left, right);
         x2 = std::clamp(x2, left, right);
 
-        /* 像素 → 时间 */
         int64_t startNs =
             m_viewStartNs +
             (x1 - m_leftMargin) / m_nsToPixel;
@@ -639,25 +623,21 @@ void PpduTimelineView::mouseReleaseEvent(QMouseEvent *e)
         {
             auto stats = computeStats(startNs, endNs);
 
-            // 显示统计信息
             showStatsOverlay(
                 stats,
                 mapToGlobal(QPoint(x2, m_selectEnd.y())));
 
-            // 锁定统计窗口
             m_showingStats = true;
 
-            // 缩放到选中的时间范围
             int usableWidth = width() - m_leftMargin - 10;
             m_viewStartNs = startNs;
             m_nsToPixel = double(usableWidth) / double(endNs - startNs);
 
-            // 防止缩放过头
             m_nsToPixel = std::clamp(m_nsToPixel, 1e-9, 1e-4);
         }
 
         m_hoverIndex = -1;
-        update(); // 保持绘制更新，避免隐藏统计窗口
+        update();
     }
 }
 
@@ -669,11 +649,11 @@ void PpduTimelineView::leaveEvent(QEvent *)
     update();
 }
 
-/* ======================== 命中测试 ======================== */
+/* ======================== hitTest ======================== */
 
 int PpduTimelineView::hitTest(const QPoint &pos) const
 {
-    int rowH = effectiveRowHeight(); // ✅ FIX
+    int rowH = effectiveRowHeight();
     int topY = timelineTopY();
 
     struct LaneItem

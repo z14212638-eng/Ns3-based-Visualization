@@ -350,7 +350,7 @@ void Simu_Config::on_pushButton_9_clicked()
 
     ns3Process = new QProcess(this);
 
-    // ns-3 工作目录
+    // ns-3 working directory
     ns3Process->setWorkingDirectory("/home/zk/Visualization/ns-3.46");
 
     QString program = "./ns3";
@@ -368,9 +368,9 @@ void Simu_Config::on_pushButton_9_clicked()
 
     ns3Process->start(program, arguments);
 
-    // ===============================
-    // 1. 创建 Timeline View（UI 线程）
-    // ===============================
+    // ==============================
+    // 1. create the timeline view
+    // ==============================
     if (!m_timelineView)
     {
         m_timelineView = new PpduTimelineView;
@@ -380,23 +380,23 @@ void Simu_Config::on_pushButton_9_clicked()
     }
 
     // ===============================
-    // 2. 创建 Reader + 线程
+    // 2. create the ppdu reader
     // ===============================
     m_ppduThread = new QThread(this);
     m_ppduReader = new QtPpduReader;
 
     m_ppduReader->moveToThread(m_ppduThread);
 
-    // 线程启动 → reader.run()
+    // load  → reader.run()
     connect(m_ppduThread, &QThread::started,
             m_ppduReader, &QtPpduReader::run);
 
-    // Reader → Timeline（核心连接）
+    // Reader → Timeline
     connect(m_ppduReader, &QtPpduReader::ppduReady,
             m_timelineView, &PpduTimelineView::append,
             Qt::QueuedConnection);
 
-    // 应用退出时安全回收
+    // recycle the thread
     connect(qApp, &QCoreApplication::aboutToQuit, [=]
             {
         m_ppduReader->stop();

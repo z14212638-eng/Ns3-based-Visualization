@@ -15,7 +15,7 @@ struct TimeRangeStats
 {
     uint64_t durationNs = 0;
 
-    uint64_t busyNs = 0; // 空口占用时间
+    uint64_t busyNs = 0; 
     uint64_t idleNs = 0;
 
     uint64_t totalBytes = 0;

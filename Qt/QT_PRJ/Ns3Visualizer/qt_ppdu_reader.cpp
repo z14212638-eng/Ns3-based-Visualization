@@ -5,7 +5,7 @@
 using namespace boost::interprocess;
 constexpr const char *SHM_NAME = "Ns3PpduSharedMemory";
 
-QtPpduReader::QtPpduReader(QObject* parent)
+QtPpduReader::QtPpduReader(QObject *parent)
     : QObject(parent), m_running(true)
 {
     ;
@@ -17,9 +17,9 @@ void QtPpduReader::run()
     RingBuffer *ring = nullptr;
 
     // =========================
-    // 1. 等待 ns-3 创建共享内存
-    // =========================
-    // 等待 ns-3 真正启动
+    // 1. wait fot ns-3 to create shared memory
+    // ========================
+    // wait for ns-3 to start up
     QThread::msleep(300);
 
     while (m_running && !shm)
@@ -39,7 +39,7 @@ void QtPpduReader::run()
         return;
 
     // =========================
-    // 2. 主循环
+    // 2. main loop to read shared memory
     // =========================
     while (m_running)
     {
@@ -68,7 +68,6 @@ void QtPpduReader::stop()
 {
     m_running = false;
 
-    // ⚠️ 关键：必须唤醒 wait
     try
     {
         managed_shared_memory shm(open_only, SHM_NAME);
@@ -80,6 +79,6 @@ void QtPpduReader::stop()
     }
     catch (...)
     {
-        // ns-3 可能已经退出，忽略
+        ;
     }
 }

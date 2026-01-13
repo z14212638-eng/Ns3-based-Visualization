@@ -137,7 +137,6 @@ public:
         v.mpduAggregation = m.mpdu_aggregation;
         v.snrGapDbX10 = m.snr_gap_db_x10;
 
-        // 这里将枚举值转换为字符串
         v.frameType = FrameTypeToString(static_cast<frame_type_t>(m.frame_type));
 
         v.rxState = static_cast<RxState>(m.rx_state);
