@@ -16,7 +16,10 @@ build_lib(
                  helper/SniffUtils-helper.cc
     HEADER_FILES model/SniffUtils.h
                  helper/SniffUtils-helper.h
-    LIBRARIES_TO_LINK ${libcore}
+    LIBRARIES_TO_LINK     ${libinternet}
+    ${libmobility}
+    ${libaodv}
+    ${libwifi}
     TEST_SOURCES test/SniffUtils-test-suite.cc
                  ${examples_as_tests_sources}
 )

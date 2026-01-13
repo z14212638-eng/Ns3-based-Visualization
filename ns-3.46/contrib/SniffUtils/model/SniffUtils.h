@@ -1,10 +1,27 @@
+/***********************************
+ * @file SniffUtils.h
+ * @brief This file contains the declaration of the SniffUtils class.
+ *
+ * The SniffUtils class contains utilities to sniff the information while transmitting and receiving
+ * packets. The detailed information and discription of this file remains to be updated.
+ *
+ * @author Kai Zhang <2747752379@hust.edu.cn>
+ * @version 1.0
+ * @date 2025.11.3
+ *
+ ***********************************/
 #ifndef SNIFF_UTILS_H
 #define SNIFF_UTILS_H
 
 #include "ns3/ampdu-subframe-header.h"
+#include "ns3/he-ppdu.h"
 #include "ns3/mac48-address.h"
 #include "ns3/msdu-aggregator.h"
+#include "ns3/net-device-container.h"
+#include "ns3/ptr.h"
 #include "ns3/wifi-mac-header.h"
+#include "ns3/wifi-phy.h"
+#include "ns3/wifi-ppdu.h"
 #include <ns3/callback.h>
 #include <ns3/log-macros-disabled.h>
 #include <ns3/log.h>
@@ -15,184 +32,290 @@
 #include <ns3/wifi-mac-queue.h>
 #include <ns3/wifi-mac.h>
 #include <ns3/wifi-net-device.h>
-#include "ns3/wifi-phy.h"       
-#include "ns3/wifi-ppdu.h"      
-#include "ns3/ptr.h"      
-#include "ns3/net-device-container.h"      
 
+#include <boost/interprocess/allocators/allocator.hpp>
+#include <boost/interprocess/containers/vector.hpp>
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/sync/interprocess_condition.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <cstdint>
 #include <iostream>
 #include <iterator>
+#include <map>
 #include <memory>
 #include <new>
 #include <vector>
 
-namespace ns3 
+/**
+ * @brief This struct contains the information of a PPDU that should be transmitted by Ns3 and
+ * received by Qt
+ *
+ */
+
+using sim_time_ns_t = uint64_t;
+using ppdu_id_t = uint32_t;
+constexpr std::size_t MAX_PPDU_NUM = 1 << 20; // about 1 million PPDUs
+
+struct PPDU_Meta
 {
+    ppdu_id_t id;
+    uint16_t sta_id;
+
+    uint8_t frame_type;
+    uint8_t mcs;
+    uint16_t mpdu_aggregation;
+    uint32_t size_bytes;
+
+    uint8_t sender[6];
+    uint8_t receiver[6];
+
+    sim_time_ns_t tx_start_ns;       // done
+    sim_time_ns_t tx_end_ns;         // done
+    sim_time_ns_t successDecodeTime; // done
+    sim_time_ns_t tx_duration_ns;    // done
+    sim_time_ns_t access_delay_ns;   // Permitted to fill it later
+
+    uint8_t rx_state;         // 0=unknown 1=success 2=collision 3=decode_fail
+    uint8_t rx_fail_reason;   // WifiPhyfailureReason
+    sim_time_ns_t tx_time_ns; // done
+
+    uint8_t collision;               // done
+    sim_time_ns_t collision_time_ns; // done
+
+    uint16_t snr_margin_db_x10; // SNR x10
+    uint16_t snr_gap_db_x10;
+
+    uint8_t reserved[6];
+};
+
+/**
+ * @brief RingBuffer
+ *
+ */
+
+struct RingBuffer
+{
+    uint32_t write_index;
+    uint32_t read_index;
+
+    boost::interprocess::interprocess_mutex mutex;
+    boost::interprocess::interprocess_condition cond;
+
+    PPDU_Meta records[MAX_PPDU_NUM];
+};
+
+namespace ns3
+{
+/**
+ * @brief Struct to store information of a single PPDU
+ * @param frame_type type of the frame ,including CONTROL , MANAGEMENT ,DATA
+ * @param sender MAC address of the sender
+ * @param receiver MAC address of the receiver
+ * @param aggregate number of subframes aggregated in this PPDU
+ * @param size_bytes size of the PPDU in bytes
+ * @param AccessChannelTime time of the PPDU in the access channel
+ * @param StartTxTime start time of the PPDU transmission
+ * @param EndTxTime end time of the PPDU transmission
+ * @param collision indicates if the PPDU was lost due to collision
+ * @param CollisionTime time of the collision
+ * @param SNRmargin SNR margin of the PPDU
+ * @param SNRgap SNR gap of the PPDU
+ * @param decodeState indicates if the PPDU was successfully decoded
+ * @param ReasonForDecodeFail reason for the failure of decoding the PPDU
+ * @param SuccessDecodeTime time of successful decoding of the PPDU
+ * @param TxDuration duration of the PPDU transmission
+ * @param mcs modulation and coding scheme of the PPDU
+ */
+
+struct Ppdu_info;
+
+struct Node_info
+{
+    Mac48Address node_address;
+    std::vector<std::shared_ptr<Ppdu_info>> Ppdu_info_list;
+    std::map<uint8_t /*mcs*/, std::vector<std::shared_ptr<Ppdu_info>>> mcs_map;
+    std::map<WifiMacType, std::vector<std::shared_ptr<Ppdu_info>>> frame_type_map;
+};
+
+struct Ppdu_info
+{
+    WifiMacType frame_type;
+    Mac48Address sender;
+    Mac48Address receiver;
+    size_t aggregate;
+    uint32_t size_bytes;
+    double AccessChannelTime;
+    Time StartTxTime;
+    Time EndTxTime;
+    bool collision;
+    Time CollisionTime;
+    double SNRmargin;
+    double SNRgap;
+    bool decodeState;
+    uint8_t ReasonForDecodeFail;
+    Time SuccessDecodeTime;
+    Time TxDuration;
+    uint8_t mcs;
+};
+
+class SniffUtils : public Object
+{
+  public:
+    SniffUtils();
+    ~SniffUtils() = default;
+
+    static TypeId GetTypeId();
     /**
-     * @brief Struct to store information about a PPDU
-     * @param frame_type type of the frame ,including CONTROL , MANAGEMENT ,DATA
-     * @param sender MAC address of the sender
-     * @param receiver MAC address of the receiver
-     * @param aggregate number of subframes aggregated in this PPDU
-     * @param size_bytes size of the PPDU in bytes
-     * @param AccessChannelTime time of the PPDU in the access channel
-     * @param StartTxTime start time of the PPDU transmission
-     * @param EndTxTime end time of the PPDU transmission
-     * @param collision indicates if the PPDU was lost due to collision
-     * @param CollisionTime time of the collision
-     * @param SNRmargin SNR margin of the PPDU
-     * @param SNRgap SNR gap of the PPDU
-     * @param decodeState indicates if the PPDU was successfully decoded
-     * @param ReasonForDecodeFail reason for the failure of decoding the PPDU
-     * @param SuccessDecodeTime time of successful decoding of the PPDU
-     * @param TxDuration duration of the PPDU transmission
-     * @param mcs modulation and coding scheme of the PPDU
+     * @brief Construct a new sniff utils object
+     * @param[in] sender net device of the sender
+     * @param[in] receiver net device of the receiver
+     * @param[in] SimulationTime simulation time in double
+     *
      */
-    struct Ppdu_info
-    {
-        WifiMacType frame_type;
-        Mac48Address sender;
-        Mac48Address receiver;
-        size_t aggregate;         
-        uint32_t size_bytes;      
-        double AccessChannelTime; 
-        Time StartTxTime;         
-        Time EndTxTime;           
-        bool collision;           
-        Time CollisionTime; 
-        double SNRmargin;       
-        double SNRgap;          
-        bool decodeState;        
-        uint8_t ReasonForDecodeFail; 
-        Time SuccessDecodeTime;     
-        Time TxDuration;           
-        uint8_t mcs;
-    };
+    bool Initialize(NetDeviceContainer sender, NetDeviceContainer receiver, double SimulationTime);
 
-    class SniffUtils : public Object
-    {
-        public:       
-        SniffUtils();
-        ~SniffUtils() = default;
-        static TypeId 
-        GetTypeId();
-        /**
-         * @brief Construct a new sniff utils object
-         * @param sender net device of the sender
-         * @param receiver net device of the receiver
-         * @param SimulationTime simulation time in double
-         * 
-         */
-        bool 
-        Initialize(NetDeviceContainer sender,
-                   NetDeviceContainer receiver,
-                   double SimulationTime);
+    void Finalize_Tag_PPDU(ppdu_id_t id);
 
-        /**
-         * @brief Sniff all the frames been transmitted
-         * @param packet the packet
-         * @param frequency frequency of the channel
-         * @param txvector txvector of the PPDU
-         * @param mpdu_info the information of the PPDU
-         * @param sta_id the id of the station
-         * 
-         */
-        void 
-        Sniff_tx_packet_begin(Ptr<const Packet> packet,
-                          uint16_t frequency,
-                          WifiTxVector txvector,
-                          MpduInfo mpdu_info,
-                          uint16_t sta_id);
-        
-        /**
-         * @brief Sniff all the frames been received
-         * @param packet the packet
-         * @param frequency of the channel
-         * @param txvector txvector of the PPDU
-         * @param mpdu_info the information of the PPDU
-         * @param noise the noise of the receiver
-         * @param sta_id the id of the station
-         */
-        void 
-        Sniff_rx_packet_begin(Ptr<const Packet> packet,
-                          uint16_t frequency,
-                          WifiTxVector txvector,
-                          MpduInfo mpdu_info,
-                          SignalNoiseDbm noise,
-                          uint16_t sta_id);
+    /**
+     * @brief Sniff all the frames been transmitted
+     * @param[in] packet the packet
+     * @param[in] frequency frequency of the channel
+     * @param[in] txvector txvector of the PPDU
+     * @param[in] mpdu_info the information of the PPDU
+     * @param[in] sta_id the id of the station
+     *
+     */
+    void Sniff_tx_packet_begin(Ptr<const Packet> packet,
+                               uint16_t frequency,
+                               WifiTxVector txvector,
+                               MpduInfo mpdu_info,
+                               uint16_t sta_id);
 
-        /**
-         * @brief Sniff all the frames been dropped
-         * 
-         * @param packet the packet
-         * @param drop_reason the reason of the drop during the reception
-         */
-        void
-        Sniff_drop_packet_phy(Ptr<const Packet> packet, 
-                              WifiPhyRxfailureReason drop_reason);                    
-        /**
-         * @brief Sniff all the frames been dropped
-         * @param ppdu the WifiPpdu
-         * @param drop_reason the reason of the drop during the reception
-         */
-        void 
-        Sniff_drop_ppdu_phy(Ptr<const WifiPpdu> ppdu, 
-                            WifiPhyRxfailureReason drop_reason);
-        
-        /**
-         * @brief Sniff all the frames been transmitted
-         * 
-         * @param psdu_map the Psdu information is included
-         * @param txvector the information of tx
-         * @param tx_power the tx power
-         */
-        void 
-        Sniff_tx_psdu_begin(WifiConstPsduMap psdu_map, 
-                          WifiTxVector txvector, 
-                          double tx_power);
-        
-        /**
-         * @brief Sniff the MAC header of the PPDU
-         * 
-         * @param wifi_mac_header the MAC header of the PPDU
-         * @param tx_vector the tx vector of the PPDU
-         * @param time ?
-         */
-        void 
-        Sniff_mac_header(const WifiMacHeader& wifi_mac_header, 
-                              const WifiTxVector& tx_vector, 
-                              Time time);
-        
-        /**
-         * @brief Sniff all the frames been transmitted
-         * @param packet the packet
-         * @param frequency of the channel
-         * @param txvector txvector of the PPDU
-         * @param mpdu_info the information of the PPDU
-         * @param sta_id the id of the station
-         */
-        void 
-        Sniff_tx_all_packets(Ptr<const Packet> packet,
-                   uint16_t frequency,
-                   WifiTxVector txvector,
-                   MpduInfo mpdu_info,
-                   uint16_t sta_id);
-        
-        /**
-         * @brief Sniff all the ppdu been sent
-         * 
-         * @param ppdu 
-         * @param tx_vector 
-         */
-        void 
-        Sniff_ppdu_begin(Ptr<const WifiPpdu> ppdu, 
-                         const WifiTxVector& tx_vector);
+    /**
+     * @brief Sniff all the frames been received
+     *
+     * @param packet
+     */
+    void Sniff_tx_packet_end(Ptr<const Packet> packet);
 
-        void 
-        Set_simulation_time(double simulation_time);
-        private:
-        bool m_initialized;
-        double m_simulation_time;
-    };
-}
-#endif 
+    /**
+     * @brief Sniff all the frames been received
+     * @param[in] packet the packet
+     * @param[in] frequency of the channel
+     * @param[in] txvector txvector of the PPDU
+     * @param[in] mpdu_info the information of the PPDU
+     * @param[in] noise the noise of the receiver
+     * @param[in] sta_id the id of the station
+     */
+    void Sniff_rx_packet_begin(Ptr<const Packet> packet,
+                               uint16_t frequency,
+                               WifiTxVector txvector,
+                               MpduInfo mpdu_info,
+                               SignalNoiseDbm noise,
+                               uint16_t sta_id);
+
+    /**
+     * @brief Sniff all the frames been dropped
+     *
+     * @param[in] packet the packet
+     * @param[in] drop_reason the reason of the drop during the reception
+     */
+    void Sniff_drop_packet_phy(Ptr<const Packet> packet);
+    /**
+     * @brief Sniff all the frames been dropped
+     * @param[in] ppdu the WifiPpdu
+     * @param[in] drop_reason the reason of the drop during the reception
+     */
+    void Sniff_drop_ppdu_phy(Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason drop_reason);
+
+    /**
+     * @brief Sniff all the frames been transmitted
+     *
+     * @param[in] psdu_map the Psdu information is included
+     * @param[in] txvector the information of tx
+     * @param[in] tx_power the tx power
+     */
+    void Sniff_tx_psdu_begin(WifiConstPsduMap psdu_map, WifiTxVector txvector, double tx_power);
+
+    /**
+     * @brief Sniff the MAC header of the PPDU
+     *
+     * @param[in] wifi_mac_header the MAC header of the PPDU
+     * @param[in] tx_vector the tx vector of the PPDU
+     * @param[in] time ?
+     */
+    void Sniff_mac_header(const WifiMacHeader& wifi_mac_header,
+                          const WifiTxVector& tx_vector,
+                          Time time);
+
+    /**
+     * @brief Sniff all the frames been transmitted
+     * @param[in] packet the packet
+     * @param[in] frequency of the channel
+     * @param[in] txvector txvector of the PPDU
+     * @param[in] mpdu_info the information of the PPDU
+     * @param[in] sta_id the id of the station
+     */
+    void Sniff_tx_all_packets(Ptr<const Packet> packet,
+                              uint16_t frequency,
+                              WifiTxVector txvector,
+                              MpduInfo mpdu_info,
+                              uint16_t sta_id);
+
+    /**
+     * @brief Sniff all the ppdu been sent
+     *
+     * @param[in] ppdu
+     * @param[in] tx_vector
+     */
+    void Sniff_ppdu_begin(Ptr<const WifiPpdu> ppdu, const WifiTxVector& tx_vector);
+
+    /**
+     * @brief set the simulation time
+     *
+     * @param[in] simulation_time
+     */
+    void Set_simulation_time(double simulation_time);
+
+    void PrintPpduMeta(uint32_t ring_index) const;
+
+    void PrintLastPpdu() const;
+
+  private:
+    bool m_initialized;
+    double m_simulation_time;
+    uint32_t m_next_ppdu_id = 0;
+    std::unordered_map<Ptr<const WifiPpdu>, uint32_t> m_ppdu_map;
+    RingBuffer* m_ring = nullptr;
+};
+
+struct PpduRuntime
+{
+    uint32_t ring_index;
+    bool rx_success = false;
+    bool rx_drop = false;
+    bool collision = false;
+    WifiPhyRxfailureReason drop_reason{};
+    int64_t success_decode_ns = 0;
+    int64_t collision_time_ns = 0;
+};
+
+extern std::unordered_map<ppdu_id_t, PpduRuntime> m_ppdu_runtime;
+
+struct ActivePpdu
+{
+    Ptr<const WifiPpdu> ppdu;
+    ppdu_id_t id;
+    uint32_t ring_index;
+    uint32_t snr_sum = 0;
+    uint32_t snr_cnt = 0;
+};
+
+extern std::optional<ActivePpdu> m_active_ppdu;
+
+
+void AppendPpdu(RingBuffer* buffer, const PPDU_Meta& ppdu);
+void ShmExample();
+} // namespace ns3
+
+#endif
