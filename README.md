@@ -49,15 +49,16 @@ It is intended as a **research and debugging tool** rather than a full simulator
 
 ```
 Visualization/
-├── Qt/                 # Qt visualization project (this repo)
-│   ├── src/
-│   │   ├── ppdu_timeline_view.*
-│   │   ├── ppdu_info_overlay.*
-│   │   ├── legend_overlay.*
-│   │   └── ...
-│   ├── CMakeLists.txt
-│   └── ...
-├── ns-3.46/             # ns-3 (NOT included in this repo)
+├── Qt/
+|      |=QT_PRJ/                 # Qt visualization project (this repo)
+│          ├── Ns3Visualizer/
+│          │   ├── ppdu_timeline_view.*
+│          │   ├── ppdu_info_overlay.*
+│          │   ├── legend_overlay.*
+│          │   └── ...
+│          ├── CMakeLists.txt
+│          └── ...
+├── ns-3.46/             # ns-3 (ONLY contrib/ is included in this repo)
 └── README.md
 ```
 
