@@ -1,13 +1,24 @@
 #include "simu_config.h"
 #include "ui_simu_config.h"
+#include "visualizer_config.h"
 
 Simu_Config::Simu_Config(QWidget *parent)
     : QWidget(parent), ui(new Ui::Simu_Config)
 {
     ui->setupUi(this);
 
+    centerWindow(this);
+
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
+    ui->frame->setObjectName("myFrame");    
+    QString frameQss = R"(
+QFrame#myFrame {
+    border: 1px solid #BFBFBF;
+    border-radius: 4px;
+    background-color: #FFFFFF;
+}
+)";
 
     connect(this->node_config_page, &node_config::Finish_setting_sta, this, [=]()
             {
@@ -310,6 +321,74 @@ void Simu_Config::on_pushButton_8_clicked()
     }
 }
 
+void Simu_Config::cleanupAndExit()
+{
+    qDebug() << "Timeline closed, cleaning up...";
+
+    // kill PPDU reader precess(?)
+    if (m_ppduReader) {
+        m_ppduReader->stop();
+        if (m_ppduThread) {
+            m_ppduThread->quit();
+            m_ppduThread->wait();
+            m_ppduThread->deleteLater();
+            m_ppduThread = nullptr;
+        }
+        m_ppduReader->deleteLater();
+        m_ppduReader = nullptr;
+    }
+
+    // kill ns3(?)
+    if (ns3Process) {
+        ns3Process->kill();
+        ns3Process->waitForFinished(2000);
+        delete ns3Process;
+        ns3Process = nullptr;
+    }
+
+    // exit the timeline view
+    if (m_timelineView) {
+        m_timelineView->close();
+        m_timelineView->deleteLater();
+        m_timelineView = nullptr;
+    }
+
+    // exit all the subwindows
+    if (node_config_page) {
+        node_config_page->close();
+        node_config_page->deleteLater();
+        node_config_page = nullptr;
+    }
+
+    if (ap_config_page) {
+        ap_config_page->close();
+        ap_config_page->deleteLater();
+        ap_config_page = nullptr;
+    }
+
+    // clean the scene(?)
+    if (scene) {
+        for (auto item : scene->items()) {
+            scene->removeItem(item);
+            delete item;
+        }
+        delete scene;
+        scene = nullptr;
+    }
+
+    // Closing the main window
+    qDebug() << "Closing main window...";
+    this->close();
+
+    // For debug , load the remain object tree
+    qDebug() << "===== Object tree after cleanup =====";
+    this->dumpObjectTree();
+    qDebug() << "===== Top-level widgets =====";
+    for (QWidget *w : QApplication::topLevelWidgets())
+        qDebug() << w << w->metaObject()->className();
+}
+
+
 // Finnal Check , Run the Simulation , Load the General Json
 void Simu_Config::on_pushButton_9_clicked()
 {
@@ -355,7 +434,7 @@ void Simu_Config::on_pushButton_9_clicked()
 
     QString program = "./ns3";
     QStringList arguments;
-    arguments << "run" << "timeline_test.cc";
+    arguments << "run" << "timeline_pressure.cc";
 
     connect(ns3Process, &QProcess::started, this, []
             { qDebug() << "ns-3 started"; });
@@ -378,6 +457,10 @@ void Simu_Config::on_pushButton_9_clicked()
         m_timelineView->resize(1200, 400);
         m_timelineView->show();
     }
+
+    // connect the timeline view
+    connect(m_timelineView, &PpduTimelineView::timelineClosed, this, &Simu_Config::cleanupAndExit);
+
 
     // ===============================
     // 2. create the ppdu reader
@@ -405,4 +488,13 @@ void Simu_Config::on_pushButton_9_clicked()
         m_ppduReader->deleteLater(); });
 
     m_ppduThread->start();
+}
+
+void Simu_Config::on_checkBox_checkStateChanged(const Qt::CheckState &state)
+{
+    bool checked = (state == Qt::Checked);
+
+    g_ppduViewConfig.absoluteRate.store(checked);
+    g_ppduViewConfig.preciseMode.store(checked);
+    g_ppduViewConfig.sampleRate.store(checked ? 1 : 10); // 默认降采样 1/10
 }

@@ -9,6 +9,7 @@
 #include "ppdu_visual_item.h"
 #include "shm.h"
 #include "qt_ppdu_reader.h"
+#include "utils.h"
 
 #include <QGraphicsEllipseItem>
 #include <QGraphicsSceneHoverEvent>
@@ -42,6 +43,8 @@ public:
 
     void update_json(QGraphicsScene *,QJsonObject&);
 
+    void cleanupAndExit();
+
 private slots:
     void on_pushButton_clicked();
 
@@ -52,6 +55,8 @@ private slots:
     void on_pushButton_8_clicked();
 
     void on_pushButton_9_clicked();
+
+    void on_checkBox_checkStateChanged(const Qt::CheckState &arg1);
 
 private:
     Ui::Simu_Config *ui;

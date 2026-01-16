@@ -1,5 +1,6 @@
 #pragma once
 #include <QGraphicsView>
+#include "utils.h"
 
 class ConfigGraphicsView : public QGraphicsView
 {

@@ -2,6 +2,7 @@
 #define ANTENNAS_H
 
 #include "JsonHelper.h"
+#include "utils.h"
 #include <QDialog>
 
 namespace Ui {

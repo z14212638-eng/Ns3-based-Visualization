@@ -6,6 +6,7 @@ Edca_config::Edca_config(QWidget *parent)
     , ui(new Ui::Edca_config)
 {
     ui->setupUi(this);
+    centerWindow(this);
 }
 
 Edca_config::~Edca_config()

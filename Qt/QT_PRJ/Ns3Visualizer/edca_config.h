@@ -2,6 +2,7 @@
 #define EDCA_CONFIG_H
 
 #include <QDialog>
+#include "utils.h"
 
 namespace Ui
 {

@@ -1,5 +1,6 @@
 #pragma once
 #include <QWidget>
+#include "utils.h"
 
 class LegendOverlay : public QWidget
 {
