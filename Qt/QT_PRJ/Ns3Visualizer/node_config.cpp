@@ -5,7 +5,7 @@ node_config::node_config(QWidget *parent)
     : QWidget(parent), ui(new Ui::node_config)
 {
     ui->setupUi(this);
-    
+
     centerWindow(this);
 
     if (!ui->checkBox_2->isChecked())
@@ -30,6 +30,55 @@ node_config::node_config(QWidget *parent)
         ui->tabWidget->setTabEnabled(3, false);
     }
     ui->tableWidget->setRowCount(0);
+
+    // deduce the GI from the selected protocol
+    ui->comboBox_5->setCurrentIndex(5);
+    ui->comboBox_15->setEnabled(false);
+    connect(ui->comboBox_5,
+            &QComboBox::currentTextChanged,
+            this,
+            [this](const QString &text)
+            {
+                auto gi = get_gi_from_string(text.toStdString());
+
+                for (int i = 0; i < ui->comboBox_15->count(); ++i)
+                {
+                    ui->comboBox_15->setItemData(
+                        i, QVariant(), Qt::UserRole - 1);
+                }
+
+                switch (gi)
+                {
+                case GI_MAP::k80211a:
+                case GI_MAP::k80211b:
+                case GI_MAP::k80211g:
+                    ui->comboBox_15->setCurrentIndex(1);
+                    ui->comboBox_15->setEnabled(false);
+                    break;
+
+                case GI_MAP::k80211n:
+                case GI_MAP::k80211ac:
+                    ui->comboBox_15->setEnabled(true);
+                    ui->comboBox_15->setCurrentIndex(1);
+                    ui->comboBox_15->setItemData(
+                        2, QVariant(0), Qt::UserRole - 1);
+                    ui->comboBox_15->setItemData(
+                        3, QVariant(1), Qt::UserRole - 1);
+                    break;
+
+                case GI_MAP::k80211ax:
+                    ui->comboBox_15->setCurrentIndex(1);
+                    ui->comboBox_15->setEnabled(true);
+                    ui->comboBox_15->setItemData(
+                        0, QVariant(0), Qt::UserRole - 1);
+
+                default:
+                    break;
+                }
+            });
+    // Default setting the GI
+    auto text = ui->comboBox_5->currentText();
+    ui->comboBox_15->currentTextChanged(text);
 }
 
 node_config::~node_config()
@@ -289,6 +338,34 @@ void node_config::on_pushButton_6_clicked()
         this->one_sta->Frequency = 2400 + (channel_number - 1) * 5;
     }
 
+    // set the GI
+    QString GI_str = ui->comboBox_15->currentText();
+    if (ui->comboBox_3->currentText() == "5G")
+    {
+        this->one_sta->Frequency = 5000 + channel_number * 5;
+    }
+    else if (ui->comboBox_3->currentText() == "2.4G")
+    {
+        this->one_sta->Frequency = 2400 + (channel_number - 1) * 5;
+    }
+
+    if (ui->comboBox_15->currentText() == "400ns")
+    {
+        this->one_sta->GI = 400;
+    }
+    else if (ui->comboBox_15->currentText() == "800ns")
+    {
+        this->one_sta->GI = 800;
+    }
+    else if (ui->comboBox_15->currentText() == "1600ns")
+    {
+        this->one_sta->GI = 1600;
+    }
+    else if (ui->comboBox_15->currentText() == "3200ns")
+    {
+        this->one_sta->GI = 3200;
+    }
+
     // set the bandwidth
     this->one_sta->bandwidth = ui->spinBox_2->value();
     // set the Tx power
@@ -348,7 +425,7 @@ void node_config::on_pushButton_6_clicked()
     this->one_sta->AMpdu_type = this->edca_page->AMpdu_type;
     this->one_sta->MaxAMpduSize = this->edca_page->MaxAMpduSize;
     this->one_sta->Density = this->edca_page->Density;
-    
+
     // set the Antenna
     std::cout << "the number of antenna is: " << this->antenna_page->antenna_list.size() << std::endl;
 
@@ -367,7 +444,6 @@ void node_config::on_pushButton_6_clicked()
     {
         this->one_sta->Antenna_list.push_back(std::move(item));
     }
-
 
     phymac_set = true;
     ui->tabWidget->setTabEnabled(3, true);
@@ -414,7 +490,7 @@ bool node_config::Integrity_Check()
     return true;
 }
 
-//Add one traffic
+// Add one traffic
 void node_config::on_pushButton_2_clicked()
 {
     if (ui->tableWidget->rowCount() == 1 && ui->tableWidget->item(0, 1) == nullptr)
@@ -487,7 +563,7 @@ void node_config::on_pushButton_2_clicked()
     this->one_sta->Traffic_list.push_back(new_traffic);
 }
 
-//Delete one traffic
+// Delete one traffic
 void node_config::on_pushButton_3_clicked()
 {
     int rowCount = ui->tableWidget->rowCount() - 1;
@@ -499,7 +575,7 @@ void node_config::on_pushButton_3_clicked()
 // Page4_Traffic_Finished
 void node_config::on_pushButton_7_clicked()
 {
-        // check if the flow id is set
+    // check if the flow id is set
     if (ui->lineEdit->text().isEmpty())
     {
         QMessageBox::critical(
@@ -527,4 +603,3 @@ void node_config::on_pushButton_7_clicked()
     this->one_sta->Antenna_list.clear();
     emit Finish_setting_sta();
 }
-

@@ -7,7 +7,7 @@ Ap_config::Ap_config(QWidget *parent)
     ui->setupUi(this);
 
     centerWindow(this);
-    
+
     if (!ui->checkBox_4->isChecked())
     {
         pos_set = true;
@@ -30,6 +30,52 @@ Ap_config::Ap_config(QWidget *parent)
         ui->tabWidget->setTabEnabled(3, false);
     }
     ui->tableWidget->setRowCount(0);
+
+    //deduce the GI from the selected protocol
+    ui->comboBox_5->setCurrentIndex(5);
+    ui->comboBox_15->setEnabled(false);
+    connect(ui->comboBox_5,
+            &QComboBox::currentTextChanged,
+            this,
+            [this](const QString &text)
+            {
+                auto gi = get_gi_from_string(text.toStdString());
+
+                for (int i = 0; i < ui->comboBox_15->count(); ++i)
+                {
+                    ui->comboBox_15->setItemData(
+                        i, QVariant(), Qt::UserRole - 1);
+                }
+
+                switch (gi)
+                {
+                case GI_MAP::k80211a:
+                case GI_MAP::k80211b:
+                case GI_MAP::k80211g:
+                    ui->comboBox_15->setCurrentIndex(1);
+                    ui->comboBox_15->setEnabled(false);
+                    break;
+
+                case GI_MAP::k80211n:
+                case GI_MAP::k80211ac:
+                    ui->comboBox_15->setEnabled(true);
+                    ui->comboBox_15->setCurrentIndex(1);
+                    ui->comboBox_15->setItemData(
+                        2, QVariant(0), Qt::UserRole - 1);
+                    ui->comboBox_15->setItemData(
+                        3, QVariant(1), Qt::UserRole - 1);
+                    break;
+
+                case GI_MAP::k80211ax:
+                    ui->comboBox_15->setEnabled(true);
+                    ui->comboBox_15->setCurrentIndex(1);
+                    ui->comboBox_15->setItemData(
+                        0, QVariant(0), Qt::UserRole - 1);
+
+                default:
+                    break;
+                }
+            });
 }
 
 Ap_config::~Ap_config()
@@ -309,6 +355,24 @@ void Ap_config::on_pushButton_6_clicked()
         this->one_ap->Frequency = 2400 + (channel_number - 1) * 5;
     }
 
+    //set the GI
+    if(ui->comboBox_15->currentText() == "400ns")
+    {
+        this->one_ap->GI = 400;
+    }
+    else if(ui->comboBox_15->currentText() == "800ns")
+    {
+        this->one_ap->GI = 800;
+    }
+    else if(ui->comboBox_15->currentText() == "1600ns")
+    {
+        this->one_ap->GI = 1600;
+    }
+    else if(ui->comboBox_15->currentText() == "3200ns")
+    {
+        this->one_ap->GI = 3200;
+    }
+
     // set the bandwidth
     this->one_ap->bandwidth = ui->spinBox_2->value();
     // set the Tx power
@@ -533,7 +597,7 @@ void Ap_config::on_pushButton_2_clicked()
     // Show the information in the table
     int rowCount = ui->tableWidget->rowCount();
     qint8 lastrow = rowCount;
-    
+
     ui->tableWidget->insertRow(lastrow);
     ui->tableWidget->setItem(lastrow, 0, new QTableWidgetItem(FlowId));
     ui->tableWidget->setItem(lastrow, 1, new QTableWidgetItem(QString::number(StartTime)));

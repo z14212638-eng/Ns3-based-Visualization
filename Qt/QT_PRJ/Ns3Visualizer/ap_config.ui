@@ -25,7 +25,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="documentMode">
       <bool>false</bool>
@@ -413,93 +413,25 @@
        <string>Phy-Mac</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="5" column="1" rowspan="2" colspan="3">
-        <widget class="QLineEdit" name="lineEdit">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_9">
          <property name="text">
-          <string>Ns3WiFi</string>
+          <string>Channel</string>
          </property>
         </widget>
        </item>
-       <item row="14" column="0" colspan="3">
-        <widget class="QLabel" name="label_20">
+       <item row="2" column="0" rowspan="2" colspan="2">
+        <widget class="QLabel" name="label_11">
          <property name="text">
-          <string>CcaSensitivity </string>
+          <string>Bandwidth</string>
          </property>
         </widget>
        </item>
-       <item row="12" column="0">
-        <widget class="QLabel" name="label_17">
-         <property name="text">
-          <string>Sifs</string>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="4">
-        <widget class="QLabel" name="label_19">
-         <property name="text">
-          <string>CcaEdThreshold </string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2" rowspan="2" colspan="2">
-        <widget class="QSpinBox" name="spinBox_2">
+       <item row="0" column="2" colspan="2">
+        <widget class="QSpinBox" name="spinBox">
          <property name="value">
-          <number>20</number>
+          <number>36</number>
          </property>
-        </widget>
-       </item>
-       <item row="10" column="4" colspan="3">
-        <widget class="QComboBox" name="comboBox_7">
-         <item>
-          <property name="text">
-           <string>Aarf</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Amrr</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Arf</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Cara</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Onoe</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Rraa</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Minstrel</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Ideal</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Constant</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ThomsonSampling</string>
-          </property>
-         </item>
         </widget>
        </item>
        <item row="3" column="4" rowspan="3" colspan="3">
@@ -576,52 +508,53 @@
          </widget>
         </widget>
        </item>
-       <item row="8" column="3" rowspan="2">
-        <widget class="QComboBox" name="comboBox_5">
-         <item>
-          <property name="text">
-           <string>802.11a</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>802.11b</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>802.11g</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>802.11n</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>802.11ac</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>802.11ax</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="0" column="2" colspan="2">
-        <widget class="QSpinBox" name="spinBox">
+       <item row="15" column="6">
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_10">
+         <property name="minimum">
+          <double>-65535.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>65535.989999999997963</double>
+         </property>
          <property name="value">
-          <number>36</number>
+          <double>-62.000000000000000</double>
          </property>
         </widget>
        </item>
-       <item row="12" column="3">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox_8">
-         <property name="value">
-          <double>3.000000000000000</double>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>TxPower</string>
          </property>
+        </widget>
+       </item>
+       <item row="13" column="4" colspan="3">
+        <widget class="QComboBox" name="comboBox_8">
+         <item>
+          <property name="text">
+           <string>DropTail</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Red</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CoDel</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>FqCoDel</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PfifoFast</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item row="9" column="4" colspan="3">
@@ -631,10 +564,85 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0" rowspan="2">
-        <widget class="QLabel" name="label_13">
+       <item row="11" column="4" colspan="3">
+        <widget class="QComboBox" name="comboBox_7">
+         <item>
+          <property name="text">
+           <string>Aarf</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Amrr</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Arf</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Cara</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Onoe</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Rraa</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Minstrel</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Ideal</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Constant</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ThomsonSampling</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="2" colspan="2">
+        <widget class="QComboBox" name="comboBox_3">
+         <item>
+          <property name="text">
+           <string>5G</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2.4G</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="11" column="3" rowspan="2">
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_7">
+         <property name="value">
+          <double>6.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="4">
+        <widget class="QLabel" name="label_35">
          <property name="text">
-          <string>Ssid</string>
+          <string>Antenna</string>
          </property>
         </widget>
        </item>
@@ -761,86 +769,24 @@
          </widget>
         </widget>
        </item>
+       <item row="5" column="1" rowspan="2" colspan="3">
+        <widget class="QLineEdit" name="lineEdit">
+         <property name="text">
+          <string>Ns3WiFi</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="3">
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_8">
+         <property name="value">
+          <double>3.000000000000000</double>
+         </property>
+        </widget>
+       </item>
        <item row="14" column="6">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox_10">
-         <property name="minimum">
-          <double>-65535.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>65535.989999999997963</double>
-         </property>
-         <property name="value">
-          <double>-62.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="3">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox_11">
-         <property name="minimum">
-          <double>-65535.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>65535.989999999997963</double>
-         </property>
-         <property name="value">
-          <double>-82.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0" colspan="2">
-        <widget class="QLabel" name="label_14">
+        <widget class="QPushButton" name="pushButton_9">
          <property name="text">
-          <string>Phy-Model</string>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="4" colspan="3">
-        <widget class="QComboBox" name="comboBox_8">
-         <item>
-          <property name="text">
-           <string>DropTail</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Red</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>CoDel</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>FqCoDel</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PfifoFast</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="4" column="2" colspan="2">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
-         <property name="value">
-          <double>20.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="5" colspan="2">
-        <widget class="QPushButton" name="pushButton_6">
-         <property name="text">
-          <string>Finish</string>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="0" colspan="3">
-        <widget class="QLabel" name="label_18">
-         <property name="text">
-          <string>RxSensitivity  </string>
+          <string>Config</string>
          </property>
         </widget>
        </item>
@@ -939,31 +885,19 @@
          </widget>
         </widget>
        </item>
-       <item row="13" column="6">
-        <widget class="QPushButton" name="pushButton_9">
-         <property name="text">
-          <string>Config</string>
+       <item row="14" column="3">
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_9">
+         <property name="minimum">
+          <double>-65535.000000000000000</double>
          </property>
-        </widget>
-       </item>
-       <item row="1" column="2" colspan="2">
-        <widget class="QComboBox" name="comboBox_3">
-         <item>
-          <property name="text">
-           <string>5G</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>2.4G</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_12">
-         <property name="text">
-          <string>TxPower</string>
+         <property name="maximum">
+          <double>65535.989999999997963</double>
+         </property>
+         <property name="singleStep">
+          <double>1.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>-121.000000000000000</double>
          </property>
         </widget>
        </item>
@@ -981,19 +915,51 @@
          </item>
         </widget>
        </item>
-       <item row="13" column="3">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox_9">
+       <item row="15" column="0" colspan="3">
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>CcaSensitivity </string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0" rowspan="2">
+        <widget class="QLabel" name="label_16">
+         <property name="text">
+          <string>Slot</string>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="3">
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_11">
          <property name="minimum">
           <double>-65535.000000000000000</double>
          </property>
          <property name="maximum">
           <double>65535.989999999997963</double>
          </property>
-         <property name="singleStep">
-          <double>1.000000000000000</double>
-         </property>
          <property name="value">
-          <double>-121.000000000000000</double>
+          <double>-82.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0" colspan="2">
+        <widget class="QLabel" name="label_14">
+         <property name="text">
+          <string>Phy-Model</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2" rowspan="2" colspan="2">
+        <widget class="QSpinBox" name="spinBox_2">
+         <property name="value">
+          <number>20</number>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="5" colspan="2">
+        <widget class="QPushButton" name="pushButton_6">
+         <property name="text">
+          <string>Finish</string>
          </property>
         </widget>
        </item>
@@ -1004,45 +970,45 @@
          </property>
         </widget>
        </item>
-       <item row="10" column="3" rowspan="2">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox_7">
+       <item row="4" column="2" colspan="2">
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
          <property name="value">
-          <double>6.000000000000000</double>
+          <double>20.000000000000000</double>
          </property>
         </widget>
        </item>
-       <item row="13" column="4">
-        <widget class="QLabel" name="label_35">
+       <item row="5" column="0" rowspan="2">
+        <widget class="QLabel" name="label_13">
          <property name="text">
-          <string>Antenna</string>
+          <string>Ssid</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_9">
+       <item row="13" column="0">
+        <widget class="QLabel" name="label_17">
          <property name="text">
-          <string>Channel</string>
+          <string>Sifs</string>
          </property>
         </widget>
        </item>
-       <item row="11" column="4" colspan="2">
+       <item row="14" column="0" colspan="3">
+        <widget class="QLabel" name="label_18">
+         <property name="text">
+          <string>RxSensitivity  </string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="4" colspan="2">
         <widget class="QLabel" name="label_34">
          <property name="text">
           <string>TxQueue</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0" rowspan="2" colspan="2">
-        <widget class="QLabel" name="label_11">
+       <item row="15" column="4">
+        <widget class="QLabel" name="label_19">
          <property name="text">
-          <string>Bandwidth</string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="0" rowspan="2">
-        <widget class="QLabel" name="label_16">
-         <property name="text">
-          <string>Slot</string>
+          <string>CcaEdThreshold </string>
          </property>
         </widget>
        </item>
@@ -1051,6 +1017,74 @@
          <property name="text">
           <string>Standard</string>
          </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="label_48">
+         <property name="text">
+          <string>Guard Interval</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="3">
+        <widget class="QComboBox" name="comboBox_15">
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>400ns</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>800ns</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1600ns</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>3200ns</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="8" column="3" rowspan="2">
+        <widget class="QComboBox" name="comboBox_5">
+         <item>
+          <property name="text">
+           <string>802.11a</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>802.11b</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>802.11g</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>802.11n</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>802.11ac</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>802.11ax</string>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
@@ -1160,7 +1194,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-591</y>
+            <y>0</y>
             <width>735</width>
             <height>1423</height>
            </rect>

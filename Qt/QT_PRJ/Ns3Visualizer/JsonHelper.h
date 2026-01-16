@@ -15,6 +15,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QJsonParseError>
+#include <QLoggingCategory>
 
 // This class is used to save the configuration of the network to a JSON file.
 
@@ -25,6 +26,27 @@ enum class AcType
     VI,
     VO
 };
+
+enum class GI_MAP
+{
+    k80211a,
+    k80211b,
+    k80211g,
+    k80211n,
+    k80211ac,
+    k80211ax
+};
+
+static const std::map<std::string, GI_MAP> gi_map = {
+    {"802.11a", GI_MAP::k80211a},
+    {"802.11b", GI_MAP::k80211b},
+    {"802.11g", GI_MAP::k80211g},
+    {"802.11n", GI_MAP::k80211n},
+    {"802.11ac", GI_MAP::k80211ac},
+    {"802.11ax", GI_MAP::k80211ax}
+};
+
+GI_MAP get_gi_from_string(const std::string &);
 
 struct Antenna_Config
 {
@@ -137,7 +159,8 @@ public:
     double TxPower = 20;
     QString Ssid = "";
     QString Phy_model = "Yans";
-    QString Standard = "802.11a";
+    QString Standard = "802.11ax";
+    qint16 GI = 800;
     double Slot = 0;
     double Sifs = 0;
     double RxSensitivity = -101;
@@ -225,7 +248,8 @@ public:
     double TxPower = 20;
     QString Ssid = "";
     QString Phy_model = "Yans";
-    QString Standard = "802.11a";
+    QString Standard = "802.11ax";
+    qint16 GI = 800;
     qint16 MaxMissedBeacons = 10;
     qint16 ProbeRequestTimeout = 500;
     bool EnableAssocFailRetry = true;

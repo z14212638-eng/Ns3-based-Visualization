@@ -1,10 +1,21 @@
 #include "JsonHelper.h"
 
+
 double get_true_random_double(double min, double max)
 {
     std::random_device rd;
     std::uniform_real_distribution<> dis(min, max);
     return dis(rd);
+}
+
+GI_MAP get_gi_from_string(const std::string &gi_str)
+{
+    auto it = gi_map.find(gi_str);
+    if (it == gi_map.end())
+    {
+        return GI_MAP::k80211ax;
+    }
+    return it->second;
 }
 
 bool JsonHelper::SaveJsonObjToRoute(const QJsonObject jsonObj, const QString filePath)
@@ -92,6 +103,7 @@ bool JsonHelper::SetApToJson(const Ap *ap, qint8 id)
     jsonObj["Ssid"] = ap->Ssid;
     jsonObj["Phy_model"] = ap->Phy_model;
     jsonObj["Standard"] = ap->Standard;
+    jsonObj["Guard_interval"] = ap->GI;
     jsonObj["Slot"] = ap->Slot;
     jsonObj["Sifs"] = ap->Sifs;
     jsonObj["RxSensitivity"] = ap->RxSensitivity;
@@ -310,6 +322,7 @@ bool JsonHelper::SetStaToJson(const Sta *sta, qint8 id)
     jsonObj["Ssid"] = sta->Ssid;
     jsonObj["Phy_model"] = sta->Phy_model;
     jsonObj["Standard"] = sta->Standard;
+    jsonObj["Guard_interval"] = sta->GI;
     jsonObj["MaxMissedBeacons"] = sta->MaxMissedBeacons;
     jsonObj["ProbeRequestTimeout"] = sta->ProbeRequestTimeout;
     jsonObj["EnableAssocFailRetry"] = sta->EnableAssocFailRetry;
