@@ -23,6 +23,10 @@ static const QColor kPpduHover(220, 50, 47);
 static const QColor kSelectFill(80, 140, 255, 60);
 static const QColor kSelectBorder(80, 140, 255, 160);
 
+static constexpr int kRangeBarHeight = 16;
+static constexpr int kRangeHandleW = 8;
+static constexpr int kRangeBarMargin = 10;
+
 /* ======================== Constructor ======================== */
 
 PpduTimelineView::PpduTimelineView(QWidget *parent)
@@ -381,6 +385,43 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
             painter.drawRect(selRect);
         }
     }
+
+    /* ================= Time Range Slider ================= */
+
+    int barY = height() - kBottomMargin + 10;
+    int barX = m_leftMargin;
+    int barW = width() - m_leftMargin - kRangeBarMargin;
+
+    if (barW > 50)
+    {
+        int leftX = barX + m_rangeStart * barW;
+        int rightX = barX + m_rangeEnd * barW;
+
+        // 导轨
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(QColor(180, 185, 190));
+        painter.drawRoundedRect(
+            QRectF(barX, barY + kRangeBarHeight / 2 - 2, barW, 4),
+            2, 2);
+
+        // 选中窗口
+        painter.setBrush(QColor(90, 140, 255, 120));
+        painter.drawRoundedRect(
+            QRectF(leftX, barY, rightX - leftX, kRangeBarHeight),
+            4, 4);
+
+        // 左右手柄
+        painter.setBrush(QColor(240, 240, 240));
+        painter.drawRoundedRect(
+            QRectF(leftX - kRangeHandleW / 2, barY,
+                   kRangeHandleW, kRangeBarHeight),
+            3, 3);
+
+        painter.drawRoundedRect(
+            QRectF(rightX - kRangeHandleW / 2, barY,
+                   kRangeHandleW, kRangeBarHeight),
+            3, 3);
+    }
 }
 
 void PpduTimelineView::resizeEvent(QResizeEvent *)
@@ -541,6 +582,35 @@ void PpduTimelineView::mousePressEvent(QMouseEvent *e)
     m_showingStats = false;
     m_overlay->close();
 
+    int barY = height() - kBottomMargin + 10;
+    int barX = m_leftMargin;
+    int barW = width() - m_leftMargin - kRangeBarMargin;
+
+    if (e->button() == Qt::LeftButton &&
+        e->y() >= barY && e->y() <= barY + kRangeBarHeight)
+    {
+        int leftX = barX + m_rangeStart * barW;
+        int rightX = barX + m_rangeEnd * barW;
+
+        if (qAbs(e->x() - leftX) < 6)
+            m_dragLeftHandle = true;
+        else if (qAbs(e->x() - rightX) < 6)
+            m_dragRightHandle = true;
+        else if (e->x() > leftX && e->x() < rightX)
+            m_dragRangeBody = true;
+
+        if (m_dragLeftHandle || m_dragRightHandle || m_dragRangeBody)
+        {
+            m_rangeDragging = true;
+            m_lastRangeX = e->x();
+            setCursor(Qt::SizeHorCursor);
+            return;
+        }
+    }
+
+    m_showingStats = false;
+    m_overlay->close();
+
     if (childAt(e->pos()) == m_btnLegend ||
         childAt(e->pos()) == m_btnSave ||
         childAt(e->pos()) == m_btnSetTimeRange)
@@ -565,6 +635,42 @@ void PpduTimelineView::mousePressEvent(QMouseEvent *e)
 
 void PpduTimelineView::mouseMoveEvent(QMouseEvent *e)
 {
+    int barY = height() - kBottomMargin + 10;
+    int barX = m_leftMargin;
+    int barW = width() - m_leftMargin - kRangeBarMargin;
+
+    if (m_rangeDragging)
+    {
+        int barW = width() - m_leftMargin - kRangeBarMargin;
+        double dx = double(e->x() - m_lastRangeX) / double(barW);
+
+        if (m_dragLeftHandle)
+            m_rangeStart = std::clamp(m_rangeStart + dx, 0.0, m_rangeEnd - 0.01);
+        else if (m_dragRightHandle)
+            m_rangeEnd = std::clamp(m_rangeEnd + dx, m_rangeStart + 0.01, 1.0);
+        else if (m_dragRangeBody)
+        {
+            double w = m_rangeEnd - m_rangeStart;
+            m_rangeStart = std::clamp(m_rangeStart + dx, 0.0, 1.0 - w);
+            m_rangeEnd = m_rangeStart + w;
+        }
+
+        // 同步时间轴
+        uint64_t globalStart = m_items.first().txStartNs;
+        uint64_t globalEnd = m_items.last().txEndNs;
+        uint64_t span = globalEnd - globalStart;
+
+        m_viewStartNs = globalStart + m_rangeStart * span;
+
+        int usableWidth = width() - m_leftMargin - 10;
+        m_nsToPixel = double(usableWidth) /
+                      double((m_rangeEnd - m_rangeStart) * span);
+
+        m_lastRangeX = e->x();
+        update();
+        return;
+    }
+
     if (m_showingStats)
         return;
 
@@ -681,6 +787,16 @@ void PpduTimelineView::mouseReleaseEvent(QMouseEvent *e)
         m_hoverIndex = -1;
         update();
     }
+
+    if (m_rangeDragging)
+    {
+        m_rangeDragging = false;
+        m_dragLeftHandle = false;
+        m_dragRightHandle = false;
+        m_dragRangeBody = false;
+        setCursor(Qt::ArrowCursor);
+        return;
+    }
 }
 
 void PpduTimelineView::leaveEvent(QEvent *)
@@ -693,8 +809,8 @@ void PpduTimelineView::leaveEvent(QEvent *)
 
 void PpduTimelineView::closeEvent(QCloseEvent *e)
 {
-    emit timelineClosed(); 
-    e->accept();       
+    emit timelineClosed();
+    e->accept();
 }
 
 /* ======================== hitTest ======================== */

@@ -103,4 +103,15 @@ private:
     uint64_t m_selStartNs = 0;
     uint64_t m_selEndNs = 0;
     bool m_showingStats = false;
+
+    /* ===== Time Range Slider ===== */
+    bool m_rangeDragging = false;
+    bool m_dragLeftHandle = false;
+    bool m_dragRightHandle = false;
+    bool m_dragRangeBody = false;
+
+    double m_rangeStart = 0.0; // [0,1]
+    double m_rangeEnd = 1.0;   // [0,1]
+
+    int m_lastRangeX = 0;
 };
