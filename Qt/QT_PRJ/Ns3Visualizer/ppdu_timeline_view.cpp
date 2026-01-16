@@ -1,4 +1,5 @@
 #include "ppdu_timeline_view.h"
+#include "visualizer_config.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -30,7 +31,7 @@ PpduTimelineView::PpduTimelineView(QWidget *parent)
     setMouseTracking(true);
 
     m_overlay = new PpduInfoOverlay(this);
-    m_overlay->hide();
+    m_overlay->close();
 
     m_btnSave = new QPushButton("~", this);
     m_btnSave->setFixedSize(26, 26);
@@ -50,7 +51,8 @@ PpduTimelineView::PpduTimelineView(QWidget *parent)
             this, &PpduTimelineView::onToggleLegend);
 
     m_legendOverlay = new LegendOverlay(this);
-    m_legendOverlay->hide();
+    centerWindow(this);
+    m_legendOverlay->close();
 }
 
 /* ======================== Culculate the number of APs =================== */
@@ -86,6 +88,17 @@ int PpduTimelineView::timelineTopY() const
 
 void PpduTimelineView::append(const PpduVisualItem &ppdu)
 {
+    static uint64_t ppduCount = 0;
+    ppduCount++;
+
+    // 如果是精确模式 或 绝对模式，全都显示
+    if (!g_ppduViewConfig.preciseMode.load() && !g_ppduViewConfig.absoluteRate.load())
+    {
+        int rate = g_ppduViewConfig.sampleRate.load();
+        if (rate > 1 && (ppduCount % rate != 0))
+            return;
+    }
+
     PpduVisualItem fixed = ppdu;
     if (fixed.nodeId <= 0)
         fixed.nodeId = 1;
@@ -95,12 +108,14 @@ void PpduTimelineView::append(const PpduVisualItem &ppdu)
     if (m_items.size() == 1)
         m_viewStartNs = fixed.txStartNs;
 
-    if (width() > 0)
-    {
-        double visibleNs = width() / m_nsToPixel;
-        if (fixed.txEndNs > m_viewStartNs + visibleNs)
-            m_viewStartNs = fixed.txEndNs - visibleNs;
-    }
+    // only append the ppdu belongs to the current view
+
+    // if (width() > 0)
+    // {
+    //     double visibleNs = width() / m_nsToPixel;
+    //     if (fixed.txEndNs > m_viewStartNs + visibleNs)
+    //         m_viewStartNs = fixed.txEndNs - visibleNs;
+    // }
 
     update();
 }
@@ -109,7 +124,7 @@ void PpduTimelineView::clear()
 {
     m_items.clear();
     m_hoverIndex = -1;
-    m_overlay->hide();
+    m_overlay->close();
     update();
 }
 
@@ -203,7 +218,7 @@ void PpduTimelineView::showStatsOverlay(
 void PpduTimelineView::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.fillRect(rect(), QColor(245, 246, 248));
+    painter.fillRect(rect(), QColor(220, 225, 232));
 
     int apCnt = apCount();
 
@@ -421,7 +436,7 @@ void PpduTimelineView::onToggleLegend()
 
     if (m_legendOverlay->isVisible())
     {
-        m_legendOverlay->hide();
+        m_legendOverlay->close();
         return;
     }
 
@@ -481,7 +496,7 @@ void PpduTimelineView::onSetTimeRange()
     m_nsToPixel = std::clamp(m_nsToPixel, 1e-9, 1e-4);
 
     m_hoverIndex = -1;
-    m_overlay->hide();
+    m_overlay->close();
     update();
 }
 
@@ -491,13 +506,40 @@ void PpduTimelineView::wheelEvent(QWheelEvent *event)
 {
     double factor = (event->angleDelta().y() > 0) ? 1.2 : 0.8;
     m_nsToPixel = std::clamp(m_nsToPixel * factor, 1e-9, 1e-4);
+
+    // 绝对模式直接更新，不改采样率和精确模式
+    if (g_ppduViewConfig.absoluteRate.load())
+    {
+        update();
+        return;
+    }
+
+    // 根据可见时间轴自动计算降采样 rate
+    double visibleNs = width() / m_nsToPixel;
+    int newRate = 1;
+    if (visibleNs > 5e7)
+        newRate = 50;
+    else if (visibleNs > 1e7)
+        newRate = 20;
+    else if (visibleNs > 2e6)
+        newRate = 10;
+    else if (visibleNs > 5e5)
+        newRate = 5;
+    else
+        newRate = 1;
+
+    g_ppduViewConfig.sampleRate.store(newRate);
+
+    // 非绝对模式下才改 preciseMode
+    g_ppduViewConfig.preciseMode.store(newRate == 1);
+
     update();
 }
 
 void PpduTimelineView::mousePressEvent(QMouseEvent *e)
 {
     m_showingStats = false;
-    m_overlay->hide();
+    m_overlay->close();
 
     if (childAt(e->pos()) == m_btnLegend ||
         childAt(e->pos()) == m_btnSave ||
@@ -545,7 +587,7 @@ void PpduTimelineView::mouseMoveEvent(QMouseEvent *e)
             update();
         }
 
-        m_overlay->hide();
+        m_overlay->close();
         return;
     }
 
@@ -578,7 +620,7 @@ void PpduTimelineView::mouseMoveEvent(QMouseEvent *e)
     }
     else
     {
-        m_overlay->hide();
+        m_overlay->close();
     }
 }
 
@@ -645,8 +687,14 @@ void PpduTimelineView::leaveEvent(QEvent *)
 {
     m_showingStats = false;
     m_hoverIndex = -1;
-    m_overlay->hide();
+    m_overlay->close();
     update();
+}
+
+void PpduTimelineView::closeEvent(QCloseEvent *e)
+{
+    emit timelineClosed(); 
+    e->accept();       
 }
 
 /* ======================== hitTest ======================== */

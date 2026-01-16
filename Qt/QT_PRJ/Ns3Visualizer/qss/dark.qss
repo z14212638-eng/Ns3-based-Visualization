@@ -1,0 +1,189 @@
+/* =========================
+   Global Base - 工业灰柔和 + 对比度稍高
+========================= */
+
+* {
+    font-family: "Inter", "Source Han Sans SC", "Noto Sans CJK SC";
+    font-weight: 650;
+}
+
+QWidget {
+    background-color: #3B3F43;   /* 主背景柔和工业灰 */
+    color: #D0D0D0;              /* 字体柔和灰，高对比 */
+}
+
+/* =========================
+   Text
+========================= */
+
+QLabel {
+    color: #D0D0D0;
+}
+
+QLabel:disabled {
+    color: #A0A0A0;
+}
+
+/* =========================
+   Buttons
+========================= */
+
+QPushButton {
+    background-color: #4C5053;       /* 按钮柔和灰 */
+    color: #E6E6E6;
+    border: 1px solid #C0C0C0;       /* 边框灰白 */
+    border-radius: 6px;               /* 保留圆角 */
+    font-size: 24px;
+    padding: 4px 8px;                 /* 自适应大小 */
+}
+
+QPushButton:hover {
+    background-color: #5A5F63;
+}
+
+QPushButton:pressed {
+    background-color: #404449;
+}
+
+QPushButton:disabled {
+    background-color: #4A4D50;
+
+    color: #888888;
+    border-color: #4A4D50;
+}
+
+/* =========================
+   Input / SpinBox / ComboBox
+========================= */
+
+QLineEdit,
+QTextEdit,
+QPlainTextEdit,
+QSpinBox,
+QDoubleSpinBox,
+QComboBox {
+    background-color: #5A5C5F;
+    color: #E6E6E6;
+    font-size: 20px;
+    border: 1px solid #C0C0C0;
+    border-radius: 4px;               /* 小圆角 */
+    padding: 3px 6px;
+}
+
+QLineEdit:focus,
+QTextEdit:focus,
+QComboBox:focus,
+QSpinBox:focus,
+QDoubleSpinBox:focus {
+    border: 1px solid #7AAEFF;        /* 蓝色高亮 */
+}
+
+
+
+/* ComboBox 下拉列表 */
+QComboBox QAbstractItemView {
+    background-color: #5A5C5F;
+    selection-background-color: #7AAEFF;
+    selection-color: #FFFFFF;
+}
+
+/* =========================
+   Tables / Views
+========================= */
+
+QTableWidget,
+QTreeView,
+QListView {
+    background-color: #4E5053;
+    alternate-background-color: #45484B;
+    color: #D0D0D0;
+    gridline-color: #C0C0C0;
+    selection-background-color: #7AAEFF;
+    selection-color: #FFFFFF;
+}
+
+QHeaderView::section {
+    background-color: #3B3F43;
+    color: #D0D0D0;
+    padding: 4px;
+    border: 1px solid #C0C0C0;
+}
+
+/* =========================
+   CheckBox - 蓝色填充工业风
+========================= */
+
+/* Checkbox 方框 */
+
+QCheckBox{
+    font-size: 22px;
+}
+
+QCheckBox::indicator {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #BFBFBF;     /* 灰白边框 */
+    border-radius: 2px;             /* 小圆角 */
+    background-color: #4A4A4A;      /* 背景浅灰 */
+}
+
+/* Checkbox 悬停边框高亮 */
+QCheckBox::indicator:hover {
+    border: 2px solid #CCCCCC;
+}
+
+/* Checkbox 选中状态 - 蓝色背景 + 蓝色边框 */
+QCheckBox::indicator:checked {
+    background-color: #5C7CFA;      /* 蓝色填充 */
+    border: 1px solid #5C7CFA;
+}
+/* =========================
+   Tabs - 强选中态区分
+========================= */
+
+/* TabWidget 内容区 */
+QTabWidget::pane {
+    border: 1px solid #C0C0C0;
+    border-radius: 4px;
+    top: -1px;
+    background-color: #4E5053;
+}
+
+/* 所有 tab - 默认未选中 */
+QTabBar::tab {
+    background-color: #2F3236;   /* 明显更暗 */
+    color: #9FA3A6;              /* 灰字 */
+    font-size: 18px;
+    font-weight: 800;
+    padding: 8px 20px;
+
+    border: 1px solid #2F3236;
+    border-bottom: none;         /* 关键：为选中态让位 */
+}
+
+/* 悬停（但未选中） */
+QTabBar::tab:hover {
+    color: #D0D0D0;
+    background-color: #383C40;
+}
+
+/* 选中 tab —— 重点在这里 */
+QTabBar::tab:selected {
+    background-color: #4E5053;  /* 与 pane 一致，形成“连成一体” */
+    color: #FFFFFF;
+
+    border: 1px solid #C0C0C0;
+    border-bottom: 1px solid #4E5053;  /* 覆盖 pane 边框 */
+}
+
+/* 防止第一个 tab 左边断裂 */
+QTabBar::tab:first:selected {
+    margin-left: 0;
+}
+
+QLabel{
+    font-size: 22px;
+}
+
+
+/* =========================

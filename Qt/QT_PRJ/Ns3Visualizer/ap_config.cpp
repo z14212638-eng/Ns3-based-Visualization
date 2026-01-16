@@ -6,6 +6,8 @@ Ap_config::Ap_config(QWidget *parent)
 {
     ui->setupUi(this);
 
+    centerWindow(this);
+    
     if (!ui->checkBox_4->isChecked())
     {
         pos_set = true;

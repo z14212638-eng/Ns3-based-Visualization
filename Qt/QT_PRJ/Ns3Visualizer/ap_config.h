@@ -3,6 +3,7 @@
 #include "JsonHelper.h"
 #include "edca_config.h"
 #include "antennas.h"
+#include "utils.h"
 #include <QMessageBox>
 #include <QWidget>
 

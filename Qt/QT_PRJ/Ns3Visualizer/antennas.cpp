@@ -7,7 +7,8 @@ Antenna::Antenna(QWidget *parent)
     , ui(new Ui::Antenna)
 {
     ui->setupUi(this);
-    ui->widget->hide();
+    centerWindow(this);
+    ui->widget->close();
     on_buttonBox_accepted();
 }
 
@@ -41,7 +42,7 @@ void Antenna::on_pushButton_3_clicked()
     ui->pushButton->setEnabled(true);
     ui->pushButton_2->setEnabled(true);
     ui->buttonBox->setEnabled(true);
-    ui->widget->hide();
+    ui->widget->close();
 }
 
 

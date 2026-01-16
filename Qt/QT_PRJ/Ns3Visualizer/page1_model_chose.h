@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "simu_config.h"
+#include "utils.h"
 
 namespace Ui {
 class Page1_model_chose;
