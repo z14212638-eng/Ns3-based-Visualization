@@ -10,12 +10,13 @@
 #include "ppdu_visual_item.h"
 #include "ppdu_info_overlay.h"
 #include "legend_overlay.h"
+#include "utils.h"
 
 struct TimeRangeStats
 {
     uint64_t durationNs = 0;
 
-    uint64_t busyNs = 0; 
+    uint64_t busyNs = 0;
     uint64_t idleNs = 0;
 
     uint64_t totalBytes = 0;
@@ -33,6 +34,9 @@ public:
     void append(const PpduVisualItem &ppdu);
     void clear();
 
+signals:
+    void timelineClosed();
+
 protected:
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *) override;
@@ -42,6 +46,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *) override;
     void mouseReleaseEvent(QMouseEvent *) override;
     void leaveEvent(QEvent *) override;
+    void closeEvent(QCloseEvent *) override;
 
 private slots:
     void onSaveImage();
@@ -98,5 +103,4 @@ private:
     uint64_t m_selStartNs = 0;
     uint64_t m_selEndNs = 0;
     bool m_showingStats = false;
-
 };

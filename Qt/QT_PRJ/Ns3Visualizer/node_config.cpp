@@ -5,6 +5,8 @@ node_config::node_config(QWidget *parent)
     : QWidget(parent), ui(new Ui::node_config)
 {
     ui->setupUi(this);
+    
+    centerWindow(this);
 
     if (!ui->checkBox_2->isChecked())
     {

@@ -6,557 +6,801 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>300</height>
+    <width>1910</width>
+    <height>1264</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Scene Selection</string>
   </property>
-  <widget class="QTabWidget" name="tabWidget">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>481</width>
-     <height>301</height>
-    </rect>
-   </property>
-   <property name="currentIndex">
-    <number>0</number>
-   </property>
-   <widget class="QWidget" name="tab">
-    <attribute name="title">
-     <string>Simulation</string>
-    </attribute>
-    <widget class="QToolBox" name="toolBox">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>20</y>
-       <width>171</width>
-       <height>241</height>
-      </rect>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="font">
+      <font>
+       <bold>false</bold>
+      </font>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
-     <widget class="QWidget" name="page">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>171</width>
-        <height>179</height>
-       </rect>
-      </property>
-      <attribute name="label">
-       <string>Simple Scenes</string>
+     <property name="iconSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Simulation</string>
       </attribute>
-      <widget class="QScrollArea" name="scrollArea">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>171</width>
-         <height>181</height>
-        </rect>
-       </property>
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>169</width>
-          <height>179</height>
-         </rect>
-        </property>
-        <widget class="QListWidget" name="listWidget">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>171</width>
-           <height>181</height>
-          </rect>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="3">
+        <widget class="QWidget" name="widget_11" native="true"/>
+       </item>
+       <item row="7" column="1" colspan="2">
+        <widget class="QWidget" name="widget_10" native="true"/>
+       </item>
+       <item row="7" column="11">
+        <widget class="QPushButton" name="pushButton_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>1</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
          </property>
-         <item>
-          <property name="text">
-           <string>None</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_3</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_4</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_5</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_6</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_7</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_8</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_9</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tutorial_1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>df</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ga</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>gf</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ag</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>g</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>dfg</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>dg</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>gs</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>hn</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>f</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>hs</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>dhg</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>fdh</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>sg</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>fhsd</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>g</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>afv</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>New Item</string>
-          </property>
-         </item>
+         <property name="maximumSize">
+          <size>
+           <width>170</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Apply</string>
+         </property>
         </widget>
-       </widget>
-      </widget>
+       </item>
+       <item row="0" column="7">
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="0">
+        <widget class="QWidget" name="widget_4" native="true"/>
+       </item>
+       <item row="3" column="10">
+        <widget class="QWidget" name="widget_2" native="true"/>
+       </item>
+       <item row="1" column="6">
+        <widget class="QWidget" name="widget_9" native="true"/>
+       </item>
+       <item row="1" column="4">
+        <widget class="QWidget" name="widget_8" native="true"/>
+       </item>
+       <item row="1" column="8">
+        <widget class="QWidget" name="widget_13" native="true"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QWidget" name="widget_3" native="true">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>150</height>
+          </size>
+         </property>
+         <widget class="QLabel" name="label_2">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>211</width>
+            <height>51</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Simulation Selected</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton">
+          <property name="geometry">
+           <rect>
+            <x>250</x>
+            <y>10</y>
+            <width>170</width>
+            <height>51</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>1</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>170</width>
+            <height>85</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Confirm</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="geometry">
+           <rect>
+            <x>490</x>
+            <y>10</y>
+            <width>161</width>
+            <height>51</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Detail</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QToolBox" name="toolBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>6</horstretch>
+           <verstretch>6</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>700</width>
+           <height>800</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>20</pointsize>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="page">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>700</width>
+            <height>698</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>Simple Scenes</string>
+          </attribute>
+          <widget class="QScrollArea" name="scrollArea">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>691</width>
+             <height>891</height>
+            </rect>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>6</horstretch>
+             <verstretch>6</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>689</width>
+              <height>889</height>
+             </rect>
+            </property>
+            <widget class="QListWidget" name="listWidget">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>681</width>
+               <height>891</height>
+              </rect>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>6</horstretch>
+               <verstretch>6</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>18</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <item>
+              <property name="text">
+               <string>None</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_2</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_3</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_4</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_5</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_6</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_7</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_8</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_9</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tutorial_1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>df</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>ga</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gf</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>ag</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>g</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>dfg</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>dg</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gs</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>hn</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>f</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>hs</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>dhg</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>fdh</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>sg</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>fhsd</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>g</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>afv</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>New Item</string>
+              </property>
+             </item>
+            </widget>
+           </widget>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="page_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>700</width>
+            <height>698</height>
+           </rect>
+          </property>
+          <attribute name="label">
+           <string>Complex Scenes</string>
+          </attribute>
+          <widget class="QScrollArea" name="scrollArea_2">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>701</width>
+             <height>651</height>
+            </rect>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>6</horstretch>
+             <verstretch>6</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>820</height>
+            </size>
+           </property>
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents_2">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>699</width>
+              <height>649</height>
+             </rect>
+            </property>
+            <widget class="QListWidget" name="listWidget_2">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>661</width>
+               <height>621</height>
+              </rect>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>6</horstretch>
+               <verstretch>6</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>800</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>18</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <item>
+              <property name="text">
+               <string>None</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>RTS test</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Throughput test</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>CTS test</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>SNR margin test</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>PPDU Collection</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>fd</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>j</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>ghj</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gs</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gfdh</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gf</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>hf</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>h</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>gdfh</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>d</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>hf</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>hf</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>dh</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>ghgfd</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>h</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>New Item</string>
+              </property>
+             </item>
+            </widget>
+           </widget>
+          </widget>
+         </widget>
+        </widget>
+       </item>
+       <item row="1" column="7">
+        <widget class="QWidget" name="widget_12" native="true"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QWidget" name="widget_15" native="true">
+         <widget class="QTextBrowser" name="textBrowser">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>651</width>
+            <height>61</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QWidget" name="widget_7" native="true"/>
+       </item>
+       <item row="0" column="3">
+        <spacer name="horizontalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="7" column="8">
+        <widget class="QCheckBox" name="checkBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>1</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>20</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>Design by myself</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QWidget" name="widget_6" native="true"/>
+       </item>
+       <item row="0" column="6">
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="12">
+        <widget class="QWidget" name="widget_5" native="true"/>
+       </item>
+       <item row="7" column="10">
+        <widget class="QPushButton" name="pushButton_4">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>1</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>170</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Back</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="9">
+        <widget class="QWidget" name="widget_14" native="true"/>
+       </item>
+       <item row="1" column="11">
+        <widget class="QWidget" name="widget" native="true"/>
+       </item>
+       <item row="0" column="5">
+        <widget class="QLabel" name="label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>90</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>24</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Select Model From the List</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
-     <widget class="QWidget" name="page_2">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>171</width>
-        <height>179</height>
-       </rect>
-      </property>
-      <attribute name="label">
-       <string>Complex Scenes</string>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>File</string>
       </attribute>
-      <widget class="QScrollArea" name="scrollArea_2">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>171</width>
-         <height>181</height>
-        </rect>
-       </property>
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents_2">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>169</width>
-          <height>179</height>
-         </rect>
-        </property>
-        <widget class="QListWidget" name="listWidget_2">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>171</width>
-           <height>181</height>
-          </rect>
-         </property>
-         <item>
-          <property name="text">
-           <string>None</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>RTS test</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Throughput test</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>CTS test</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>SNR margin test</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PPDU Collection</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>fd</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>j</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ghj</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>gs</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>gfdh</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>gf</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>hf</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>h</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>gdfh</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>d</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>hf</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>hf</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>dh</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ghgfd</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>h</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>New Item</string>
-          </property>
-         </item>
-        </widget>
-       </widget>
-      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Edit</string>
+      </attribute>
      </widget>
     </widget>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>20</y>
-       <width>211</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Select Model From the List</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>50</y>
-       <width>81</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Confirm</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="geometry">
-      <rect>
-       <x>350</x>
-       <y>50</y>
-       <width>81</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Detail</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_2">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>100</y>
-       <width>181</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>The Scene You Select</string>
-     </property>
-    </widget>
-    <widget class="QTextBrowser" name="textBrowser">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>130</y>
-       <width>161</width>
-       <height>31</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="checkBox">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>230</y>
-       <width>131</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Design by myself</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_3">
-     <property name="geometry">
-      <rect>
-       <x>410</x>
-       <y>230</y>
-       <width>61</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Apply</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_4">
-     <property name="geometry">
-      <rect>
-       <x>320</x>
-       <y>230</y>
-       <width>61</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Back</string>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="tab_2">
-    <attribute name="title">
-     <string>File</string>
-    </attribute>
-   </widget>
-   <widget class="QWidget" name="tab_3">
-    <attribute name="title">
-     <string>Edit</string>
-    </attribute>
-   </widget>
-  </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

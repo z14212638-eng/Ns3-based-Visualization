@@ -5,6 +5,7 @@
 #include "JsonHelper.h"
 #include "edca_config.h"
 #include "antennas.h"
+#include "utils.h"
 
 namespace Ui {
 class node_config;

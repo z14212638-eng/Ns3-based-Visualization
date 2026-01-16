@@ -6,11 +6,7 @@ Page1_model_chose::Page1_model_chose(QWidget *parent)
     , ui(new Ui::Page1_model_chose)
 {
     ui->setupUi(this);
-    connect(ui->checkBox, &QCheckBox::toggled, ui->textBrowser, [=](){
-        ui->textBrowser->clear();
-        ui->pushButton->setDisabled(ui->checkBox->isChecked());
-        ui->pushButton_2->setDisabled(ui->checkBox->isChecked());
-    });
+    centerWindow(this);
 
 }
 
@@ -53,15 +49,16 @@ void Page1_model_chose::on_pushButton_4_clicked()
 
 void Page1_model_chose::on_pushButton_clicked()
 {
-    ui->textBrowser->setText(this->GetSceneName());
+    ;
 }
 
 
 void Page1_model_chose::on_pushButton_3_clicked()
 {
     if(ui->checkBox->isChecked()){
-        this->hide();
-        this->simu_config->show();
+        this->close();
+        this->simu_config->showMaximized();
+;
     }
     else{
         ;

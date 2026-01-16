@@ -5,6 +5,8 @@
 #include <QScreen>
 #include <QGuiApplication>
 #include "page1_model_chose.h"
+#include "utils.h"
+#include "indus_widget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -12,7 +14,7 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QWidget
+class MainWindow : public IndustrialWindow
 {
     Q_OBJECT
 
