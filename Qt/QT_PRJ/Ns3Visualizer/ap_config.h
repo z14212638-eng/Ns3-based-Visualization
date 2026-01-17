@@ -58,6 +58,8 @@ public:
 
     void on_pushButton_3_clicked();
 
+    void Restrict_channel();
+
 signals:
     void Finish_setting_ap();
 

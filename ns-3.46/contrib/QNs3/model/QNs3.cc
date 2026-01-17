@@ -371,6 +371,7 @@ from_json(const json& j, NodeConfig& nodeConfig)
 
     j.at("Position").get_to(nodeConfig.Position);
     j.at("Standard").get_to(nodeConfig.Standard);
+    j.at("Guard_interval").get_to(nodeConfig.Guard_interval);
     j.at("Mobility").get_to(nodeConfig.mobility);
     j.at("Id").get_to(nodeConfig.Id);
     j.at("Channel_number").get_to(nodeConfig.Channel_number);

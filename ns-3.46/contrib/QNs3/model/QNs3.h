@@ -252,6 +252,7 @@ struct NodeConfig
     std::string Ssid;
     std::string Phy_model;
     std::string Standard;
+    int Guard_interval;
     RtsCts Rts_Cts;
     Qos qos;
     Antenna antenna;

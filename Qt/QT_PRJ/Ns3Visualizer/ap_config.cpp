@@ -31,15 +31,22 @@ Ap_config::Ap_config(QWidget *parent)
     }
     ui->tableWidget->setRowCount(0);
 
-    //deduce the GI from the selected protocol
+    // deduce the GI from the selected protocol
     ui->comboBox_5->setCurrentIndex(5);
     ui->comboBox_15->setEnabled(false);
+
+    Restrict_channel();
+}
+
+// restrict the bandwidth,channel number and the frequency
+void Ap_config::Restrict_channel()
+{
     connect(ui->comboBox_5,
             &QComboBox::currentTextChanged,
             this,
             [this](const QString &text)
             {
-                auto gi = get_gi_from_string(text.toStdString());
+                auto standard = get_standard_from_string(text.toStdString());
 
                 for (int i = 0; i < ui->comboBox_15->count(); ++i)
                 {
@@ -47,17 +54,17 @@ Ap_config::Ap_config(QWidget *parent)
                         i, QVariant(), Qt::UserRole - 1);
                 }
 
-                switch (gi)
+                switch (standard)
                 {
-                case GI_MAP::k80211a:
-                case GI_MAP::k80211b:
-                case GI_MAP::k80211g:
+                case Standard_MAP::k80211a:
+                case Standard_MAP::k80211b:
+                case Standard_MAP::k80211g:
                     ui->comboBox_15->setCurrentIndex(1);
                     ui->comboBox_15->setEnabled(false);
                     break;
 
-                case GI_MAP::k80211n:
-                case GI_MAP::k80211ac:
+                case Standard_MAP::k80211n:
+                case Standard_MAP::k80211ac:
                     ui->comboBox_15->setEnabled(true);
                     ui->comboBox_15->setCurrentIndex(1);
                     ui->comboBox_15->setItemData(
@@ -66,14 +73,74 @@ Ap_config::Ap_config(QWidget *parent)
                         3, QVariant(1), Qt::UserRole - 1);
                     break;
 
-                case GI_MAP::k80211ax:
+                case Standard_MAP::k80211ax:
                     ui->comboBox_15->setEnabled(true);
                     ui->comboBox_15->setCurrentIndex(1);
                     ui->comboBox_15->setItemData(
                         0, QVariant(0), Qt::UserRole - 1);
+                    break;
 
                 default:
                     break;
+                }
+            });
+
+    connect(ui->comboBox_3,
+            &QComboBox::currentTextChanged,
+            this,
+            [this](const QString &text)
+            {
+                ui->comboBox_16->clear();
+
+                if (text == "2.4G")
+                {
+                    ui->comboBox_16->clear();
+                    ui->comboBox_16->addItems({"20", "40"});
+                    ui->comboBox_16->setCurrentText("20");
+
+                    ui->spinBox->setRange(1, 13);
+                    ui->spinBox->setSingleStep(1);
+                    ui->spinBox->setValue(1);
+                }
+                else if (text == "5G")
+                {
+                    ui->comboBox_16->clear();
+                    ui->comboBox_16->addItems({"20", "40", "80", "160"});
+                    ui->comboBox_16->setCurrentText("40");
+
+                    ui->spinBox->setRange(36, 165);
+                    ui->spinBox->setSingleStep(4);
+                    ui->spinBox->setValue(36);
+                }
+            });
+
+    connect(ui->comboBox_16,
+            &QComboBox::currentTextChanged,
+            this,
+            [this](const QString &bwText)
+            {
+                int bw = bwText.toInt();
+
+                if (ui->comboBox_3->currentText() != "5G")
+                    return;
+
+                if (bw == 20 || bw == 40)
+                {
+                    ui->spinBox->setRange(36, 165);
+                    ui->spinBox->setSingleStep(4);
+                    ui->spinBox->setValue(36);
+                }
+                else if (bw == 80)
+                {
+                    ui->spinBox->setRange(42, 155);
+                    ui->spinBox->setSingleStep(16);
+                    ui->spinBox->setValue(42);
+                }
+                else if (bw == 160)
+                {
+                    ui->spinBox->setRange(50, 114);
+                    ui->spinBox->setSingleStep(64);
+                    ui->spinBox->setValue(50);
                 }
             });
 }
@@ -355,26 +422,26 @@ void Ap_config::on_pushButton_6_clicked()
         this->one_ap->Frequency = 2400 + (channel_number - 1) * 5;
     }
 
-    //set the GI
-    if(ui->comboBox_15->currentText() == "400ns")
+    // set the GI
+    if (ui->comboBox_15->currentText() == "400ns")
     {
         this->one_ap->GI = 400;
     }
-    else if(ui->comboBox_15->currentText() == "800ns")
+    else if (ui->comboBox_15->currentText() == "800ns")
     {
         this->one_ap->GI = 800;
     }
-    else if(ui->comboBox_15->currentText() == "1600ns")
+    else if (ui->comboBox_15->currentText() == "1600ns")
     {
         this->one_ap->GI = 1600;
     }
-    else if(ui->comboBox_15->currentText() == "3200ns")
+    else if (ui->comboBox_15->currentText() == "3200ns")
     {
         this->one_ap->GI = 3200;
     }
 
     // set the bandwidth
-    this->one_ap->bandwidth = ui->spinBox_2->value();
+    this->one_ap->bandwidth = ui->comboBox_16->currentText().toShort();
     // set the Tx power
     this->one_ap->TxPower = ui->doubleSpinBox_6->value();
     // set the Ssid

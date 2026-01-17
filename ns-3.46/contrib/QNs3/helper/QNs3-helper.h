@@ -10,11 +10,11 @@
 #include "ns3/network-module.h"
 #include "ns3/qos-txop.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/wifi-mac.h"
 #include "ns3/wifi-module.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy-band.h"
 #include "ns3/wifi-phy.h"
-#include "ns3/wifi-mac.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/wifi-types.h"
 #include "ns3/wifi-units.h"
@@ -36,6 +36,7 @@ class QNs3Helper
     QNs3Helper() = default;
     ~QNs3Helper() = default;
     static WifiStandard Configure_WifiStandard(const std::string& standard);
+    static void Configure_GI(const Ptr<WifiPhy>& phy, const int gi, const std::string& standard);
     static std::string BuildChannelSettings(const NodeConfig& cfg);
     static std::string Configure_RateCtrlManager(std::optional<std::string> rate_ctrl_manager);
     static WifiChannelConfig Configure_BandChannel(const NodeConfig& node);
@@ -44,8 +45,10 @@ class QNs3Helper
     static void ConfigureStaMac(const NodeConfig& cfg, const Ptr<WifiNetDevice>& device);
     static void ConfigureQos(const NodeConfig& cfg, Ptr<WifiMac> qosMac);
     static void ConfigureApMac(const NodeConfig& cfg, const Ptr<WifiNetDevice>& device);
-    static void ConfigureMobility(const std::vector<NodeConfig>& configs, const NodeContainer& container);
-    static void ApplyDeviceConfigs(const std::vector<NodeConfig>& configs, const NetDeviceContainer& devices);
+    static void ConfigureMobility(const std::vector<NodeConfig>& configs,
+                                  const NodeContainer& container);
+    static void ApplyDeviceConfigs(const std::vector<NodeConfig>& configs,
+                                   const NetDeviceContainer& devices);
     static Building::BuildingType_t GetBuildingType(const GeneralConfig& cfg);
     static Building::ExtWallsType_t GetBuildingExtWallsType(const GeneralConfig& cfg);
 };

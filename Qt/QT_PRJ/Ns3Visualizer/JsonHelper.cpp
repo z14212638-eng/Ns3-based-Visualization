@@ -8,12 +8,12 @@ double get_true_random_double(double min, double max)
     return dis(rd);
 }
 
-GI_MAP get_gi_from_string(const std::string &gi_str)
+Standard_MAP get_standard_from_string(const std::string &gi_str)
 {
-    auto it = gi_map.find(gi_str);
-    if (it == gi_map.end())
+    auto it = standard_map.find(gi_str);
+    if (it == standard_map.end())
     {
-        return GI_MAP::k80211ax;
+        return Standard_MAP::k80211ax;
     }
     return it->second;
 }

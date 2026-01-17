@@ -9,13 +9,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 确保窗口大小已设置好
     ui->pushButton->resize(100, 30); // 调整按钮大小
+    
     this->showMaximized();
 
-    // 延迟到事件循环后再居中，避免窗口管理器干扰
-    QTimer::singleShot(0, this, [this]() {
-        this->centerWindow(this);
-    });
-    
     // 连接子窗口返回信号
     connect(ppage1, &Page1_model_chose::BackToMain, this, [=]()
             {

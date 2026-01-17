@@ -4,7 +4,7 @@
         ],
         "set": false
     },
-    "Bandwidth": 20,
+    "Bandwidth": 40,
     "Beacon": {
         "BeaconInterval": 100,
         "Beacon_Rate": 1,
@@ -15,6 +15,7 @@
     "CcaSensitivity": -82,
     "Channel_number": 36,
     "Frequency": 5180,
+    "Guard_interval": 800,
     "Id": 2,
     "Mobility": {
         "boundaries": [
@@ -32,9 +33,9 @@
     },
     "Phy_model": "Yans",
     "Position": [
-        6.3862108544946095,
-        6.2346555646248945,
-        3.065758693655374
+        3.6663694001642,
+        4.580189684423123,
+        1.7361061370453315
     ],
     "Qos": {
         "Edca_choose": "AC_VO",
@@ -86,7 +87,7 @@
     "Sifs": 3,
     "Slot": 6,
     "Ssid": "Ns3WiFi",
-    "Standard": "802.11a",
+    "Standard": "802.11ax",
     "Traffic": {
         "Flows": [
         ]

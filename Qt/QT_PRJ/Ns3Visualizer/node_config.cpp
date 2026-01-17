@@ -34,12 +34,18 @@ node_config::node_config(QWidget *parent)
     // deduce the GI from the selected protocol
     ui->comboBox_5->setCurrentIndex(5);
     ui->comboBox_15->setEnabled(false);
+
+    Restrict_channel();
+}
+
+void node_config::Restrict_channel()
+{
     connect(ui->comboBox_5,
             &QComboBox::currentTextChanged,
             this,
             [this](const QString &text)
             {
-                auto gi = get_gi_from_string(text.toStdString());
+                auto standard = get_standard_from_string(text.toStdString());
 
                 for (int i = 0; i < ui->comboBox_15->count(); ++i)
                 {
@@ -47,17 +53,17 @@ node_config::node_config(QWidget *parent)
                         i, QVariant(), Qt::UserRole - 1);
                 }
 
-                switch (gi)
+                switch (standard)
                 {
-                case GI_MAP::k80211a:
-                case GI_MAP::k80211b:
-                case GI_MAP::k80211g:
+                case Standard_MAP::k80211a:
+                case Standard_MAP::k80211b:
+                case Standard_MAP::k80211g:
                     ui->comboBox_15->setCurrentIndex(1);
                     ui->comboBox_15->setEnabled(false);
                     break;
 
-                case GI_MAP::k80211n:
-                case GI_MAP::k80211ac:
+                case Standard_MAP::k80211n:
+                case Standard_MAP::k80211ac:
                     ui->comboBox_15->setEnabled(true);
                     ui->comboBox_15->setCurrentIndex(1);
                     ui->comboBox_15->setItemData(
@@ -66,19 +72,76 @@ node_config::node_config(QWidget *parent)
                         3, QVariant(1), Qt::UserRole - 1);
                     break;
 
-                case GI_MAP::k80211ax:
-                    ui->comboBox_15->setCurrentIndex(1);
+                case Standard_MAP::k80211ax:
                     ui->comboBox_15->setEnabled(true);
+                    ui->comboBox_15->setCurrentIndex(1);
                     ui->comboBox_15->setItemData(
                         0, QVariant(0), Qt::UserRole - 1);
+                    break;
 
                 default:
                     break;
                 }
             });
-    // Default setting the GI
-    auto text = ui->comboBox_5->currentText();
-    ui->comboBox_15->currentTextChanged(text);
+
+    connect(ui->comboBox_3,
+            &QComboBox::currentTextChanged,
+            this,
+            [this](const QString &text)
+            {
+                ui->comboBox_16->clear();
+
+                if (text == "2.4G")
+                {
+                    ui->comboBox_16->clear();
+                    ui->comboBox_16->addItems({"20", "40"});
+                    ui->comboBox_16->setCurrentText("20");
+
+                    ui->spinBox->setRange(1, 13);
+                    ui->spinBox->setSingleStep(1);
+                    ui->spinBox->setValue(1);
+                }
+                else if (text == "5G")
+                {
+                    ui->comboBox_16->clear();
+                    ui->comboBox_16->addItems({"20", "40", "80", "160"});
+                    ui->comboBox_16->setCurrentText("40");
+
+                    ui->spinBox->setRange(36, 165);
+                    ui->spinBox->setSingleStep(4);
+                    ui->spinBox->setValue(36);
+                }
+            });
+
+    connect(ui->comboBox_16,
+            &QComboBox::currentTextChanged,
+            this,
+            [this](const QString &bwText)
+            {
+                int bw = bwText.toInt();
+
+                if (ui->comboBox_3->currentText() != "5G")
+                    return;
+
+                if (bw == 20 || bw == 40)
+                {
+                    ui->spinBox->setRange(36, 165);
+                    ui->spinBox->setSingleStep(4);
+                    ui->spinBox->setValue(36);
+                }
+                else if (bw == 80)
+                {
+                    ui->spinBox->setRange(42, 155);
+                    ui->spinBox->setSingleStep(16);
+                    ui->spinBox->setValue(42);
+                }
+                else if (bw == 160)
+                {
+                    ui->spinBox->setRange(50, 114);
+                    ui->spinBox->setSingleStep(64);
+                    ui->spinBox->setValue(50);
+                }
+            });
 }
 
 node_config::~node_config()
@@ -367,7 +430,7 @@ void node_config::on_pushButton_6_clicked()
     }
 
     // set the bandwidth
-    this->one_sta->bandwidth = ui->spinBox_2->value();
+    this->one_sta->bandwidth = ui->comboBox_16->currentText().toShort();
     // set the Tx power
     this->one_sta->TxPower = ui->doubleSpinBox_6->value();
     // set the Ssid

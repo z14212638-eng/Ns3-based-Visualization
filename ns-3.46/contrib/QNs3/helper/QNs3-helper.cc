@@ -3,18 +3,18 @@
 namespace ns3
 {
 
+static const std::unordered_map<std::string, WifiStandard> standard_map = {
+    {"802.11n", WIFI_STANDARD_80211n},
+    {"802.11b", WIFI_STANDARD_80211b},
+    {"802.11ac", WIFI_STANDARD_80211ac},
+    {"802.11ax", WIFI_STANDARD_80211ax},
+    {"802.11g", WIFI_STANDARD_80211g},
+    {"802.11a", WIFI_STANDARD_80211a},
+};
+
 WifiStandard
 QNs3Helper::Configure_WifiStandard(const std::string& standard)
 {
-    static const std::unordered_map<std::string, WifiStandard> standard_map = {
-        {"802.11n-5GHz", WIFI_STANDARD_80211n},
-        {"802.11n-2.4GHz", WIFI_STANDARD_80211n},
-        {"802.11ac", WIFI_STANDARD_80211ac},
-        {"802.11ax", WIFI_STANDARD_80211ax},
-        {"802.11g", WIFI_STANDARD_80211g},
-        {"802.11a", WIFI_STANDARD_80211a},
-    };
-
     const auto it = standard_map.find(standard);
     if (it == standard_map.end())
     {
@@ -22,6 +22,43 @@ QNs3Helper::Configure_WifiStandard(const std::string& standard)
         return WIFI_STANDARD_80211n;
     }
     return it->second;
+}
+
+void
+Configure_GI(const Ptr<WifiPhy>& phy, const int gi, const std::string& standard)
+{
+    auto it = standard_map.find(standard);
+    auto standard_enum = WIFI_STANDARD_80211n;
+    if (it != standard_map.end())
+    {
+        standard_enum = it->second;
+    }
+
+    switch (standard_enum)
+    {
+    case WIFI_STANDARD_80211a:
+    case WIFI_STANDARD_80211b:
+    case WIFI_STANDARD_80211g:
+        break;
+    case WIFI_STANDARD_80211n: {
+        if (gi == 400 && phy->GetDevice()->GetHtConfiguration())
+        {
+            Config::SetDefault("ns3::HtConfiguration::ShortGuardIntervalSupported",
+                               BooleanValue(true));
+        }
+    }
+    case WIFI_STANDARD_80211ac: {
+        if (gi == 400 && phy->GetDevice()->GetVhtConfiguration())
+        {
+            Config::SetDefault("ns3::VhtConfiguration::ShortGuardIntervalSupported",
+                               BooleanValue(true));
+        }
+    }
+    case WIFI_STANDARD_80211ax: {
+        auto HE = phy->GetDevice()->GetHeConfiguration();
+         HE->SetGuardInterval(MicroSeconds(gi));
+    }
+    }
 }
 
 std::string
@@ -60,10 +97,10 @@ std::string
 QNs3Helper::BuildChannelSettings(const NodeConfig& cfg)
 {
     const auto band = (cfg.Frequency <= 3.0) ? "BAND_2_4GHZ" : "BAND_5GHZ";
-    std::cout<<(cfg.Frequency >= 3.0) <<std::endl;
+    std::cout << (cfg.Frequency >= 3.0) << std::endl;
     std::ostringstream oss;
-    oss << "{"<<cfg.Channel_number << ", " << cfg.Bandwidth << ", " << band << ", 0}";
-    std::cout<<oss.str()<<std::endl;
+    oss << "{" << cfg.Channel_number << ", " << cfg.Bandwidth << ", " << band << ", 0}";
+    std::cout << oss.str() << std::endl;
     return oss.str();
 }
 
@@ -158,7 +195,9 @@ void
 QNs3Helper::ConfigureQos(const NodeConfig& cfg, Ptr<WifiMac> mac)
 {
     if (!mac || !mac->GetQosSupported())
+    {
         return;
+    }
 
     for (const auto& kv : cfg.qos.Edca_params)
     {
@@ -166,7 +205,9 @@ QNs3Helper::ConfigureQos(const NodeConfig& cfg, Ptr<WifiMac> mac)
 
         Ptr<QosTxop> txop = mac->GetQosTxop(ac);
         if (!txop)
-            continue; 
+        {
+            continue;
+        }
 
         const auto& params = kv.second;
         txop->SetMinCw(params.CWmin);
@@ -202,7 +243,6 @@ QNs3Helper::ConfigureApMac(const NodeConfig& cfg, const Ptr<WifiNetDevice>& devi
     }
 }
 
-
 void
 QNs3Helper::ConfigureStaMac(const NodeConfig& cfg, const Ptr<WifiNetDevice>& device)
 {
@@ -230,7 +270,8 @@ QNs3Helper::ConfigureStaMac(const NodeConfig& cfg, const Ptr<WifiNetDevice>& dev
 }
 
 void
-QNs3Helper::ConfigureMobility(const std::vector<NodeConfig>& configs, const NodeContainer& container)
+QNs3Helper::ConfigureMobility(const std::vector<NodeConfig>& configs,
+                              const NodeContainer& container)
 {
     Ptr<ListPositionAllocator> allocator = CreateObject<ListPositionAllocator>();
     for (const auto& cfg : configs)
@@ -247,7 +288,8 @@ QNs3Helper::ConfigureMobility(const std::vector<NodeConfig>& configs, const Node
 }
 
 void
-QNs3Helper::ApplyDeviceConfigs(const std::vector<NodeConfig>& configs, const NetDeviceContainer& devices)
+QNs3Helper::ApplyDeviceConfigs(const std::vector<NodeConfig>& configs,
+                               const NetDeviceContainer& devices)
 {
     const std::size_t count = std::min<std::size_t>(configs.size(), devices.GetN());
     for (std::size_t i = 0; i < count; ++i)

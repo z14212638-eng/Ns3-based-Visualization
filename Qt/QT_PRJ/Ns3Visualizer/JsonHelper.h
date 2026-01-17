@@ -27,7 +27,7 @@ enum class AcType
     VO
 };
 
-enum class GI_MAP
+enum class Standard_MAP
 {
     k80211a,
     k80211b,
@@ -37,16 +37,16 @@ enum class GI_MAP
     k80211ax
 };
 
-static const std::map<std::string, GI_MAP> gi_map = {
-    {"802.11a", GI_MAP::k80211a},
-    {"802.11b", GI_MAP::k80211b},
-    {"802.11g", GI_MAP::k80211g},
-    {"802.11n", GI_MAP::k80211n},
-    {"802.11ac", GI_MAP::k80211ac},
-    {"802.11ax", GI_MAP::k80211ax}
+static const std::map<std::string, Standard_MAP> standard_map = {
+    {"802.11a", Standard_MAP::k80211a},
+    {"802.11b", Standard_MAP::k80211b},
+    {"802.11g", Standard_MAP::k80211g},
+    {"802.11n", Standard_MAP::k80211n},
+    {"802.11ac", Standard_MAP::k80211ac},
+    {"802.11ax", Standard_MAP::k80211ax}
 };
 
-GI_MAP get_gi_from_string(const std::string &);
+Standard_MAP get_standard_from_string(const std::string &);
 
 struct Antenna_Config
 {

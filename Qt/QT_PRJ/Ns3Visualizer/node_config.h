@@ -56,6 +56,8 @@ private slots:
 
     void on_pushButton_7_clicked();
 
+    void Restrict_channel();
+
 private:
     Ui::node_config *ui;
     bool pos_set = false;

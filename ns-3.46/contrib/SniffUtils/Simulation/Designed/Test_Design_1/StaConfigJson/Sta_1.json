@@ -10,10 +10,11 @@
         ],
         "set": true
     },
-    "Bandwidth": 20,
+    "Bandwidth": 40,
     "Channel_number": 36,
     "EnableAssocFailRetry": true,
     "Frequency": 5180,
+    "Guard_interval": 800,
     "Id": 1,
     "MaxMissedBeacons": 10,
     "Mobility": {
@@ -32,9 +33,9 @@
     },
     "Phy_model": "Yans",
     "Position": [
-        4.033139564462948,
-        4.664926725867431,
-        3.716410013103056
+        4.453851346055527,
+        1.7644648128936424,
+        3.3198862021560878
     ],
     "ProbeRequestTimeout": 500,
     "Qos": {
@@ -84,7 +85,7 @@
         "set": true
     },
     "Ssid": "Ns3WiFi",
-    "Standard": "802.11a",
+    "Standard": "802.11ax",
     "Traffic": {
         "Flows": [
             {
