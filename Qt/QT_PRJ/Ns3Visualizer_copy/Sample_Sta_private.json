@@ -1,0 +1,88 @@
+{
+    "Position": [
+        0,
+        0,
+        0
+    ],
+    "Id": 1,
+    "Mobility": {
+        "set": false,
+        "model_type": "ConstanModel",
+        "boundaries": [
+            0,
+            1,
+            0,
+            2
+        ],
+        "mode": "time"
+    },
+    "Active_probing": "false",
+    "Channel_number": 30,
+    "Frequency": 5.180,
+    "Bandwidth": 20,
+    "Tx_power": 20,
+    "Ssid": "NS3_WIFI",
+    "Phy_model": "YansWifiPhy",
+    "Standard": "802.11n-5GHz",
+    "Rts_Cts": {
+        "set": false,
+        "Threshold": 65535
+    },
+    "MaxMissedBeacons": 10,
+    "ProbeRequestTimeout": 500,
+    "EnableAssocFailRetry": true,
+    "Rate_ctr_algo": "Aarf",
+    "TxQueue": "DropTail",
+    "Qos": {
+        "Qos_support": true,
+        "Edca_choose": "AC_VO",
+        "Edca_params": {
+            "AC_VO": {
+                "CWmin": 3,
+                "CWmax": 7,
+                "AIFSN": 2,
+                "TXOPLimit": 47
+            },
+            "AC_VI": {
+                "CWmin": 7,
+                "CWmax": 15,
+                "AIFSN": 2,
+                "TXOPLimit": 94
+            },
+            "AC_BE": {
+                "CWmin": 15,
+                "CWmax": 1023,
+                "AIFSN": 3,
+                "TXOPLimit": 0
+            },
+            "AC_BK": {
+                "CWmin": 15,
+                "CWmax": 1023,
+                "AIFSN": 7,
+                "TXOPLimit": 0
+            }
+        },
+        "Msdu_Aggregation": {
+            "set": true,
+            "type": "AC_VO",
+            "MaxAmsduSize": 65535
+        },
+        "Mpdu_Agregation": {
+            "set": true,
+            "type": "AC_VO",
+            "MpduDensity": 0,
+            "MaxAmpduSize": 65
+        }
+    },
+    "Antenna": {
+        "set": true,
+        "Antennas": [
+            {
+                "type": "IstopicAntennaModel",
+                "MaxGain": 20,
+                "Beamwidth": 30
+            },
+            {}
+        ]
+    }
+}
