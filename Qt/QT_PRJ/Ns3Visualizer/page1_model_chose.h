@@ -22,14 +22,17 @@ public:
 private slots:
     void on_pushButton_4_clicked();
 
-    void on_pushButton_clicked();
+    void on_pushButton_5_clicked();
 
     void on_pushButton_3_clicked();
+
+    void on_checkBox_checkStateChanged(const Qt::CheckState &arg1);
 
 signals:
     void BackToMain();
 private:
     Ui::Page1_model_chose *ui;
+    QString sceneName = "";
 };
 
 #endif // PAGE1_MODEL_CHOSE_H

@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     // 连接子窗口返回信号
     connect(ppage1, &Page1_model_chose::BackToMain, this, [=]()
             {
-                ppage1->close();
+                ppage1->hide();
                 this->showMaximized();
             });
 }
@@ -29,7 +29,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_pushButton_clicked()
 {
 
-        this->close();
+        this->hide();
         this->ppage1->showMaximized();
 ;
 
