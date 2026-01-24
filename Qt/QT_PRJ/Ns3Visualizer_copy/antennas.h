@@ -24,8 +24,7 @@ public:
     bool is_sta = false;
 
 signals:
-    void BackToLastPage_AP();
-    void BackToLastPage_STA();
+    void BackToLastPage();
     
 private slots:
     void on_pushButton_clicked();

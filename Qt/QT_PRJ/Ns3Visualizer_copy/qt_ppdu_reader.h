@@ -18,6 +18,7 @@ public slots:
 
 signals:
     void ppduReady(const PpduVisualItem& ppdu);
+    void finished();
 
 private:
     bool m_running = true;           // 线程运行标志

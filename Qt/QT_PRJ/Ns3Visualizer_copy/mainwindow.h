@@ -1,11 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include <QWidget>
+#include <QStack>
 #include <QStyle>
+#include <QApplication>
 #include <QScreen>
 #include <QGuiApplication>
 #include <QStackedWidget>
 #include <QMainWindow>
+#include <QDebug>
+#include <QTimer>
 
 #include "page1_model_chose.h"
 #include "utils.h"
@@ -20,10 +24,10 @@
 #include "ppdu_timeline_view.h"
 #include "simu_config.h"
 
-
 QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+    class MainWindow;
 }
 QT_END_NAMESPACE
 
@@ -34,18 +38,33 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void closeEvent(QCloseEvent *event) override;
+    void switchTo(int index);
+    void back();
 
 private:
     Ui::MainWindow *ui;
 
+    /*Page Management*/
     QStackedWidget *stack;
+    QStack<int> history;
 
+    /*Page Widgets*/
     Page1_model_chose *page1;
     Simu_Config *simuConfig;
-    node_config *nodeConfig;
-    Ap_config *apConfig;
-    Edca_config *edcaConfig;
-    Antenna *antenna;
+    node_config *nodeConfigPage;
+    Ap_config *apConfigPage;
+    Edca_config *edcaConfig;//ui-only
+    Antenna *antenna;//ui-only
 
+    /*Menu_Actions & SideBar_Actions*/
+    QAction *homeAction;
+
+    /*Data Structure*/
+    //Make sure this data structure is unique,on no account should it be copied.
+    Ap ap_now;
+    Sta sta_now;
+    BuildingConfig buildingConfig;//including ap_list and sta_list
+    JsonHelper jsonhelper;
 };
 #endif // MAINWINDOW_H

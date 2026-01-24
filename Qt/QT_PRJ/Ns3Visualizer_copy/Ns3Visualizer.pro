@@ -28,7 +28,8 @@ SOURCES += \
     legend_overlay.cpp\
     visualizer_config.cpp\
     utils.cpp\
-    indus_widget.cpp
+    indus_widget.cpp\
+    image_viewer.cpp
 
 HEADERS += \
     JsonHelper.h \
@@ -49,7 +50,8 @@ HEADERS += \
     legend_overlay.h\
     visualizer_config.h\
     utils.h\
-    indus_widget.h
+    indus_widget.h\
+    image_viewer.h
 
 FORMS += \
     antennas.ui \

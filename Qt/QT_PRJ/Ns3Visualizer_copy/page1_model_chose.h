@@ -2,8 +2,11 @@
 #define PAGE1_MODEL_CHOSE_H
 
 #include <QWidget>
+#include <QEvent>
+#include <QMouseEvent>
 #include "simu_config.h"
 #include "utils.h"
+#include "image_viewer.h"
 
 namespace Ui {
 class Page1_model_chose;
@@ -30,9 +33,11 @@ private slots:
 
 signals:
     void BackToMain();
+    void ConfigSimulation();
 private:
     Ui::Page1_model_chose *ui;
     QString sceneName = "";
+    bool eventFilter(QObject *obj, QEvent *event) override;
 };
 
 #endif // PAGE1_MODEL_CHOSE_H

@@ -49,6 +49,12 @@ PpduTimelineView::PpduTimelineView(QWidget *parent)
     connect(m_btnSetTimeRange, &QPushButton::clicked,
             this, &PpduTimelineView::onSetTimeRange);
 
+    QPushButton *quitButton = new QPushButton("QUIT", this);
+    quitButton->setFixedSize(120, 30);
+    quitButton->move(76, 8);
+
+    connect(quitButton, &QPushButton::clicked, this, &PpduTimelineView::quit_simulation);
+
     m_btnLegend = new QPushButton("ⓘ", this);
     m_btnLegend->setFixedSize(26, 26);
     connect(m_btnLegend, &QPushButton::clicked,
@@ -57,6 +63,19 @@ PpduTimelineView::PpduTimelineView(QWidget *parent)
     m_legendOverlay = new LegendOverlay(this);
     centerWindow(this);
     m_legendOverlay->close();
+}
+
+PpduTimelineView::~PpduTimelineView()
+{
+    // Clean up UI components
+    delete m_legendOverlay; 
+    delete m_overlay;
+    delete m_btnSave;
+    delete m_btnLegend;
+    delete m_btnSetTimeRange;
+    
+    // Clear data
+    m_items.clear();
 }
 
 /* ======================== Culculate the number of APs =================== */

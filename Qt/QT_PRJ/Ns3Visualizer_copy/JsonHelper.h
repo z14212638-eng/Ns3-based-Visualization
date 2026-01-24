@@ -16,6 +16,7 @@
 #include <QDebug>
 #include <QJsonParseError>
 #include <QLoggingCategory>
+#include <QObject>
 
 // This class is used to save the configuration of the network to a JSON file.
 

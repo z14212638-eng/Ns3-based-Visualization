@@ -35,21 +35,25 @@ class Simu_Config : public QWidget
 public:
     explicit Simu_Config(QWidget *parent = nullptr);
     ~Simu_Config();
-    node_config *node_config_page = new (node_config);
-    Ap_config *ap_config_page = new (Ap_config);
-    void Write_building_into_config();
-
+    void Write_building_into_config(BuildingConfig &,Ap_config &,node_config &);
     void Draw_the_config_map();
-
     void update_json(QGraphicsScene *, QJsonObject &);
-
+    void Update_json_map(JsonHelper &json_helper);
+    void Load_General_Json(JsonHelper &json_helper);
+    void Create_And_StartThread();
+    void requestCleanup();
     void cleanupAndExit();
 
 signals:
     void BackToLastPage();
+    void Building_Set();
+    void update();
     void AddSta();
     void AddAp();
-    
+    void LoadGeneralConfig();
+    void CreateAndStartThread();
+    void simulation_end();
+
 private slots:
     void on_pushButton_clicked();
 
@@ -65,15 +69,17 @@ private slots:
 
 private:
     Ui::Simu_Config *ui;
-    JsonHelper *jsonHelper;
-    QGraphicsScene *scene;
+    QGraphicsScene *scene = nullptr;
 
     QThread *m_ppduThread = nullptr;
     QtPpduReader *m_ppduReader = nullptr;
     PpduTimelineView *m_timelineView = nullptr;
     QProcess *ns3Process = nullptr;
+
+    QVector<double> building_range = {0, 0, 0};
 };
 
+// NodeItem represents a movable node in the graphics scene
 class NodeItem : public QGraphicsEllipseItem
 {
 public:

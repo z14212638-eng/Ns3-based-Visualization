@@ -15,7 +15,7 @@
     "EnableAssocFailRetry": true,
     "Frequency": 5180,
     "Guard_interval": 800,
-    "Id": 1,
+    "Id": 0,
     "MaxMissedBeacons": 10,
     "Mobility": {
         "boundaries": [
@@ -33,9 +33,9 @@
     },
     "Phy_model": "Yans",
     "Position": [
-        4.453851346055527,
-        1.7644648128936424,
-        3.3198862021560878
+        3.7593817283756215,
+        9.1905210578479,
+        1.45000586168343
     ],
     "ProbeRequestTimeout": 500,
     "Qos": {

@@ -151,7 +151,7 @@ Ap_config::~Ap_config()
 }
 
 // Page1_Finished
-void Ap_config::on_pushButton_clicked()
+void Ap_config::setPosition(Ap &one_ap)
 {
     if (!ui->checkBox_4->isChecked())
     {
@@ -160,9 +160,9 @@ void Ap_config::on_pushButton_clicked()
         {
 
             ui->tabWidget->setCurrentIndex(1);
-            this->one_ap->m_position = {ui->doubleSpinBox->value(),
-                                        ui->doubleSpinBox_2->value(),
-                                        ui->doubleSpinBox_3->value()};
+            one_ap.m_position = {ui->doubleSpinBox->value(),
+                                 ui->doubleSpinBox_2->value(),
+                                 ui->doubleSpinBox_3->value()};
             pos_set = true;
         }
         else
@@ -186,29 +186,35 @@ void Ap_config::on_pushButton_clicked()
         double y_rand = get_true_random_double(0, y_max);
         double z_rand = get_true_random_double(0, z_max);
 
-        this->one_ap->m_position = {x_rand, y_rand, z_rand};
+        one_ap.m_position = {x_rand, y_rand, z_rand};
         std::cout << "The position of AP is: " << x_rand << " " << y_rand << " " << z_rand << std::endl;
         ui->tabWidget->setCurrentIndex(1);
     }
 }
 
+void Ap_config::on_pushButton_clicked()
+{
+    emit Page1();
+}
+
 // Page2_Finished
-void Ap_config::on_pushButton_4_clicked()
+
+void Ap_config::setMobility(Ap &one_ap)
 {
     // If mobility is not set
     if (!ui->checkBox_3->isChecked())
     {
         ui->tabWidget->setCurrentIndex(2);
         mobility_set = true;
-        this->one_ap->Mobility = false;
+        one_ap.Mobility = false;
         return;
     }
 
     // If mobility is set and "random" mode is selected
     else if (ui->checkBox_3->isChecked() && ui->comboBox->currentText() == "Random Mobility Model")
     {
-        this->one_ap->Mobility = true;
-        this->one_ap->mode = "Random Mobility Model";
+        one_ap.Mobility = true;
+        one_ap.mode = "Random Mobility Model";
         double x_max = this->Building_range[0];
         double y_max = this->Building_range[1];
         double z_max = this->Building_range[2];
@@ -225,20 +231,20 @@ void Ap_config::on_pushButton_4_clicked()
         ui->doubleSpinBox_17->setValue((y_rand_1 > y_rand_2) ? y_rand_1 : y_rand_2);
 
         // set the boundaries of mobility
-        this->one_ap->boundaries = {ui->doubleSpinBox_14->value(), ui->doubleSpinBox_15->value(), ui->doubleSpinBox_16->value(), ui->doubleSpinBox_17->value()};
-        this->one_ap->time_change_interval = ui->doubleSpinBox_4->value();
-        this->one_ap->mode = ui->comboBox_2->currentText();
-        this->one_ap->distance_change_interval = ui->doubleSpinBox_5->value();
-        this->one_ap->random_velocity = ui->doubleSpinBox_18->value();
+        one_ap.boundaries = {ui->doubleSpinBox_14->value(), ui->doubleSpinBox_15->value(), ui->doubleSpinBox_16->value(), ui->doubleSpinBox_17->value()};
+        one_ap.time_change_interval = ui->doubleSpinBox_4->value();
+        one_ap.mode = ui->comboBox_2->currentText();
+        one_ap.distance_change_interval = ui->doubleSpinBox_5->value();
+        one_ap.random_velocity = ui->doubleSpinBox_18->value();
 
-        std::cout << "The boundaries of AP is: " << this->one_ap->boundaries[0] << " " << this->one_ap->boundaries[1] << " " << this->one_ap->boundaries[2] << " " << this->one_ap->boundaries[3] << std::endl;
-        std::cout << "The time change interval of AP is: " << this->one_ap->time_change_interval << std::endl;
-        std::cout << "The distance change interval of AP is: " << this->one_ap->distance_change_interval << std::endl;
-        std::cout << "The random velocity of AP is: " << this->one_ap->random_velocity << std::endl;
-        std::cout << "The mode of AP is: " << this->one_ap->mode.toStdString() << std::endl;
+        std::cout << "The boundaries of AP is: " << one_ap.boundaries[0] << " " << one_ap.boundaries[1] << " " << one_ap.boundaries[2] << " " << one_ap.boundaries[3] << std::endl;
+        std::cout << "The time change interval of AP is: " << one_ap.time_change_interval << std::endl;
+        std::cout << "The distance change interval of AP is: " << one_ap.distance_change_interval << std::endl;
+        std::cout << "The random velocity of AP is: " << one_ap.random_velocity << std::endl;
+        std::cout << "The mode of AP is: " << one_ap.mode.toStdString() << std::endl;
 
         ui->tabWidget->setCurrentIndex(2);
-        this->one_ap->Mobility = true;
+        one_ap.Mobility = true;
         return;
     }
     // If not choosing the "random" mode,check if the conditions are valid
@@ -268,7 +274,7 @@ void Ap_config::on_pushButton_4_clicked()
         if (mobility_set)
         {
             ui->tabWidget->setCurrentIndex(2);
-            this->one_ap->Mobility = true;
+            one_ap.Mobility = true;
         }
 
         else
@@ -280,6 +286,11 @@ void Ap_config::on_pushButton_4_clicked()
                 QMessageBox::Ok);
         }
     }
+}
+
+void Ap_config::on_pushButton_4_clicked()
+{
+    emit Page2();
 }
 
 // Page1_Random_Position
@@ -386,15 +397,139 @@ void Ap_config::on_checkBox_6_clicked(bool checked)
 // Edca_Config
 void Ap_config::on_pushButton_8_clicked()
 {
-    this->edca_page->is_ap = true;
     emit Edca_to_config();
 }
 
 // Antenna_Config
 void Ap_config::on_pushButton_9_clicked()
 {
-    this->antenna_page->is_ap = true;
     emit Antenna_to_config();
+}
+
+void Ap_config::Load_One_Config(Ap &ap_now)
+{
+    // set the channel number
+    ap_now.channel_number = ui->spinBox->value();
+    qint16 channel_number = ui->spinBox->value();
+
+    // set the frequency
+    if (ui->comboBox_3->currentText() == "5G")
+    {
+        ap_now.Frequency = 5000 + channel_number * 5;
+    }
+    else if (ui->comboBox_3->currentText() == "2.4G")
+    {
+        ap_now.Frequency = 2400 + (channel_number - 1) * 5;
+    }
+
+    // set the GI
+    if (ui->comboBox_15->currentText() == "400ns")
+    {
+        ap_now.GI = 400;
+    }
+    else if (ui->comboBox_15->currentText() == "800ns")
+    {
+        ap_now.GI = 800;
+    }
+    else if (ui->comboBox_15->currentText() == "1600ns")
+    {
+        ap_now.GI = 1600;
+    }
+    else if (ui->comboBox_15->currentText() == "3200ns")
+    {
+        ap_now.GI = 3200;
+    }
+
+    // set the bandwidth
+    ap_now.bandwidth = ui->comboBox_16->currentText().toShort();
+    // set the Tx power
+    ap_now.TxPower = ui->doubleSpinBox_6->value();
+    // set the Ssid
+    ap_now.Ssid = ui->lineEdit->text();
+    // set the phy_model
+    ap_now.Phy_model = ui->comboBox_4->currentText();
+    // set the Standard
+    ap_now.Standard = ui->comboBox_5->currentText();
+    // set the Slot
+    ap_now.Slot = ui->doubleSpinBox_7->value();
+    // set the Sifs
+    ap_now.Sifs = ui->doubleSpinBox_8->value();
+    // set the RxSensitivity
+    ap_now.RxSensitivity = ui->doubleSpinBox_9->value();
+    // set the CcaEdThreshold
+    ap_now.CcaThreshold = ui->doubleSpinBox_10->value();
+    // set the CcaSensitivity
+    ap_now.CcaSensitivity = ui->doubleSpinBox_11->value();
+    // set the Beacon
+    ap_now.Beacon = ui->checkBox->isChecked();
+    ap_now.Beacon_interval = ui->doubleSpinBox_12->value();
+    ap_now.Beacon_Rate = ui->doubleSpinBox_13->value();
+    ap_now.EnableBeaconJitter = ui->checkBox_5->isChecked();
+    // set the Rts_Cts
+    ap_now.RtsCts = ui->checkBox_5->isChecked();
+    ap_now.RtsCts_Threshold = ui->spinBox_3->value();
+    // set the Rate_ctr_algo
+    ap_now.Rate_ctr_algo = ui->comboBox_7->currentText();
+    // set the TxQueue
+    ap_now.TxQueue = ui->comboBox_8->currentText();
+
+    // set the Qos
+    ap_now.Qos = ui->checkBox_6->isChecked();
+    ap_now.Edca = ui->comboBox_6->currentText();
+}
+
+void Ap_config::Get_Edca_Config(Ap &ap_now, Edca_config &edca_config)
+{
+    ap_now.AC_VO_cwmin = edca_config.AC_VO_cwmin;
+    ap_now.AC_VO_cwmax = edca_config.AC_VO_cwmax;
+    ap_now.AC_VO_AIFSN = edca_config.AC_VO_AIFSN;
+    ap_now.AC_VO_TXOP_LIMIT = edca_config.AC_VO_TXOP_LIMIT;
+
+    ap_now.AC_VI_cwmin = edca_config.AC_VI_cwmin;
+    ap_now.AC_VI_cwmax = edca_config.AC_VI_cwmax;
+    ap_now.AC_VI_AIFSN = edca_config.AC_VI_AIFSN;
+    ap_now.AC_VI_TXOP_LIMIT = edca_config.AC_VI_TXOP_LIMIT;
+
+    ap_now.AC_BE_cwmin = edca_config.AC_BE_cwmin;
+    ap_now.AC_BE_cwmax = edca_config.AC_BE_cwmax;
+    ap_now.AC_BE_AIFSN = edca_config.AC_BE_AIFSN;
+    ap_now.AC_BE_TXOP_LIMIT = edca_config.AC_BE_TXOP_LIMIT;
+
+    ap_now.AC_BK_cwmin = edca_config.AC_BK_cwmin;
+    ap_now.AC_BK_cwmax = edca_config.AC_BK_cwmax;
+    ap_now.AC_BK_AIFSN = edca_config.AC_BK_AIFSN;
+    ap_now.AC_BK_TXOP_LIMIT = edca_config.AC_BK_TXOP_LIMIT;
+
+    ap_now.Msdu_aggregation = edca_config.Msdu_aggregation;
+    ap_now.AMsdu_type = edca_config.AMsdu_type;
+    ap_now.MaxAMsduSize = edca_config.MaxAMsduSize;
+
+    ap_now.Mpdu_aggregation = edca_config.Mpdu_aggregation;
+    ap_now.AMpdu_type = edca_config.AMpdu_type;
+    ap_now.MaxAMpduSize = edca_config.MaxAMpduSize;
+    ap_now.Density = edca_config.Density;
+}
+
+void Ap_config::Get_Antenna_Config(Ap &ap_now, Antenna &antenna_config)
+{
+    // set the Antenna
+    std::cout << "the number of antenna is: " << antenna_config.antenna_list.size() << std::endl;
+
+    if (antenna_config.AntennaCount() == 0)
+    {
+        QMessageBox::critical(
+            this,
+            "Error",
+            "Please set the antenna",
+            QMessageBox::Ok);
+        return;
+    }
+
+    std::cout << antenna_config.antenna_list[0]->Antenna_type.toStdString() << std::endl;
+    for (auto item : antenna_config.antenna_list)
+    {
+        ap_now.Antenna_list.push_back(std::move(item));
+    }
 }
 
 // Page3_Finished
@@ -410,127 +545,10 @@ void Ap_config::on_pushButton_6_clicked()
         return;
     }
 
-    // set the channel number
-    this->one_ap->channel_number = ui->spinBox->value();
-    qint16 channel_number = ui->spinBox->value();
-
-    // set the frequency
-    if (ui->comboBox_3->currentText() == "5G")
-    {
-        this->one_ap->Frequency = 5000 + channel_number * 5;
-    }
-    else if (ui->comboBox_3->currentText() == "2.4G")
-    {
-        this->one_ap->Frequency = 2400 + (channel_number - 1) * 5;
-    }
-
-    // set the GI
-    if (ui->comboBox_15->currentText() == "400ns")
-    {
-        this->one_ap->GI = 400;
-    }
-    else if (ui->comboBox_15->currentText() == "800ns")
-    {
-        this->one_ap->GI = 800;
-    }
-    else if (ui->comboBox_15->currentText() == "1600ns")
-    {
-        this->one_ap->GI = 1600;
-    }
-    else if (ui->comboBox_15->currentText() == "3200ns")
-    {
-        this->one_ap->GI = 3200;
-    }
-
-    // set the bandwidth
-    this->one_ap->bandwidth = ui->comboBox_16->currentText().toShort();
-    // set the Tx power
-    this->one_ap->TxPower = ui->doubleSpinBox_6->value();
-    // set the Ssid
-    this->one_ap->Ssid = ui->lineEdit->text();
-    // set the phy_model
-    this->one_ap->Phy_model = ui->comboBox_4->currentText();
-    // set the Standard
-    this->one_ap->Standard = ui->comboBox_5->currentText();
-    // set the Slot
-    this->one_ap->Slot = ui->doubleSpinBox_7->value();
-    // set the Sifs
-    this->one_ap->Sifs = ui->doubleSpinBox_8->value();
-    // set the RxSensitivity
-    this->one_ap->RxSensitivity = ui->doubleSpinBox_9->value();
-    // set the CcaEdThreshold
-    this->one_ap->CcaThreshold = ui->doubleSpinBox_10->value();
-    // set the CcaSensitivity
-    this->one_ap->CcaSensitivity = ui->doubleSpinBox_11->value();
-    // set the Beacon
-    this->one_ap->Beacon = ui->checkBox->isChecked();
-    this->one_ap->Beacon_interval = ui->doubleSpinBox_12->value();
-    this->one_ap->Beacon_Rate = ui->doubleSpinBox_13->value();
-    this->one_ap->EnableBeaconJitter = ui->checkBox_5->isChecked();
-    // set the Rts_Cts
-    this->one_ap->RtsCts = ui->checkBox_5->isChecked();
-    this->one_ap->RtsCts_Threshold = ui->spinBox_3->value();
-    // set the Rate_ctr_algo
-    this->one_ap->Rate_ctr_algo = ui->comboBox_7->currentText();
-    // set the TxQueue
-    this->one_ap->TxQueue = ui->comboBox_8->currentText();
-
-    // set the Qos
-    this->one_ap->Qos = ui->checkBox_6->isChecked();
-    this->one_ap->Edca = ui->comboBox_6->currentText();
-
-    this->one_ap->AC_VO_cwmin = this->edca_page->AC_VO_cwmin;
-    this->one_ap->AC_VO_cwmax = this->edca_page->AC_VO_cwmax;
-    this->one_ap->AC_VO_AIFSN = this->edca_page->AC_VO_AIFSN;
-    this->one_ap->AC_VO_TXOP_LIMIT = this->edca_page->AC_VO_TXOP_LIMIT;
-
-    this->one_ap->AC_VI_cwmin = this->edca_page->AC_VI_cwmin;
-    this->one_ap->AC_VI_cwmax = this->edca_page->AC_VI_cwmax;
-    this->one_ap->AC_VI_AIFSN = this->edca_page->AC_VI_AIFSN;
-    this->one_ap->AC_VI_TXOP_LIMIT = this->edca_page->AC_VI_TXOP_LIMIT;
-
-    this->one_ap->AC_BE_cwmin = this->edca_page->AC_BE_cwmin;
-    this->one_ap->AC_BE_cwmax = this->edca_page->AC_BE_cwmax;
-    this->one_ap->AC_BE_AIFSN = this->edca_page->AC_BE_AIFSN;
-    this->one_ap->AC_BE_TXOP_LIMIT = this->edca_page->AC_BE_TXOP_LIMIT;
-
-    this->one_ap->AC_BK_cwmin = this->edca_page->AC_BK_cwmin;
-    this->one_ap->AC_BK_cwmax = this->edca_page->AC_BK_cwmax;
-    this->one_ap->AC_BK_AIFSN = this->edca_page->AC_BK_AIFSN;
-    this->one_ap->AC_BK_TXOP_LIMIT = this->edca_page->AC_BK_TXOP_LIMIT;
-
-    this->one_ap->Msdu_aggregation = this->edca_page->Msdu_aggregation;
-    this->one_ap->AMsdu_type = this->edca_page->AMsdu_type;
-    this->one_ap->MaxAMsduSize = this->edca_page->MaxAMsduSize;
-
-    this->one_ap->Mpdu_aggregation = this->edca_page->Mpdu_aggregation;
-    this->one_ap->AMpdu_type = this->edca_page->AMpdu_type;
-    this->one_ap->MaxAMpduSize = this->edca_page->MaxAMpduSize;
-    this->one_ap->Density = this->edca_page->Density;
-
-    // set the Antenna
-    std::cout << "the number of antenna is: " << this->antenna_page->antenna_list.size() << std::endl;
-
-    if (this->antenna_page->AntennaCount() == 0)
-    {
-        QMessageBox::critical(
-            this,
-            "Error",
-            "Please set the antenna",
-            QMessageBox::Ok);
-        return;
-    }
-
-    std::cout << this->antenna_page->antenna_list[0]->Antenna_type.toStdString() << std::endl;
-    for (auto item : this->antenna_page->antenna_list)
-    {
-        this->one_ap->Antenna_list.push_back(std::move(item));
-    }
-
     phymac_set = true;
     ui->tabWidget->setTabEnabled(3, true);
     // check if the Qos is on,if not, disable the Qos related settings
-    if (!this->one_ap->Qos)
+    if (!ui->checkBox_6->isChecked())
     {
         ui->checkBox_7->setEnabled(false);
         ui->comboBox_11->setEnabled(false);
@@ -598,22 +616,20 @@ void Ap_config::on_pushButton_7_clicked()
         return;
     }
 
+    emit LoadOneApConfig();
     ApIndex++;
-    this->json_helper->SetApToJson(this->one_ap.get(), ApIndex);
-    this->one_ap->Traffic_list.clear();
-    this->one_ap->Antenna_list.clear();
-    this->edca_page->is_ap = false;
-    this->edca_page->is_sta = false;
     emit Finish_setting_ap();
 }
 
-// add Traffic
-void Ap_config::on_pushButton_2_clicked()
+void Ap_config::Get_Traffic_Config(Ap &ap_now)
 {
-    if (ui->tableWidget->rowCount() == 1 && ui->tableWidget->item(0, 1) == nullptr)
+    if (ui->tableWidget->rowCount() == 1 &&
+        ui->tableWidget->item(0, 0) &&
+        ui->tableWidget->item(0, 0)->text().isEmpty())
     {
-        ui->tableWidget->setRowCount(0);
+        ui->tableWidget->removeRow(0);
     }
+
     // Information to be shown in the table
     QString FlowId = ui->lineEdit_2->text();
     QString Protocol = ui->comboBox_9->currentText();
@@ -666,8 +682,7 @@ void Ap_config::on_pushButton_2_clicked()
         bkTraffic->DataRate = ui->spinBox_29->value();
     }
     // Show the information in the table
-    int rowCount = ui->tableWidget->rowCount();
-    qint8 lastrow = rowCount;
+    int lastrow = ui->tableWidget->rowCount();
 
     ui->tableWidget->insertRow(lastrow);
     ui->tableWidget->setItem(lastrow, 0, new QTableWidgetItem(FlowId));
@@ -677,13 +692,25 @@ void Ap_config::on_pushButton_2_clicked()
     ui->tableWidget->setItem(lastrow, 4, new QTableWidgetItem(Direction));
 
     // Insert the data structure into the vector
-    this->one_ap->Traffic_list.push_back(new_traffic);
+    ap_now.Traffic_list.push_back(new_traffic);
 }
+// add Traffic
+
 
 void Ap_config::on_pushButton_3_clicked()
 {
-    int rowCount = ui->tableWidget->rowCount() - 1;
-    if (rowCount < 0)
-        return;
-    ui->tableWidget->removeRow(rowCount);
+    int row = ui->tableWidget->rowCount() - 1;
+    if (row < 0) return;
+
+    ui->tableWidget->removeRow(row);
+
+    emit RemoveLastTraffic();
 }
+
+
+void Ap_config::on_pushButton_2_clicked()
+{
+    qDebug() << "Add Traffic button clicked!";
+    emit Traffic_Set();
+}
+

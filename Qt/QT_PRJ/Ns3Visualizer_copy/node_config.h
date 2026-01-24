@@ -1,5 +1,6 @@
 #ifndef NODE_CONFIG_H
 #define NODE_CONFIG_H
+#include <iostream>
 #include <QMessageBox>
 #include <QWidget>
 #include "JsonHelper.h"
@@ -18,18 +19,27 @@ class node_config : public QWidget
 public:
     explicit node_config(QWidget *parent = nullptr);
     ~node_config();
-    JsonHelper *json_helper = new (JsonHelper);
-    std::shared_ptr<Sta> one_sta = std::make_shared<Sta>();
-    Edca_config *edca_page = new (Edca_config);
-    Antenna *antenna_page = new (Antenna);
-    QVector<double> Building_range = {0, 0, 0};
 
+    QVector<double> Building_range = {0, 0, 0};
+    QVector<double> m_position = {0, 0, 0};
     qint8 StaIndex = 0;
+    
+    void setPosition(Sta &);
+    void setMobility(Sta &);
+    void Load_One_Config(Sta &);
+    void Get_Edca_Config(Sta &, Edca_config &);
+    void Get_Antenna_Config(Sta &, Antenna &);
+    void Get_Traffic_Config(Sta &);
 
 signals:
     void Finish_setting_sta();
-    void Edca_to_config();
+    void Edca_to_config(); 
     void Antenna_to_config();
+    void LoadOneStaConfig();
+    void Page1();
+    void Page2();
+    void Traffic_Set();
+    void RemoveLastTraffic();
     
 private slots:
     void on_pushButton_clicked();

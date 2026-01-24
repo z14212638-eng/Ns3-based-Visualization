@@ -42,7 +42,7 @@ void Antenna::on_pushButton_3_clicked()
     ui->pushButton->setEnabled(true);
     ui->pushButton_2->setEnabled(true);
     ui->buttonBox->setEnabled(true);
-    emit (this->is_ap ? BackToLastPage_AP() : BackToLastPage_STA());
+    ui->widget->close();
 }
 
 
@@ -69,6 +69,7 @@ void Antenna::on_buttonBox_accepted() {
         );
         antenna_list.append(std::move(new_antenna));
     }
+    emit BackToLastPage();
 }
 
 qint16 Antenna::AntennaCount() const {

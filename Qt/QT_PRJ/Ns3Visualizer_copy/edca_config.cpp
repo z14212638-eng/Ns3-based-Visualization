@@ -45,6 +45,6 @@ void Edca_config::on_buttonBox_accepted()
      MaxAMpduSize = ui->spinBox_18->value();
      Density = ui->spinBox_19->value();
 
-     emit (this->is_ap? BackToLastPage_AP() : BackToLastPage_STA());
+     emit BackToLastPage();
 }
 

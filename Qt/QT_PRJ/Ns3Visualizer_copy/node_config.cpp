@@ -149,17 +149,18 @@ node_config::~node_config()
     delete ui;
 }
 
-// Page1_Finished
-void node_config::on_pushButton_clicked()
+void node_config::setPosition(Sta &sta)
 {
     if (!ui->checkBox_2->isChecked())
     {
+
         if (ui->doubleSpinBox->value() != 0.00 || ui->doubleSpinBox_2->value() != 0.00 || ui->doubleSpinBox_3->value() != 0.00)
         {
+
             ui->tabWidget->setCurrentIndex(1);
-            this->one_sta->m_position = {ui->doubleSpinBox->value(),
-                                         ui->doubleSpinBox_2->value(),
-                                         ui->doubleSpinBox_3->value()};
+            sta.m_position = {ui->doubleSpinBox->value(),
+                              ui->doubleSpinBox_2->value(),
+                              ui->doubleSpinBox_3->value()};
             pos_set = true;
         }
         else
@@ -183,29 +184,28 @@ void node_config::on_pushButton_clicked()
         double y_rand = get_true_random_double(0, y_max);
         double z_rand = get_true_random_double(0, z_max);
 
-        this->one_sta->m_position = {x_rand, y_rand, z_rand};
-        std::cout << "The position of STA is: " << x_rand << " " << y_rand << " " << z_rand << std::endl;
+        sta.m_position = {x_rand, y_rand, z_rand};
+        std::cout << "The position of AP is: " << x_rand << " " << y_rand << " " << z_rand << std::endl;
         ui->tabWidget->setCurrentIndex(1);
     }
 }
 
-// Page2_Finished
-void node_config::on_pushButton_4_clicked()
+void node_config::setMobility(Sta &sta)
 {
     // If mobility is not set
     if (!ui->checkBox->isChecked())
     {
         ui->tabWidget->setCurrentIndex(2);
         mobility_set = true;
-        this->one_sta->Mobility = false;
+        sta.Mobility = false;
         return;
     }
 
     // If mobility is set and "random" mode is selected
     else if (ui->checkBox->isChecked() && ui->comboBox->currentText() == "Random Mobility Model")
     {
-        this->one_sta->Mobility = true;
-        this->one_sta->mode = "Random Mobility Model";
+        sta.Mobility = true;
+        sta.mode = "Random Mobility Model";
         double x_max = this->Building_range[0];
         double y_max = this->Building_range[1];
         double z_max = this->Building_range[2];
@@ -222,20 +222,20 @@ void node_config::on_pushButton_4_clicked()
         ui->doubleSpinBox_11->setValue((y_rand_1 > y_rand_2) ? y_rand_1 : y_rand_2);
 
         // set the boundaries of mobility
-        this->one_sta->boundaries = {ui->doubleSpinBox_8->value(), ui->doubleSpinBox_9->value(), ui->doubleSpinBox_10->value(), ui->doubleSpinBox_11->value()};
-        this->one_sta->time_change_interval = ui->doubleSpinBox_4->value();
-        this->one_sta->mode = ui->comboBox_2->currentText();
-        this->one_sta->distance_change_interval = ui->doubleSpinBox_5->value();
-        this->one_sta->random_velocity = ui->doubleSpinBox_7->value();
+        sta.boundaries = {ui->doubleSpinBox_8->value(), ui->doubleSpinBox_9->value(), ui->doubleSpinBox_10->value(), ui->doubleSpinBox_11->value()};
+        sta.time_change_interval = ui->doubleSpinBox_4->value();
+        sta.mode = ui->comboBox_2->currentText();
+        sta.distance_change_interval = ui->doubleSpinBox_5->value();
+        sta.random_velocity = ui->doubleSpinBox_7->value();
 
-        std::cout << "The boundaries of Sta is: " << this->one_sta->boundaries[0] << " " << this->one_sta->boundaries[1] << " " << this->one_sta->boundaries[2] << " " << this->one_sta->boundaries[3] << std::endl;
-        std::cout << "The time change interval of Sta is: " << this->one_sta->time_change_interval << std::endl;
-        std::cout << "The distance change interval of Sta is: " << this->one_sta->distance_change_interval << std::endl;
-        std::cout << "The random velocity of Sta is: " << this->one_sta->random_velocity << std::endl;
-        std::cout << "The mode of Sta is: " << this->one_sta->mode.toStdString() << std::endl;
+        std::cout << "The boundaries of AP is: " << sta.boundaries[0] << " " << sta.boundaries[1] << " " << sta.boundaries[2] << " " << sta.boundaries[3] << std::endl;
+        std::cout << "The time change interval of AP is: " << sta.time_change_interval << std::endl;
+        std::cout << "The distance change interval of AP is: " << sta.distance_change_interval << std::endl;
+        std::cout << "The random velocity of AP is: " << sta.random_velocity << std::endl;
+        std::cout << "The mode of AP is: " << sta.mode.toStdString() << std::endl;
 
         ui->tabWidget->setCurrentIndex(2);
-        this->one_sta->Mobility = true;
+        sta.Mobility = true;
         return;
     }
     // If not choosing the "random" mode,check if the conditions are valid
@@ -256,7 +256,7 @@ void node_config::on_pushButton_4_clicked()
         QMessageBox::critical(
             this,
             "Error",
-            "Please set the Position",
+            "Please set the position",
             QMessageBox::Ok);
     }
 
@@ -265,7 +265,7 @@ void node_config::on_pushButton_4_clicked()
         if (mobility_set)
         {
             ui->tabWidget->setCurrentIndex(2);
-            this->one_sta->Mobility = true;
+            sta.Mobility = true;
         }
 
         else
@@ -273,10 +273,152 @@ void node_config::on_pushButton_4_clicked()
             QMessageBox::critical(
                 this,
                 "Error",
-                "Please set the Mobility correctly",
+                "Please set the mobility correctly",
                 QMessageBox::Ok);
         }
     }
+}
+
+void node_config::Load_One_Config(Sta &one_sta)
+{
+    // set the channel number
+    one_sta.channel_number = ui->spinBox->value();
+    qint16 channel_number = ui->spinBox->value();
+
+    // set the frequency
+    if (ui->comboBox_3->currentText() == "5G")
+    {
+        one_sta.Frequency = 5000 + channel_number * 5;
+    }
+    else if (ui->comboBox_3->currentText() == "2.4G")
+    {
+        one_sta.Frequency = 2400 + (channel_number - 1) * 5;
+    }
+
+    // set the GI
+    QString GI_str = ui->comboBox_15->currentText();
+    if (ui->comboBox_3->currentText() == "5G")
+    {
+        one_sta.Frequency = 5000 + channel_number * 5;
+    }
+    else if (ui->comboBox_3->currentText() == "2.4G")
+    {
+        one_sta.Frequency = 2400 + (channel_number - 1) * 5;
+    }
+
+    if (ui->comboBox_15->currentText() == "400ns")
+    {
+        one_sta.GI = 400;
+    }
+    else if (ui->comboBox_15->currentText() == "800ns")
+    {
+        one_sta.GI = 800;
+    }
+    else if (ui->comboBox_15->currentText() == "1600ns")
+    {
+        one_sta.GI = 1600;
+    }
+    else if (ui->comboBox_15->currentText() == "3200ns")
+    {
+        one_sta.GI = 3200;
+    }
+
+    // set the bandwidth
+    one_sta.bandwidth = ui->comboBox_16->currentText().toShort();
+    // set the Tx power
+    one_sta.TxPower = ui->doubleSpinBox_6->value();
+    // set the Ssid
+    one_sta.Ssid = ui->lineEdit->text();
+    // set the phy_model
+    one_sta.Phy_model = ui->comboBox_4->currentText();
+    // set the Standard
+    one_sta.Standard = ui->comboBox_5->currentText();
+
+    // set the MaxMissedBeacons
+    one_sta.MaxMissedBeacons = ui->spinBox_4->value();
+    // set the ProbeRequestTimeout
+    one_sta.ProbeRequestTimeout = ui->spinBox_5->value();
+    // set the EnableAssocFailRetry
+    one_sta.EnableAssocFailRetry = ui->checkBox_7->isChecked();
+    // set the ActiveProbing
+    one_sta.active_probing = ui->checkBox_12->isChecked();
+    // set the Rts_Cts
+    one_sta.RtsCts = ui->checkBox_5->isChecked();
+    one_sta.RtsCts_Threshold = ui->spinBox_3->value();
+    // set the Rate_ctr_algo
+    one_sta.Rate_ctr_algo = ui->comboBox_7->currentText();
+    // set the TxQueue
+    one_sta.TxQueue = ui->comboBox_8->currentText();
+
+    // set the Qos
+    one_sta.Qos = ui->checkBox_6->isChecked();
+    one_sta.Edca = ui->comboBox_6->currentText();
+}
+
+void node_config::Get_Edca_Config(Sta &sta, Edca_config &edca_config)
+{
+    sta.AC_VO_cwmin = edca_config.AC_VO_cwmin;
+    sta.AC_VO_cwmax = edca_config.AC_VO_cwmax;
+    sta.AC_VO_AIFSN = edca_config.AC_VO_AIFSN;
+    sta.AC_VO_TXOP_LIMIT = edca_config.AC_VO_TXOP_LIMIT;
+
+    sta.AC_VI_cwmin = edca_config.AC_VI_cwmin;
+    sta.AC_VI_cwmax = edca_config.AC_VI_cwmax;
+    sta.AC_VI_AIFSN = edca_config.AC_VI_AIFSN;
+    sta.AC_VI_TXOP_LIMIT = edca_config.AC_VI_TXOP_LIMIT;
+
+    sta.AC_BE_cwmin = edca_config.AC_BE_cwmin;
+    sta.AC_BE_cwmax = edca_config.AC_BE_cwmax;
+    sta.AC_BE_AIFSN = edca_config.AC_BE_AIFSN;
+    sta.AC_BE_TXOP_LIMIT = edca_config.AC_BE_TXOP_LIMIT;
+
+    sta.AC_BK_cwmin = edca_config.AC_BK_cwmin;
+    sta.AC_BK_cwmax = edca_config.AC_BK_cwmax;
+    sta.AC_BK_AIFSN = edca_config.AC_BK_AIFSN;
+    sta.AC_BK_TXOP_LIMIT = edca_config.AC_BK_TXOP_LIMIT;
+
+    sta.Msdu_aggregation = edca_config.Msdu_aggregation;
+    sta.AMsdu_type = edca_config.AMsdu_type;
+    sta.MaxAMsduSize = edca_config.MaxAMsduSize;
+
+    sta.Mpdu_aggregation = edca_config.Mpdu_aggregation;
+    sta.AMpdu_type = edca_config.AMpdu_type;
+    sta.MaxAMpduSize = edca_config.MaxAMpduSize;
+    sta.Density = edca_config.Density;
+}
+
+void node_config::Get_Antenna_Config(Sta &sta, Antenna &antenna_config)
+{
+    // set the Antenna
+    std::cout << "the number of antenna is: " << antenna_config.antenna_list.size() << std::endl;
+
+    if (antenna_config.AntennaCount() == 0)
+    {
+        QMessageBox::critical(
+            this,
+            "Error",
+            "Please set the antenna",
+            QMessageBox::Ok);
+        return;
+    }
+
+    std::cout << antenna_config.antenna_list[0]->Antenna_type.toStdString() << std::endl;
+    for (auto item : antenna_config.antenna_list)
+    {
+        sta.Antenna_list.push_back(std::move(item));
+    }
+}
+
+// Page1_Finished
+void node_config::on_pushButton_clicked()
+{
+    emit Page1();
+}
+
+// Page2_Finished
+void node_config::on_pushButton_4_clicked()
+{
+    emit Page2();
 }
 
 // Page1_Random_Position
@@ -365,13 +507,13 @@ void node_config::on_checkBox_6_clicked(bool checked)
 // Edca_Config
 void node_config::on_pushButton_8_clicked()
 {
-    this->edca_page->show();
+    emit Edca_to_config();
 }
 
 // Antenna_Config
 void node_config::on_pushButton_9_clicked()
 {
-    this->antenna_page->show();
+    emit Antenna_to_config();
 }
 
 // Page3_Finished
@@ -387,130 +529,10 @@ void node_config::on_pushButton_6_clicked()
         return;
     }
 
-    // set the channel number
-    this->one_sta->channel_number = ui->spinBox->value();
-    qint16 channel_number = ui->spinBox->value();
-
-    // set the frequency
-    if (ui->comboBox_3->currentText() == "5G")
-    {
-        this->one_sta->Frequency = 5000 + channel_number * 5;
-    }
-    else if (ui->comboBox_3->currentText() == "2.4G")
-    {
-        this->one_sta->Frequency = 2400 + (channel_number - 1) * 5;
-    }
-
-    // set the GI
-    QString GI_str = ui->comboBox_15->currentText();
-    if (ui->comboBox_3->currentText() == "5G")
-    {
-        this->one_sta->Frequency = 5000 + channel_number * 5;
-    }
-    else if (ui->comboBox_3->currentText() == "2.4G")
-    {
-        this->one_sta->Frequency = 2400 + (channel_number - 1) * 5;
-    }
-
-    if (ui->comboBox_15->currentText() == "400ns")
-    {
-        this->one_sta->GI = 400;
-    }
-    else if (ui->comboBox_15->currentText() == "800ns")
-    {
-        this->one_sta->GI = 800;
-    }
-    else if (ui->comboBox_15->currentText() == "1600ns")
-    {
-        this->one_sta->GI = 1600;
-    }
-    else if (ui->comboBox_15->currentText() == "3200ns")
-    {
-        this->one_sta->GI = 3200;
-    }
-
-    // set the bandwidth
-    this->one_sta->bandwidth = ui->comboBox_16->currentText().toShort();
-    // set the Tx power
-    this->one_sta->TxPower = ui->doubleSpinBox_6->value();
-    // set the Ssid
-    this->one_sta->Ssid = ui->lineEdit->text();
-    // set the phy_model
-    this->one_sta->Phy_model = ui->comboBox_4->currentText();
-    // set the Standard
-    this->one_sta->Standard = ui->comboBox_5->currentText();
-
-    // set the MaxMissedBeacons
-    this->one_sta->MaxMissedBeacons = ui->spinBox_4->value();
-    // set the ProbeRequestTimeout
-    this->one_sta->ProbeRequestTimeout = ui->spinBox_5->value();
-    // set the EnableAssocFailRetry
-    this->one_sta->EnableAssocFailRetry = ui->checkBox_7->isChecked();
-    // set the ActiveProbing
-    this->one_sta->active_probing = ui->checkBox_12->isChecked();
-    // set the Rts_Cts
-    this->one_sta->RtsCts = ui->checkBox_5->isChecked();
-    this->one_sta->RtsCts_Threshold = ui->spinBox_3->value();
-    // set the Rate_ctr_algo
-    this->one_sta->Rate_ctr_algo = ui->comboBox_7->currentText();
-    // set the TxQueue
-    this->one_sta->TxQueue = ui->comboBox_8->currentText();
-
-    // set the Qos
-    this->one_sta->Qos = ui->checkBox_6->isChecked();
-    this->one_sta->Edca = ui->comboBox_6->currentText();
-
-    this->one_sta->AC_VO_cwmin = this->edca_page->AC_VO_cwmin;
-    this->one_sta->AC_VO_cwmax = this->edca_page->AC_VO_cwmax;
-    this->one_sta->AC_VO_AIFSN = this->edca_page->AC_VO_AIFSN;
-    this->one_sta->AC_VO_TXOP_LIMIT = this->edca_page->AC_VO_TXOP_LIMIT;
-
-    this->one_sta->AC_VI_cwmin = this->edca_page->AC_VI_cwmin;
-    this->one_sta->AC_VI_cwmax = this->edca_page->AC_VI_cwmax;
-    this->one_sta->AC_VI_AIFSN = this->edca_page->AC_VI_AIFSN;
-    this->one_sta->AC_VI_TXOP_LIMIT = this->edca_page->AC_VI_TXOP_LIMIT;
-
-    this->one_sta->AC_BE_cwmin = this->edca_page->AC_BE_cwmin;
-    this->one_sta->AC_BE_cwmax = this->edca_page->AC_BE_cwmax;
-    this->one_sta->AC_BE_AIFSN = this->edca_page->AC_BE_AIFSN;
-    this->one_sta->AC_BE_TXOP_LIMIT = this->edca_page->AC_BE_TXOP_LIMIT;
-
-    this->one_sta->AC_BK_cwmin = this->edca_page->AC_BK_cwmin;
-    this->one_sta->AC_BK_cwmax = this->edca_page->AC_BK_cwmax;
-    this->one_sta->AC_BK_AIFSN = this->edca_page->AC_BK_AIFSN;
-    this->one_sta->AC_BK_TXOP_LIMIT = this->edca_page->AC_BK_TXOP_LIMIT;
-
-    this->one_sta->Msdu_aggregation = this->edca_page->Msdu_aggregation;
-    this->one_sta->AMsdu_type = this->edca_page->AMsdu_type;
-    this->one_sta->MaxAMsduSize = this->edca_page->MaxAMsduSize;
-
-    this->one_sta->Mpdu_aggregation = this->edca_page->Mpdu_aggregation;
-    this->one_sta->AMpdu_type = this->edca_page->AMpdu_type;
-    this->one_sta->MaxAMpduSize = this->edca_page->MaxAMpduSize;
-    this->one_sta->Density = this->edca_page->Density;
-
-    // set the Antenna
-    std::cout << "the number of antenna is: " << this->antenna_page->antenna_list.size() << std::endl;
-
-    if (this->antenna_page->AntennaCount() == 0)
-    {
-        QMessageBox::critical(
-            this,
-            "Error",
-            "Please set the antenna",
-            QMessageBox::Ok);
-        return;
-    }
-
-    std::cout << this->antenna_page->antenna_list[0]->Antenna_type.toStdString() << std::endl;
-    for (auto item : this->antenna_page->antenna_list)
-    {
-        this->one_sta->Antenna_list.push_back(std::move(item));
-    }
-
     phymac_set = true;
     ui->tabWidget->setTabEnabled(3, true);
-    if (!this->one_sta->Qos)
+
+    if (!ui->checkBox_6->isChecked())
     {
         ui->checkBox_8->setEnabled(false);
         ui->comboBox_11->setEnabled(false);
@@ -554,11 +576,13 @@ bool node_config::Integrity_Check()
 }
 
 // Add one traffic
-void node_config::on_pushButton_2_clicked()
+void node_config::Get_Traffic_Config(Sta &sta)
 {
-    if (ui->tableWidget->rowCount() == 1 && ui->tableWidget->item(0, 1) == nullptr)
+    if (ui->tableWidget->rowCount() == 1 &&
+        ui->tableWidget->item(0, 0) &&
+        ui->tableWidget->item(0, 0)->text().isEmpty())
     {
-        ui->tableWidget->setRowCount(0);
+        ui->tableWidget->removeRow(0);
     }
     // Information to be shown in the table
     QString FlowId = ui->lineEdit_2->text();
@@ -623,16 +647,22 @@ void node_config::on_pushButton_2_clicked()
     ui->tableWidget->setItem(lastrow, 4, new QTableWidgetItem(Direction));
 
     // Insert the data structure into the vector
-    this->one_sta->Traffic_list.push_back(new_traffic);
+    sta.Traffic_list.push_back(new_traffic);
+}
+void node_config::on_pushButton_2_clicked()
+{
+    emit Traffic_Set();
 }
 
 // Delete one traffic
 void node_config::on_pushButton_3_clicked()
 {
-    int rowCount = ui->tableWidget->rowCount() - 1;
-    if (rowCount < 0)
-        return;
-    ui->tableWidget->removeRow(rowCount);
+    int row = ui->tableWidget->rowCount() - 1;
+    if (row < 0) return;
+
+    ui->tableWidget->removeRow(row);
+
+    emit RemoveLastTraffic();
 }
 
 // Page4_Traffic_Finished
@@ -660,9 +690,7 @@ void node_config::on_pushButton_7_clicked()
         return;
     }
 
+    emit LoadOneStaConfig();
     StaIndex++;
-    this->json_helper->SetStaToJson(this->one_sta.get(), StaIndex);
-    this->one_sta->Traffic_list.clear();
-    this->one_sta->Antenna_list.clear();
     emit Finish_setting_sta();
 }

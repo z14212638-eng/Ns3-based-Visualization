@@ -17,6 +17,7 @@ Page1_model_chose::Page1_model_chose(QWidget *parent)
     ui->textBrowser_2->document()->setDefaultFont(
     ui->textBrowser_2->font());
 
+    ui->label_3->installEventFilter(this);
 }
 
 QString Page1_model_chose::GetSceneName()
@@ -65,7 +66,7 @@ void Page1_model_chose::on_pushButton_5_clicked()
         ui->textBrowser->append(name);
 
     ui->label_3->setPixmap(QPixmap(
-        "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/Test_Design_1/PPDU_TIMELINE/ppdu_timeline.png"));
+        "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/Test_Design_1/PPDU_TIMELINE/picture.png"));
     ui->label_3->setAlignment(Qt::AlignCenter);
     ui->label_3->setScaledContents(true);
 }
@@ -75,9 +76,7 @@ void Page1_model_chose::on_pushButton_3_clicked()
 {
     if (ui->checkBox->isChecked())
     {
-        this->close();
-        this->simu_config->showMaximized();
-        ;
+        emit ConfigSimulation();
     }
     else
     {
@@ -89,8 +88,25 @@ void Page1_model_chose::on_checkBox_checkStateChanged(const Qt::CheckState &arg1
 {
     if(arg1==Qt::Checked)
     {
-        this->hide();
-        this->simu_config->showMaximized();
+        emit ConfigSimulation();
     }
+}
+
+
+bool Page1_model_chose::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == ui->label_3 &&
+        event->type() == QEvent::MouseButtonDblClick)
+    {
+        QPixmap pix = ui->label_3->pixmap();
+        if (!pix.isNull())
+        {
+            ImageViewer *viewer = new ImageViewer(pix);
+            viewer->setAttribute(Qt::WA_DeleteOnClose);
+            viewer->show();
+        }
+        return true;
+    }
+    return QWidget::eventFilter(obj, event);
 }
 

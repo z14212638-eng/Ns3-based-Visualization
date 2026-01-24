@@ -30,12 +30,17 @@ class PpduTimelineView : public QWidget
     Q_OBJECT
 public:
     explicit PpduTimelineView(QWidget *parent = nullptr);
-
+    ~PpduTimelineView();
+    
+    void enableQuitButton(bool enable);  // 控制按钮
+    void stopTimeline();                  // 停止 timeline/线程
+    
     void append(const PpduVisualItem &ppdu);
     void clear();
 
 signals:
     void timelineClosed();
+    void quit_simulation();
 
 protected:
     void paintEvent(QPaintEvent *) override;
@@ -95,6 +100,7 @@ private:
     QPushButton *m_btnSave = nullptr;
     QPushButton *m_btnLegend = nullptr;
     QPushButton *m_btnSetTimeRange = nullptr;
+    QPushButton *quitButton = nullptr;
 
     PpduInfoOverlay *m_overlay = nullptr;
     LegendOverlay *m_legendOverlay = nullptr;
