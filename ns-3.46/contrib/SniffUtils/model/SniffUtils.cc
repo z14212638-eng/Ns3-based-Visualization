@@ -101,6 +101,33 @@ SniffUtils::Initialize(NetDeviceContainer sender,
     return true;
 }
 
+uint8_t FreqToChannel(double freqMHz)
+{
+    if (freqMHz >= 2412 && freqMHz <= 2484)   
+        return static_cast<uint8_t>((freqMHz - 2407) / 5);
+    else if (freqMHz >= 5180 && freqMHz <= 5825)
+        return static_cast<uint8_t>((freqMHz - 5000) / 5);
+    else if (freqMHz >= 5955 && freqMHz <= 7115)
+        return static_cast<uint8_t>((freqMHz - 5955) / 5);
+    return 0; 
+}
+
+uint8_t GetPpduPrimaryChannel(const Ptr<const WifiPpdu>& ppdu)
+{
+    std::vector<MHz_u> freqs = ppdu->GetTxCenterFreqs();
+    if (freqs.empty()) return 0;
+
+    double centerFreq = freqs[0]; // 主中心频率
+    return FreqToChannel(centerFreq);
+}
+
+
+/**
+ * @brief Finally tag the PPDU with the result of the sniffing.
+ * @attention We can not deduce the result of the rx when we start sniffing,so waiting until the end of the PPDU to tag it.
+ *
+ * @param id find the PPDU by its id.
+ */
 void
 SniffUtils::Finalize_Tag_PPDU(ppdu_id_t id)
 {
@@ -242,29 +269,39 @@ SniffUtils::Sniff_tx_all_packets(Ptr<const Packet> packet,
 void
 SniffUtils::Sniff_ppdu_begin(Ptr<const WifiPpdu> ppdu, const WifiTxVector& tx_vector)
 {
-    // Ptr<const WifiPsdu> psdu = ppdu->GetPsdu();
-    // if (psdu)
-    // {
-    //     WifiMacHeader mac_header = psdu->GetHeader(0);
-    //     NS_LOG_UNCOND(mac_header.GetTypeString());
-    // }
+    /*Initialize Check*/
     if (!m_initialized)
     {
         std::cout << "SniffUtils not initialized" << std::endl;
         return;
     }
 
+    /*Initalize & Separate the PPDU*/
     PPDU_Meta meta{};
+
+    /*Get Psdu*/
     Ptr<const WifiPsdu> psdu_sample = ppdu->GetPsdu();
+
+    /*Get TxVector*/
     const WifiTxVector tx_vector_sample = ppdu->GetTxVector();
 
-    meta.id = m_next_ppdu_id++;
-
-    meta.frame_type = static_cast<uint8_t>(psdu_sample->GetHeader(0).GetType());
-
+    /*Get Mode*/
     WifiMode mode = tx_vector_sample.GetMode();
+
+    /*Get ModulationClass*/
     WifiModulationClass modClass = mode.GetModulationClass();
 
+    /*PPDU ID*/
+    meta.id = m_next_ppdu_id++;
+
+    /*Channel ID*/
+    uint8_t channels = GetPpduPrimaryChannel(ppdu);
+    meta.channel_id = channels;
+
+    /*Frame_Type*/
+    meta.frame_type = static_cast<uint8_t>(psdu_sample->GetHeader(0).GetType());
+
+    /*MCS*/
     if (modClass == WIFI_MOD_CLASS_HT || modClass == WIFI_MOD_CLASS_VHT ||
         modClass == WIFI_MOD_CLASS_HE || modClass == WIFI_MOD_CLASS_EHT)
     {
@@ -275,21 +312,28 @@ SniffUtils::Sniff_ppdu_begin(Ptr<const WifiPpdu> ppdu, const WifiTxVector& tx_ve
         meta.mcs = -1; // legacy / control / management
     }
 
+    /*MPDU_AGGRE*/
     meta.mpdu_aggregation = psdu_sample->GetNMpdus();
+
+    /*Size*/
     meta.size_bytes = psdu_sample->GetSize() + psdu_sample->GetHeader(0).GetSize();
 
+    /*Address*/
     psdu_sample->GetHeader(0).GetAddr2().CopyTo(meta.sender);
     psdu_sample->GetHeader(0).GetAddr1().CopyTo(meta.receiver);
 
+    /*TIME*/
     meta.tx_start_ns = Simulator::Now().GetNanoSeconds();
     Time duration = ppdu->GetTxDuration();
     meta.tx_duration_ns = duration.GetNanoSeconds();
     meta.tx_end_ns = meta.tx_start_ns + meta.tx_duration_ns;
 
+    /*RX_state*/
     meta.rx_state = 0;       // not received
     meta.rx_fail_reason = 0; // no failure
 
     std::cout << "PPDU[UNCOMPLETED] " << meta.id << " written to shared memory" << std::endl;
+
     // Write it (uncomplished) into the ring buffer
     AppendPpdu(m_ring, meta);
 
@@ -377,6 +421,7 @@ SniffUtils::PrintPpduMeta(uint32_t ring_index) const
     std::cout << "\n========== PPDU META ==========\n";
     std::cout << "ID            : " << m.id << "\n";
     std::cout << "STA ID        : " << m.sta_id << "\n";
+    std::cout << "Channel ID    : " << static_cast<int>(m.channel_id) << "\n";
 
     std::cout << "Frame Type    : " << static_cast<int>(m.frame_type) << "\n";
     std::cout << "MCS           : " << static_cast<int>(m.mcs) << "\n";

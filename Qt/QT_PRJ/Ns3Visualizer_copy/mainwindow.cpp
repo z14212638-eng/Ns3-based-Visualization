@@ -2,203 +2,262 @@
 #include "ui_mainwindow.h"
 
 #include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QToolBar>
-#include <QStatusBar>
 #include <QLabel>
 #include <QStackedWidget>
-#include <qthreadpool.h>
+#include <QStatusBar>
+#include <QToolBar>
+#include <QVBoxLayout>
 #include <qcombobox.h>
+#include <qthreadpool.h>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
-{
-        ui->setupUi(this);
+    : QMainWindow(parent), ui(new Ui::MainWindow) {
+  ui->setupUi(this);
 
-        /* ================== ToolBar ================== */
-        QToolBar *topToolBar = new QToolBar("Top Toolbar", this);
-        addToolBar(Qt::TopToolBarArea, topToolBar);
-        homeAction = topToolBar->addAction("Home");
-        connect(homeAction, &QAction::triggered, this, [=]()
-                { switchTo(0); });
-        topToolBar->addAction("Settings");
+  /* ================== ToolBar ================== */
+  QToolBar *topToolBar = new QToolBar("Top Toolbar", this);
+  addToolBar(Qt::TopToolBarArea, topToolBar);
+  homeAction = topToolBar->addAction("Home");
+  connect(homeAction, &QAction::triggered, this, [=]() { switchTo(0); });
+  topToolBar->addAction("Settings");
 
-        /* ================== Central Widget ================== */
-        QWidget *central = new QWidget(this);
-        setCentralWidget(central);
+  /* ================== Central Widget ================== */
+  QWidget *central = new QWidget(this);
+  setCentralWidget(central);
 
-        QHBoxLayout *mainLayout = new QHBoxLayout(central);
-        mainLayout->setContentsMargins(0, 0, 0, 0);
+  QHBoxLayout *mainLayout = new QHBoxLayout(central);
+  mainLayout->setContentsMargins(0, 0, 0, 0);
 
-        /* ================== Left Sidebar ================== */
-        QWidget *leftSidebar = new QWidget(central);
-        leftSidebar->setFixedWidth(150);
+  /* ================== Left Sidebar ================== */
+  QWidget *leftSidebar = new QWidget(central);
+  leftSidebar->setFixedWidth(150);
 
-        QVBoxLayout *leftLayout = new QVBoxLayout(leftSidebar);
-        leftLayout->addWidget(new QLabel("Left Panel"));
-        leftLayout->addStretch();
+  QVBoxLayout *leftLayout = new QVBoxLayout(leftSidebar);
+  leftLayout->addWidget(new QLabel("Left Panel"));
+  leftLayout->addStretch();
 
-        /* ================== Right Sidebar ================== */
-        QWidget *rightSidebar = new QWidget(central);
-        rightSidebar->setFixedWidth(150);
+  /* ================== Right Sidebar ================== */
+  QWidget *rightSidebar = new QWidget(central);
+  rightSidebar->setFixedWidth(150);
 
-        QVBoxLayout *rightLayout = new QVBoxLayout(rightSidebar);
-        rightLayout->addWidget(new QLabel("Right Panel"));
-        rightLayout->addStretch();
+  QVBoxLayout *rightLayout = new QVBoxLayout(rightSidebar);
+  rightLayout->addWidget(new QLabel("Right Panel"));
+  rightLayout->addStretch();
 
-        /* ================== StackedWidget (核心) ================== */
-        stack = new QStackedWidget(central);
+  /* ================== StackedWidget (核心) ================== */
+  stack = new QStackedWidget(central);
 
-        /* ================== Pages ================== */
-        page1 = new Page1_model_chose(this);
-        simuConfig = new Simu_Config(this);
-        nodeConfigPage = new node_config(this);
-        apConfigPage = new Ap_config(this);
-        edcaConfig = new Edca_config(this);
-        antenna = new Antenna(this);
+  /* ================== Pages ================== */
+  page1 = new Page1_model_chose(this);
+  simuConfig = new Simu_Config(this);
+  nodeConfigPage = new node_config(this);
+  apConfigPage = new Ap_config(this);
+  edcaConfig = new Edca_config(this);
+  antenna = new Antenna(this);
+  timelineDisplay = new Timeline_Display(this);
 
-        stack->addWidget(page1);          // index 0
-        stack->addWidget(simuConfig);     // index 1
-        stack->addWidget(nodeConfigPage); // index 2
-        stack->addWidget(apConfigPage);   // index 3
-        stack->addWidget(edcaConfig);     // index 4
-        stack->addWidget(antenna);        // index 5
+  stack->addWidget(page1);           // index 0
+  stack->addWidget(simuConfig);      // index 1
+  stack->addWidget(nodeConfigPage);  // index 2
+  stack->addWidget(apConfigPage);    // index 3
+  stack->addWidget(edcaConfig);      // index 4
+  stack->addWidget(antenna);         // index 5
+  stack->addWidget(timelineDisplay); // index 6
 
-        switchTo(0);
+  switchTo(0);
 
-        /* ================== Layout Assemble ================== */
-        mainLayout->addWidget(leftSidebar);
-        mainLayout->addWidget(stack, 1);
-        mainLayout->addWidget(rightSidebar);
+  /* ================== Layout Assemble ================== */
+  mainLayout->addWidget(leftSidebar);
+  mainLayout->addWidget(stack, 1);
+  mainLayout->addWidget(rightSidebar);
 
-        /* ================== Signal & Slot ================== */
+  /* ================== Signal & Slot ================== */
 
-        /*Page_1_model_chose*/
-        connect(page1, &Page1_model_chose::BackToMain, this, [=]()
-                { switchTo(0); });
+  /*Page_1_model_chose*/
+  connect(page1, &Page1_model_chose::BackToMain, this, [=]() { switchTo(0); });
 
-        connect(page1, &Page1_model_chose::ConfigSimulation, this, [=]()
-                { switchTo(1); });
-        /*Simu_Config*/
-        connect(simuConfig, &Simu_Config::BackToLastPage, this, [=]()
-                { switchTo(0); });
+  connect(page1, &Page1_model_chose::ConfigSimulation, this,
+          [=]() { switchTo(1); });
+  /*Simu_Config*/
+  connect(simuConfig, &Simu_Config::BackToLastPage, this,
+          [=]() { switchTo(0); });
 
-        connect(simuConfig, &Simu_Config::Building_Set, this, [=]()
-                { simuConfig->Write_building_into_config(buildingConfig, *apConfigPage, *nodeConfigPage); });
+  connect(simuConfig, &Simu_Config::Building_Set, this, [=]() {
+    simuConfig->Write_building_into_config(buildingConfig, *apConfigPage,
+                                           *nodeConfigPage);
+  });
 
-        connect(simuConfig, &Simu_Config::update, this, [=]()
-                { simuConfig->Update_json_map(jsonhelper); });
+  connect(simuConfig, &Simu_Config::update, this,
+          [=]() { simuConfig->Update_json_map(jsonhelper); });
 
-        connect(simuConfig, &Simu_Config::LoadGeneralConfig, this, [=]()
-                { simuConfig->Load_General_Json(jsonhelper); });
+  connect(simuConfig, &Simu_Config::LoadGeneralConfig, this,
+          [=]() { simuConfig->Load_General_Json(jsonhelper); });
 
-        connect(simuConfig, &Simu_Config::CreateAndStartThread, this, [=]()
-                { simuConfig->Create_And_StartThread(); });
+  connect(simuConfig, &Simu_Config::CreateAndStartThread, this, [=]() {
+    auto *tv = timelineDisplay->timelineView();
+    tv->Num_ap = simuConfig->Num_ap;
+    tv->Num_sta = simuConfig->Num_sta;
+    tv->clear();
+    simuConfig->Create_And_StartThread();
 
-        connect(simuConfig, &Simu_Config::AddAp, this, [=]()
-                { switchTo(3); });
+    switchTo(6);
+  });
 
-        connect(simuConfig, &Simu_Config::AddSta, this, [=]()
-                { switchTo(2); });
+  connect(simuConfig, &Simu_Config::AddAp, this, [=]() { switchTo(3); });
 
-        /*Ap_Config*/
-        connect(apConfigPage, &Ap_config::Finish_setting_ap, this, [=]()
-                { switchTo(1); });
+  connect(simuConfig, &Simu_Config::AddSta, this, [=]() { switchTo(2); });
 
-        connect(apConfigPage, &Ap_config::Page1, this, [=]()
-                { apConfigPage->setPosition(ap_now); });
-        connect(apConfigPage, &Ap_config::Page2, this, [=]()
-                { apConfigPage->setMobility(ap_now); });
-        connect(apConfigPage, &Ap_config::Edca_to_config, this, [=]()
-                { switchTo(4); });
+  /*Ap_Config*/
+  connect(apConfigPage, &Ap_config::Finish_setting_ap, this,
+          [=]() { switchTo(1); });
 
-        connect(apConfigPage, &Ap_config::Antenna_to_config, this, [=]()
-                { switchTo(5); });
+  connect(apConfigPage, &Ap_config::Page1, this,
+          [=]() { apConfigPage->setPosition(ap_now); });
+  connect(apConfigPage, &Ap_config::Page2, this,
+          [=]() { apConfigPage->setMobility(ap_now); });
+  connect(apConfigPage, &Ap_config::Edca_to_config, this,
+          [=]() { switchTo(4); });
 
-        connect(apConfigPage, &Ap_config::Traffic_Set, this, [=]()
-                { apConfigPage->Get_Traffic_Config(ap_now); });
+  connect(apConfigPage, &Ap_config::Antenna_to_config, this,
+          [=]() { switchTo(5); });
 
-        connect(apConfigPage, &Ap_config::RemoveLastTraffic, this, [=]()
-                {
-                if (!ap_now.Traffic_list.empty())
-                ap_now.Traffic_list.pop_back(); });
+  connect(apConfigPage, &Ap_config::Traffic_Set, this,
+          [=]() { apConfigPage->Get_Traffic_Config(ap_now); });
 
-        connect(apConfigPage, &Ap_config::LoadOneApConfig, this, [=]()
-                { apConfigPage->Load_One_Config(this->ap_now);
-                  apConfigPage->Get_Edca_Config(ap_now, *(edcaConfig));
-                  apConfigPage->Get_Antenna_Config(ap_now, *(antenna));
-                  jsonhelper.SetApToJson(&ap_now, apConfigPage->ApIndex);
-                  ap_now.Traffic_list.clear();
-                  ap_now.Antenna_list.clear();
-                  emit simuConfig->update(); });
+  connect(apConfigPage, &Ap_config::RemoveLastTraffic, this, [=]() {
+    if (!ap_now.Traffic_list.empty())
+      ap_now.Traffic_list.pop_back();
+  });
 
-        /*Sta_Config*/
-        connect(nodeConfigPage, &node_config::Finish_setting_sta, this, [=]()
-                { switchTo(1); });
-        connect(nodeConfigPage, &node_config::Page1, this, [=]()
-                { nodeConfigPage->setPosition(sta_now); });
-        connect(nodeConfigPage, &node_config::Page2, this, [=]()
-                { nodeConfigPage->setMobility(sta_now); });
-        connect(nodeConfigPage, &node_config::Edca_to_config, this, [=]()
-                { switchTo(4); });
-        connect(nodeConfigPage, &node_config::Antenna_to_config, this, [=]()
-                { switchTo(5); });
-        connect(nodeConfigPage, &node_config::Traffic_Set, this, [=]()
-                { nodeConfigPage->Get_Traffic_Config(sta_now); });
-                
-        connect(apConfigPage, &Ap_config::RemoveLastTraffic, this, [=]()
-                {
-                if (!ap_now.Traffic_list.empty())
-                ap_now.Traffic_list.pop_back(); });
+  connect(apConfigPage, &Ap_config::LoadOneApConfig, this, [=]() {
+    apConfigPage->Load_One_Config(this->ap_now);
+    apConfigPage->Get_Edca_Config(ap_now, *(edcaConfig));
+    apConfigPage->Get_Antenna_Config(ap_now, *(antenna));
+    jsonhelper.SetApToJson(&ap_now, apConfigPage->ApIndex);
+    ap_now.Traffic_list.clear();
+    ap_now.Antenna_list.clear();
+    emit simuConfig->update();
+  });
 
-        connect(nodeConfigPage, &node_config::LoadOneStaConfig, this, [=]()
-                { 
-                    nodeConfigPage->Load_One_Config(sta_now);
-                    nodeConfigPage->Get_Edca_Config(sta_now, *edcaConfig);
-                    nodeConfigPage->Get_Antenna_Config(sta_now, *antenna);
-                    jsonhelper.SetStaToJson(&sta_now, nodeConfigPage->StaIndex);
-                    sta_now.Traffic_list.clear();
-                    sta_now.Antenna_list.clear();
-                    emit simuConfig->update(); });
+  /*Sta_Config*/
+  connect(nodeConfigPage, &node_config::Finish_setting_sta, this,
+          [=]() { switchTo(1); });
+  connect(nodeConfigPage, &node_config::Page1, this,
+          [=]() { nodeConfigPage->setPosition(sta_now); });
+  connect(nodeConfigPage, &node_config::Page2, this,
+          [=]() { nodeConfigPage->setMobility(sta_now); });
+  connect(nodeConfigPage, &node_config::Edca_to_config, this,
+          [=]() { switchTo(4); });
+  connect(nodeConfigPage, &node_config::Antenna_to_config, this,
+          [=]() { switchTo(5); });
+  connect(nodeConfigPage, &node_config::Traffic_Set, this,
+          [=]() { nodeConfigPage->Get_Traffic_Config(sta_now); });
 
-        /*Edca_Config*/
-        connect(edcaConfig, &Edca_config::BackToLastPage, this, [=]()
-                { back(); });
+  connect(apConfigPage, &Ap_config::RemoveLastTraffic, this, [=]() {
+    if (!ap_now.Traffic_list.empty())
+      ap_now.Traffic_list.pop_back();
+  });
 
-        /*Antenna_Config*/
-        connect(antenna, &Antenna::BackToLastPage, this, [=]()
-                { back(); });
-        /* ================== Status Bar ================== */
-        QStatusBar *status = new QStatusBar(this);
-        setStatusBar(status);
-        status->showMessage("Ready");
+  connect(nodeConfigPage, &node_config::LoadOneStaConfig, this, [=]() {
+    nodeConfigPage->Load_One_Config(sta_now);
+    nodeConfigPage->Get_Edca_Config(sta_now, *edcaConfig);
+    nodeConfigPage->Get_Antenna_Config(sta_now, *antenna);
+    jsonhelper.SetStaToJson(&sta_now, nodeConfigPage->StaIndex);
+    sta_now.Traffic_list.clear();
+    sta_now.Antenna_list.clear();
+    emit simuConfig->update();
+  });
 
-        showMaximized();
+  /*Edca_Config*/
+  connect(edcaConfig, &Edca_config::BackToLastPage, this, [=]() { back(); });
+
+  /*Antenna_Config*/
+  connect(antenna, &Antenna::BackToLastPage, this, [=]() { back(); });
+
+  /*Timeline_Display*/
+  connect(simuConfig, &Simu_Config::ppduReady, timelineDisplay->timelineView(),
+          &PpduTimelineView::append, Qt::QueuedConnection);
+  /*Timeline_Display*/
+  connect(timelineDisplay->timelineView(), &PpduTimelineView::quit_simulation,
+          this, [=]() {
+            qDebug() << "[MainWindow] quit_simulation received";
+
+            if (simuConfig) {
+              simuConfig->requestCleanup();
+            }
+            switchTo(0);
+            resetMain();
+          });
+
+  /* ================== Status Bar ================== */
+  QStatusBar *status = new QStatusBar(this);
+  setStatusBar(status);
+  status->showMessage("Ready");
+
+  showMaximized();
 }
-MainWindow::~MainWindow()
-{
-        qDebug() << "MainWindow destroyed";
-        QThreadPool::globalInstance()->clear(); // 取消未开始任务
+MainWindow::~MainWindow() {
+  qDebug() << "MainWindow destroyed";
+  QThreadPool::globalInstance()->clear(); // 取消未开始任务
 }
 
-void MainWindow::switchTo(int index)
-{
-        history.push(stack->currentIndex());
-        stack->setCurrentIndex(index);
+void MainWindow::switchTo(int index) {
+  history.push(stack->currentIndex());
+  stack->setCurrentIndex(index);
 }
 
-void MainWindow::back()
-{
-        if (!history.isEmpty())
-                stack->setCurrentIndex(history.pop());
+void MainWindow::back() {
+  if (!history.isEmpty())
+    stack->setCurrentIndex(history.pop());
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-        qDebug() << "MainWindow closeEvent";
+void MainWindow::closeEvent(QCloseEvent *event) {
+  qDebug() << "MainWindow closeEvent";
 
-        // 取消未开始的线程任务
-        QThreadPool::globalInstance()->clear();
+  // 取消未开始的线程任务
+  QThreadPool::globalInstance()->clear();
 
-        event->accept();
+  event->accept();
 }
+
+void MainWindow::resetMain()
+{
+    qDebug() << "[MainWindow] resetMain()";
+
+    // ===============================
+    // 1️⃣ 清空导航历史
+    // ===============================ap
+    history.clear();
+
+    // ===============================
+    // 2️⃣ 停止 & reset 仿真核心页
+    // ===============================
+    if (simuConfig) {
+        simuConfig->resetPage();
+    }
+
+    // ===============================
+    // 3️⃣ reset 所有页面（UI 状态）
+    // ===============================
+    if (page1) page1->resetPage();
+    if (nodeConfigPage) nodeConfigPage->resetPage();
+    if (apConfigPage) apConfigPage->resetPage();
+    if (edcaConfig) edcaConfig->resetPage();
+    if (antenna) antenna->resetPage();
+    if (timelineDisplay) timelineDisplay->resetPage();
+
+    // ===============================
+    // 4️⃣ 清空运行期数据结构
+    // ===============================
+    ap_now = Ap{};
+    sta_now = Sta{};
+    buildingConfig = BuildingConfig{};
+    jsonhelper.reset(); 
+    // ===============================
+    // 5️⃣ 回到首页
+    // ===============================
+    stack->setCurrentIndex(0);
+
+    qDebug() << "[MainWindow] resetAll() done";
+}
+

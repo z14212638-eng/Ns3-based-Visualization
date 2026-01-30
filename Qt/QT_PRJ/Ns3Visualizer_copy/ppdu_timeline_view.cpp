@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QToolTip>
 
 #include <algorithm>
 #include <complex>
@@ -30,7 +31,8 @@ static constexpr int kRangeBarMargin = 10;
 /* ======================== Constructor ======================== */
 
 PpduTimelineView::PpduTimelineView(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent),
+      m_rowMode(TimelineRowMode::ByAp) // ★ NEW
 {
     setMouseTracking(true);
 
@@ -49,11 +51,20 @@ PpduTimelineView::PpduTimelineView(QWidget *parent)
     connect(m_btnSetTimeRange, &QPushButton::clicked,
             this, &PpduTimelineView::onSetTimeRange);
 
-    QPushButton *quitButton = new QPushButton("QUIT", this);
-    quitButton->setFixedSize(120, 30);
-    quitButton->move(76, 8);
+    // ★ NEW: Channel View Button
+    m_btnChannel = new QPushButton("CH", this);
+    m_btnChannel->setFixedSize(32, 26);
+    m_btnChannel->move(76, 8);
+    connect(m_btnChannel, &QPushButton::clicked,
+            this, &PpduTimelineView::onToggleChannelView);
 
-    connect(quitButton, &QPushButton::clicked, this, &PpduTimelineView::quit_simulation);
+    quitButton = new QPushButton("QUIT", this);
+
+    quitButton->setFixedSize(120, 30);
+    quitButton->move(112, 8);
+
+    connect(quitButton, &QPushButton::clicked,
+            this, &PpduTimelineView::quit_simulation);
 
     m_btnLegend = new QPushButton("ⓘ", this);
     m_btnLegend->setFixedSize(26, 26);
@@ -68,24 +79,46 @@ PpduTimelineView::PpduTimelineView(QWidget *parent)
 PpduTimelineView::~PpduTimelineView()
 {
     // Clean up UI components
-    delete m_legendOverlay; 
+    delete m_legendOverlay;
     delete m_overlay;
     delete m_btnSave;
     delete m_btnLegend;
     delete m_btnSetTimeRange;
-    
+
     // Clear data
     m_items.clear();
+}
+
+/* ======================== Row Key ======================== */
+// ★ NEW
+uint64_t PpduTimelineView::rowKey(const PpduVisualItem &ppdu) const
+{
+    if (m_rowMode == TimelineRowMode::ByChannel)
+        return static_cast<uint64_t>(ppdu.channel_number);
+
+    // default: AP view
+    return ppdu.receiver;
+}
+
+/* ======================== Channel View Toggle ======================== */
+// ★ NEW
+void PpduTimelineView::onToggleChannelView()
+{
+    if (m_rowMode == TimelineRowMode::ByAp)
+        m_rowMode = TimelineRowMode::ByChannel;
+    else
+        m_rowMode = TimelineRowMode::ByAp;
+
+    m_hoverIndex = -1;
+    m_overlay->close();
+    update();
 }
 
 /* ======================== Culculate the number of APs =================== */
 
 int PpduTimelineView::apCount() const
 {
-    int maxAp = 0;
-    for (const auto &it : m_items)
-        maxAp = std::max(maxAp, (int)it.nodeId);
-    return std::max(1, maxAp);
+    return this->Num_ap;
 }
 
 /* ======================== Timeline Top ======================== */
@@ -156,17 +189,22 @@ void PpduTimelineView::clear()
 bool PpduTimelineView::hasOverlap(int idx) const
 {
     const auto &a = m_items[idx];
+    uint64_t keyA = rowKey(a);
 
+    // 检测同一行（同一receiver或同一channel）上的时间重叠
     for (int i = 0; i < m_items.size(); ++i)
     {
         if (i == idx)
             continue;
 
         const auto &b = m_items[i];
+        uint64_t keyB = rowKey(b);
 
-        if (a.nodeId != b.nodeId)
+        // 必须在同一行
+        if (keyA != keyB)
             continue;
 
+        // 检测时间重叠
         if (std::max(a.txStartNs, b.txStartNs) <
             std::min(a.txEndNs, b.txEndNs))
         {
@@ -243,43 +281,87 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
     QPainter painter(this);
     painter.fillRect(rect(), QColor(220, 225, 232));
 
-    int apCnt = apCount();
-
-    int availH = height() - m_topMargin - kBottomMargin;
-    int rowH = effectiveRowHeight();
-
-    int topY = timelineTopY();
-
-    if (m_hoverIndex >= 0 && m_hoverIndex < m_items.size())
+    // ==================== Step 1: 构建 receiver 地址到行号映射 ====================
+    QMap<uint64_t, int> addrRowMap; // receiver address -> row index
+    int rowCounter = 0;
+    for (const auto &ppdu : m_items)
     {
-        int ap = m_items[m_hoverIndex].nodeId;
-        painter.fillRect(QRectF(0,
-                                topY + (ap - 1) * rowH,
-                                width(),
-                                rowH),
-                         QColor(255, 235, 205, 120));
+        uint64_t key = rowKey(ppdu);
+        if (!addrRowMap.contains(key))
+            addrRowMap[key] = rowCounter++;
     }
 
-    painter.setPen(QColor(200, 200, 200));
-    for (int ap = 0; ap <= apCnt; ++ap)
+    int apCnt = addrRowMap.size(); // 实际绘制行数
+    if (apCnt == 0)
+        return;
+
+    int availH = height() - m_topMargin - kBottomMargin;
+    int rowH = std::clamp(availH / apCnt, 18, 80);
+    int topY = m_topMargin;
+    if (availH > apCnt * rowH)
+        topY += (availH - apCnt * rowH) / 2;
+
+    // ==================== Step 2: 绘制背景 hover ====================
+    if (m_hoverIndex >= 0 && m_hoverIndex < m_items.size())
     {
-        int y = topY + ap * rowH;
+        uint64_t key = rowKey(m_items[m_hoverIndex]);
+        int row = addrRowMap.value(key, -1);
+        if (row >= 0)
+        {
+            painter.fillRect(
+                QRectF(0, topY + row * rowH, width(), rowH),
+                QColor(255, 235, 205, 120));
+        }
+    }
+
+    // ==================== Step 3: 绘制网格线 ====================
+    painter.setPen(QColor(200, 200, 200));
+    for (int r = 0; r <= apCnt; ++r)
+    {
+        int y = topY + r * rowH;
         painter.drawLine(m_leftMargin, y, width(), y);
     }
 
     painter.setPen(Qt::black);
-    for (int ap = 1; ap <= apCnt; ++ap)
+    for (auto it = addrRowMap.constBegin(); it != addrRowMap.constEnd(); ++it)
     {
-        int y = topY + (ap - 1) * rowH + rowH / 2;
-        painter.drawText(8, y + 5, QString("AP%1").arg(ap));
+        int row = it.value();
+        uint64_t key = it.key();
+        int y = topY + row * rowH + rowH / 2;
+
+        /* Draw AP/Channel labels */
+        if (m_rowMode == TimelineRowMode::ByChannel)
+            painter.drawText(8, y + 5,
+                             QString("CH %1").arg(it.key()));
+        else
+            painter.drawText(8, y + 5,
+                             QString("NODE %1").arg(row + 1));
+
+        // -------- hover 显示 MAC 地址 --------
+        QRect labelRect(0, y - rowH / 2, m_leftMargin - 10, rowH);
+
+        if (labelRect.contains(m_mousePos)) // m_mousePos 在 mouseMoveEvent 里更新
+        {
+            QString mac;
+            uint64_t addr = it.key();
+            QStringList parts;
+            for (int i = 5; i >= 0; --i)
+            {
+                parts << QString("%1")
+                             .arg((addr >> (i * 8)) & 0xFF, 2, 16, QChar('0'));
+            }
+            mac = parts.join(":").toUpper();
+
+            QToolTip::showText(
+                mapToGlobal(QPoint(8, y)),
+                mac,
+                this);
+        }
     }
-
     painter.setPen(QColor(180, 180, 180));
-    painter.drawLine(m_leftMargin - 8,
-                     topY,
-                     m_leftMargin - 8,
-                     topY + apCnt * rowH);
+    painter.drawLine(m_leftMargin - 8, topY, m_leftMargin - 8, topY + apCnt * rowH);
 
+    // ==================== Step 4: 绘制 PPDU ====================
     struct LaneItem
     {
         int index;
@@ -287,25 +369,29 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
         uint64_t end;
     };
 
-    for (int ap = 1; ap <= apCnt; ++ap)
+    for (auto itAddr = addrRowMap.constBegin(); itAddr != addrRowMap.constEnd(); ++itAddr)
     {
-        QVector<LaneItem> items;
+        int row = itAddr.value();
+        uint64_t key = itAddr.key();
+
+        QVector<LaneItem> laneItems;
         for (int i = 0; i < m_items.size(); ++i)
         {
-            if (m_items[i].nodeId == ap)
-                items.push_back({i,
-                                 m_items[i].txStartNs,
-                                 m_items[i].txEndNs});
+            if (rowKey(m_items[i]) == key)
+            {
+                laneItems.push_back({i,
+                                     m_items[i].txStartNs,
+                                     m_items[i].txEndNs});
+            }
         }
-
-        std::sort(items.begin(), items.end(),
-                  [](auto &a, auto &b)
+        std::sort(laneItems.begin(), laneItems.end(),
+                  [](const LaneItem &a, const LaneItem &b)
                   { return a.start < b.start; });
 
         QVector<uint64_t> laneEnd;
         QVector<QVector<int>> lanes;
 
-        for (auto &it : items)
+        for (auto &it : laneItems)
         {
             int lane = -1;
             for (int l = 0; l < laneEnd.size(); ++l)
@@ -332,31 +418,43 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
 
             for (int idx : lanes[l])
             {
-                const auto &it = m_items[idx];
+                const auto &ppdu = m_items[idx];
 
                 QRectF r(
-                    m_leftMargin +
-                        (it.txStartNs - m_viewStartNs) * m_nsToPixel,
-                    topY +
-                        (ap - 1) * rowH +
-                        l * laneH + kLanePadding,
-                    std::max(1.0,
-                             (it.txEndNs - it.txStartNs) * m_nsToPixel),
+                    m_leftMargin + (ppdu.txStartNs - m_viewStartNs) * m_nsToPixel,
+                    topY + row * rowH + l * laneH + kLanePadding,
+                    std::max(1.0, (ppdu.txEndNs - ppdu.txStartNs) * m_nsToPixel),
                     laneH - 2 * kLanePadding);
 
                 bool overlap = hasOverlap(idx);
 
-                QColor fill;
+                // 基础颜色：根据sender和receiver确定
+                QColor baseColor = QColor("#1f77b4"); // 默认蓝色
                 if (idx == m_hoverIndex)
-                    fill = overlap ? QColor("#b22222") : Qt::red;
+                    baseColor = Qt::red;
+                
+                // 如果有冲突，使用半透明橙色叠加
+                if (overlap)
+                {
+                    // 先绘制基础颜色
+                    painter.setPen(Qt::NoPen);
+                    painter.setBrush(baseColor);
+                    painter.drawRoundedRect(r, 3, 3);
+                    
+                    // 再叠加冲突颜色（半透明橙色）
+                    painter.setBrush(QColor(255, 127, 14, 180)); // 半透明橙色
+                    painter.drawRoundedRect(r, 3, 3);
+                }
                 else
-                    fill = overlap ? QColor("#ff7f0e") : QColor("#1f77b4");
+                {
+                    painter.setPen(Qt::NoPen);
+                    painter.setBrush(baseColor);
+                    painter.drawRoundedRect(r, 3, 3);
+                }
 
-                painter.setPen(Qt::NoPen);
-                painter.setBrush(fill);
-                painter.drawRoundedRect(r, 3, 3);
-
+                // 绘制边框
                 painter.setPen(QColor(60, 60, 60));
+                painter.setBrush(Qt::NoBrush);
                 painter.drawRoundedRect(r, 3, 3);
             }
         }
@@ -395,9 +493,9 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
         {
             QRectF selRect(
                 left,
-                timelineTopY(),
+                topY,
                 right - left,
-                apCount() * rowH);
+                apCnt * rowH);
 
             painter.setPen(QPen(kSelectBorder, 1, Qt::DashLine));
             painter.setBrush(kSelectFill);
@@ -726,19 +824,36 @@ void PpduTimelineView::mouseMoveEvent(QMouseEvent *e)
     {
         const auto &it = m_items[idx];
 
+        // Format MAC addresses
+        auto formatMac = [](uint64_t addr) -> QString {
+            QStringList parts;
+            for (int i = 5; i >= 0; --i)
+            {
+                parts << QString("%1")
+                             .arg((addr >> (i * 8)) & 0xFF, 2, 16, QChar('0'));
+            }
+            return parts.join(":").toUpper();
+        };
+
+        QString senderMac = formatMac(it.sender);
+        QString receiverMac = formatMac(it.receiver);
+
         QString text =
-            QString("AP %1\n"
-                    "Start: %2 ms\n"
-                    "End:   %3 ms\n"
-                    "Dur:   %4 us\n"
-                    "MPDU:  %5\n"
-                    "Type:  %6")
+            QString("Node ID: %1\n"
+                    "Start:   %2 ms\n"
+                    "End:     %3 ms\n"
+                    "Duration: %4 us\n"
+                    "MPDU:    %5\n"
+                    "Type:    %6\n"
+                    "Flow:    %7 -> %8")
                 .arg(it.nodeId)
                 .arg(it.txStartNs / 1e6, 0, 'f', 3)
                 .arg(it.txEndNs / 1e6, 0, 'f', 3)
                 .arg((it.txEndNs - it.txStartNs) / 1e3, 0, 'f', 1)
                 .arg(it.mpduAggregation)
-                .arg(QString::fromStdString(it.frameType));
+                .arg(QString::fromStdString(it.frameType))
+                .arg(senderMac)
+                .arg(receiverMac);
 
         m_overlay->setText(text);
         m_overlay->showAt(mapToGlobal(e->pos()) + QPoint(12, 12));
@@ -747,6 +862,8 @@ void PpduTimelineView::mouseMoveEvent(QMouseEvent *e)
     {
         m_overlay->close();
     }
+    m_mousePos = e->pos();
+    update();
 }
 
 void PpduTimelineView::mouseReleaseEvent(QMouseEvent *e)
@@ -836,8 +953,29 @@ void PpduTimelineView::closeEvent(QCloseEvent *e)
 
 int PpduTimelineView::hitTest(const QPoint &pos) const
 {
-    int rowH = effectiveRowHeight();
-    int topY = timelineTopY();
+    if (m_items.isEmpty())
+        return -1;
+
+    QMap<uint64_t, int> addrRowMap;
+    int rowCounter = 0;
+
+    for (const auto &ppdu : m_items)
+    {
+        uint64_t key = rowKey(ppdu);
+        if (!addrRowMap.contains(key))
+            addrRowMap[key] = rowCounter++;
+    }
+
+    int rowCnt = addrRowMap.size();
+    if (rowCnt == 0)
+        return -1;
+
+    int availH = height() - m_topMargin - kBottomMargin;
+    int rowH = std::clamp(availH / rowCnt, 18, 80);
+
+    int topY = m_topMargin;
+    if (availH > rowCnt * rowH)
+        topY += (availH - rowCnt * rowH) / 2;
 
     struct LaneItem
     {
@@ -846,19 +984,25 @@ int PpduTimelineView::hitTest(const QPoint &pos) const
         uint64_t end;
     };
 
-    for (int ap = 1; ap <= apCount(); ++ap)
+    for (auto itAddr = addrRowMap.constBegin();
+         itAddr != addrRowMap.constEnd(); ++itAddr)
     {
+        int row = itAddr.value();
+        uint64_t key = itAddr.key();
+
         QVector<LaneItem> items;
         for (int i = 0; i < m_items.size(); ++i)
         {
-            if (m_items[i].nodeId == ap)
+            if (rowKey(m_items[i]) == key)
+            {
                 items.push_back({i,
                                  m_items[i].txStartNs,
                                  m_items[i].txEndNs});
+            }
         }
 
         std::sort(items.begin(), items.end(),
-                  [](auto &a, auto &b)
+                  [](const LaneItem &a, const LaneItem &b)
                   { return a.start < b.start; });
 
         QVector<uint64_t> laneEnd;
@@ -891,22 +1035,71 @@ int PpduTimelineView::hitTest(const QPoint &pos) const
 
             for (int idx : lanes[l])
             {
-                const auto &it = m_items[idx];
+                const auto &ppdu = m_items[idx];
 
                 QRectF r(
                     m_leftMargin +
-                        (it.txStartNs - m_viewStartNs) * m_nsToPixel,
-                    topY +
-                        (ap - 1) * rowH +
-                        l * laneH + 2,
+                        (ppdu.txStartNs - m_viewStartNs) * m_nsToPixel,
+                    topY + row * rowH + l * laneH + kLanePadding,
                     std::max(1.0,
-                             (it.txEndNs - it.txStartNs) * m_nsToPixel),
-                    laneH - 4);
+                             (ppdu.txEndNs - ppdu.txStartNs) * m_nsToPixel),
+                    laneH - 2 * kLanePadding);
 
                 if (r.contains(pos))
                     return idx;
             }
         }
     }
+
     return -1;
+}
+
+
+void PpduTimelineView::resetPage()
+{
+    /* ===== data ===== */
+    m_items.clear();
+
+    /* ===== view state ===== */
+    m_viewStartNs = 0;
+    m_nsToPixel = 1e-6;
+
+    Num_ap = 0;
+    Num_sta = 0;
+
+    /* ===== hover / selection ===== */
+    m_hoverIndex = -1;
+    m_hasSelection = false;
+    m_showingStats = false;
+
+    m_selecting = false;
+    m_dragging = false;
+
+    /* ===== mouse / drag ===== */
+    m_dragLeftHandle = false;
+    m_dragRightHandle = false;
+    m_dragRangeBody = false;
+    m_rangeDragging = false;
+
+    /* ===== time range slider ===== */
+    m_rangeStart = 0.0;
+    m_rangeEnd = 1.0;
+    m_lastRangeX = 0;
+
+    /* ===== view mode ===== */
+    m_rowMode = TimelineRowMode::ByAp;
+
+    /* ===== overlays ===== */
+    if (m_overlay)
+        m_overlay->close();
+
+    if (m_legendOverlay)
+        m_legendOverlay->close();
+
+    /* ===== cursor ===== */
+    unsetCursor();
+
+    update();
+
+    qDebug() << "[PpduTimelineView] resetPage() done";
 }

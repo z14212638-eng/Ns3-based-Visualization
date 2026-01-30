@@ -56,10 +56,15 @@ using sim_time_ns_t = uint64_t;
 using ppdu_id_t = uint32_t;
 constexpr std::size_t MAX_PPDU_NUM = 1 << 20; // about 1 million PPDUs
 
+/**
+ * @brief This struct contains the information of a MPDU that should be transmitted by Ns3 and
+ * 
+ */
 struct PPDU_Meta
 {
     ppdu_id_t id;
     uint16_t sta_id;
+    uint8_t channel_id;
 
     uint8_t frame_type;
     uint8_t mcs;
@@ -69,18 +74,18 @@ struct PPDU_Meta
     uint8_t sender[6];
     uint8_t receiver[6];
 
-    sim_time_ns_t tx_start_ns;       // done
-    sim_time_ns_t tx_end_ns;         // done
-    sim_time_ns_t successDecodeTime; // done
-    sim_time_ns_t tx_duration_ns;    // done
-    sim_time_ns_t access_delay_ns;   // Permitted to fill it later
+    sim_time_ns_t tx_start_ns;       
+    sim_time_ns_t tx_end_ns;         
+    sim_time_ns_t successDecodeTime; 
+    sim_time_ns_t tx_duration_ns;    
+    sim_time_ns_t access_delay_ns;   
 
     uint8_t rx_state;         // 0=unknown 1=success 2=collision 3=decode_fail
-    uint8_t rx_fail_reason;   // WifiPhyfailureReason
-    sim_time_ns_t tx_time_ns; // done
+    uint8_t rx_fail_reason;   
+    sim_time_ns_t tx_time_ns; 
 
-    uint8_t collision;               // done
-    sim_time_ns_t collision_time_ns; // done
+    uint8_t collision;               
+    sim_time_ns_t collision_time_ns; 
 
     uint16_t snr_margin_db_x10; // SNR x10
     uint16_t snr_gap_db_x10;
@@ -289,6 +294,10 @@ class SniffUtils : public Object
     RingBuffer* m_ring = nullptr;
 };
 
+/**
+ * @brief The information of a PPDU that is freshly sniffed by SniffUtils
+ * 
+ */
 struct PpduRuntime
 {
     uint32_t ring_index;
@@ -302,6 +311,11 @@ struct PpduRuntime
 
 extern std::unordered_map<ppdu_id_t, PpduRuntime> m_ppdu_runtime;
 
+
+/**
+ * @brief
+ * 
+ */
 struct ActivePpdu
 {
     Ptr<const WifiPpdu> ppdu;

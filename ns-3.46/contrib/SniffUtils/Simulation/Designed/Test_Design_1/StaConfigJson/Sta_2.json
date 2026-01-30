@@ -1,4 +1,5 @@
 {
+    "ActiveProbing": true,
     "Antenna": {
         "Antennas": [
             {
@@ -10,18 +11,12 @@
         "set": true
     },
     "Bandwidth": 40,
-    "Beacon": {
-        "BeaconInterval": 100,
-        "Beacon_Rate": 1,
-        "EnableBeaconJitter": true,
-        "set": true
-    },
-    "CcaEdThreshold": -62,
-    "CcaSensitivity": -82,
     "Channel_number": 36,
+    "EnableAssocFailRetry": true,
     "Frequency": 5180,
     "Guard_interval": 800,
     "Id": 1,
+    "MaxMissedBeacons": 10,
     "Mobility": {
         "boundaries": [
             0,
@@ -40,8 +35,9 @@
     "Position": [
         0,
         0,
-        0
+        4.872055680013486
     ],
+    "ProbeRequestTimeout": 500,
     "Qos": {
         "Edca_choose": "AC_VO",
         "Edca_params": {
@@ -85,16 +81,51 @@
     },
     "Rate_ctrl_algo": "Aarf",
     "Rts_Cts": {
-        "Threshold": -1,
+        "Threshold": -2,
         "set": true
     },
-    "RxSensitivity": -121,
-    "Sifs": 3,
-    "Slot": 6,
     "Ssid": "Ns3WiFi",
     "Standard": "802.11ax",
     "Traffic": {
         "Flows": [
+            {
+                "Direction": "downlink",
+                "EDCA_Traffic": [
+                    {
+                        "enabled": false,
+                        "meanDataRate": 0,
+                        "packetSize": 1200,
+                        "peakDataRate": 0,
+                        "trafficType": "CBR",
+                        "type": "AC_VI"
+                    },
+                    {
+                        "enabled": false,
+                        "interval": 20,
+                        "packetSize": 160,
+                        "trafficType": "CBR",
+                        "type": "AC_VO"
+                    },
+                    {
+                        "DataRate": 0,
+                        "enabled": false,
+                        "packetSize": 1024,
+                        "trafficType": "CBR",
+                        "type": "AC_BE"
+                    },
+                    {
+                        "DataRate": 0,
+                        "enabled": false,
+                        "packetSize": 1024,
+                        "trafficType": "CBR",
+                        "type": "AC_BK"
+                    }
+                ],
+                "EndTime": 0,
+                "FlowId": "flow_1",
+                "Protocol": "UDP",
+                "StartTime": 0
+            }
         ]
     },
     "TxQueue": "DropTail",

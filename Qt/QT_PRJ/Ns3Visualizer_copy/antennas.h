@@ -10,7 +10,7 @@ namespace Ui
     class Antenna;
 }
 
-class Antenna : public QDialog
+class Antenna : public QDialog,public ResettableBase
 {
     Q_OBJECT
 
@@ -23,6 +23,7 @@ public:
     bool is_ap = false;
     bool is_sta = false;
 
+    void resetPage() override;
 signals:
     void BackToLastPage();
     
@@ -34,6 +35,8 @@ private slots:
     void on_pushButton_2_clicked();
 
     void on_buttonBox_accepted();
+
+    void insertDefaultAntenna();
 
 private:
     Ui::Antenna *ui;

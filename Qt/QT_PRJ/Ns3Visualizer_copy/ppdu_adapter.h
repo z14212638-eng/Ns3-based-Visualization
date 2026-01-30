@@ -128,6 +128,9 @@ public:
         PpduVisualItem v{};
         v.id = m.id;
         v.nodeId = m.node_id;
+        v.channel_number = m.channel_id;
+        v.sender = m.sender;
+        v.receiver = m.receiver;
         v.txStartNs = m.tx_start_ns;
         v.txEndNs = m.tx_end_ns;
         v.durationNs = m.tx_duration_ns;

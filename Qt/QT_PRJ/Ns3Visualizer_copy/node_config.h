@@ -12,7 +12,7 @@ namespace Ui {
 class node_config;
 }
 
-class node_config : public QWidget
+class node_config : public QWidget,public ResettableBase
 {
     Q_OBJECT
 
@@ -30,6 +30,7 @@ public:
     void Get_Edca_Config(Sta &, Edca_config &);
     void Get_Antenna_Config(Sta &, Antenna &);
     void Get_Traffic_Config(Sta &);
+    void resetPage() override;
 
 signals:
     void Finish_setting_sta();

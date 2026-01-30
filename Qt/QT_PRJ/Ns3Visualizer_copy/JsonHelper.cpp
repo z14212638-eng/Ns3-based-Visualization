@@ -477,3 +477,38 @@ bool JsonHelper::SetStaToJson(const Sta *sta, qint8 id)
     std::cout << "m_sta_config_list  appended  ,number:" << m_sta_config_list.size() << std::endl;
     return true;
 }
+
+void JsonHelper::reset()
+{
+    qDebug() << "[JsonHelper] reset()";
+
+    // 1️⃣ 清空 building json
+    m_building_config = QJsonObject();
+
+    // 2️⃣ 释放动态分配的 json（避免泄漏）
+    if (m_sta_config)
+    {
+        delete m_sta_config;
+        m_sta_config = nullptr;
+    }
+
+    if (m_ap_config)
+    {
+        delete m_ap_config;
+        m_ap_config = nullptr;
+    }
+
+    // 3️⃣ 清空配置列表
+    m_sta_config_list.clear();
+    m_ap_config_list.clear();
+
+    // 4️⃣ 重建 building 配置（而不是 clear）
+    m_building.reset();
+    m_building = std::make_shared<BuildingConfig>();
+
+    // 5️⃣ （可选）初始化 building json 的基础字段
+    m_building_config["Sta_num"] = 0;
+    m_building_config["Ap_num"]  = 0;
+    m_building_config["Sta_pos_list"] = QJsonArray();
+    m_building_config["Ap_pos_list"]  = QJsonArray();
+}

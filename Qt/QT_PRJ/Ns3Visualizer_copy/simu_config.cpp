@@ -8,6 +8,7 @@ Simu_Config::Simu_Config(QWidget *parent)
 
   centerWindow(this);
 
+  ui->tabWidget->setCurrentIndex(0);
   scene = new QGraphicsScene(this);
   ui->graphicsView->setScene(scene);
   ui->frame->setObjectName("myFrame");
@@ -306,31 +307,108 @@ void Simu_Config::cleanupAndExit() {
   // ===============================
   // 3. 关闭 Timeline
   // ===============================
-  if (m_timelineView) {
-    qDebug() << "Closing timeline view";
-    m_timelineView->close();
-    m_timelineView->deleteLater();
-    m_timelineView = nullptr;
-  }
-
-  // ===============================
-  // 4. Scene：只删 NodeItem
-  // ===============================
-  if (scene) {
-    const auto items = scene->items();
-    for (QGraphicsItem *item : items) {
-      if (auto *node = dynamic_cast<NodeItem *>(item)) {
-        scene->removeItem(node);
-        delete node;
-      }
-    }
-  }
+  // if (m_timelineView) {
+  //   qDebug() << "Closing timeline view";
+  //   m_timelineView->close();
+  //   m_timelineView->deleteLater();
+  //   m_timelineView = nullptr;
+  // }
 
   // ===============================
   // 5. 关闭自己
   // ===============================
   close();
 }
+
+void Simu_Config::resetPage()
+{
+    qDebug() << "[Simu_Config] resetPage()";
+
+    // ===============================
+    // 1️⃣ 停止仿真相关资源（但不 close 自己）
+    // ===============================
+    if (m_ppduReader) {
+        m_ppduReader->stop();
+        m_ppduReader->deleteLater();
+        m_ppduReader = nullptr;
+    }
+
+    if (m_ppduThread) {
+        m_ppduThread->quit();
+        m_ppduThread->wait();
+        m_ppduThread->deleteLater();
+        m_ppduThread = nullptr;
+    }
+
+    if (ns3Process) {
+        ns3Process->kill();
+        ns3Process->deleteLater();
+        ns3Process = nullptr;
+    }
+
+    // ===============================
+    // 2️⃣ Scene 清理（删除 NodeItem + 建筑框）
+    // ===============================
+    if (scene) {
+        const auto items = scene->items();
+        for (QGraphicsItem *item : items) {
+            scene->removeItem(item);
+            delete item;
+        }
+        scene->clear();
+    }
+
+    // ===============================
+    // 3️⃣ UI 组件回退
+    // ===============================
+    ui->tabWidget->setCurrentIndex(0);
+
+    ui->doubleSpinBox->setValue(10);
+    ui->doubleSpinBox_2->setValue(10);
+    ui->doubleSpinBox_3->setValue(5);
+    ui->doubleSpinBox_4->setValue(0);
+
+    ui->comboBox->setCurrentIndex(0);
+    ui->comboBox_2->setCurrentIndex(0);
+
+    ui->lcdNumber->display(0);
+    ui->lcdNumber_2->display(0);
+
+    ui->pushButton_7->setEnabled(true);
+    ui->pushButton_7->setText("Check");
+
+    // ===============================
+    // 4️⃣ 内部状态清零
+    // ===============================
+    Num_ap = 0;
+    Num_sta = 0;
+    building_range = {0, 0, 0};
+
+    // ===============================
+    // 5️⃣ GraphicsView 复位
+    // ===============================
+    ui->graphicsView->resetTransform();
+    ui->graphicsView->setScene(scene);
+
+    //rebuildScene();
+    qDebug() << "[Simu_Config] resetPage() done";
+}
+
+void Simu_Config::rebuildScene()
+{
+    if (!scene)
+        scene = new QGraphicsScene(this);
+
+    scene->clear();
+
+    if (building_range[0] <= 0 || building_range[1] <= 0) {
+        qDebug() << "[Simu_Config] skip draw building (invalid range)";
+        return;
+    }
+
+    Draw_the_config_map();
+}
+
 
 
 void Simu_Config::requestCleanup() {
@@ -357,6 +435,9 @@ void Simu_Config::Load_General_Json(JsonHelper &json_helper) {
   QString filepath = json_helper.General_file_path + "General.json";
   json_helper.SaveJsonObjToRoute(json_helper.m_building_config, filepath);
   qDebug() << "Save general config to " << filepath;
+
+  this->Num_ap = ui->lcdNumber->intValue();
+  this->Num_sta = ui->lcdNumber_2->intValue();
 
   emit CreateAndStartThread();
 }
@@ -387,26 +468,28 @@ void Simu_Config::Create_And_StartThread() {
             qDebug() << "ns-3 finished:" << code << status;
 
             // 核心：ns-3 结束 ⇒ 触发清理
-            requestCleanup();
+            //requestCleanup();
 
             ns3Process->deleteLater();
             ns3Process = nullptr;
           });
 
-  ns3Process->start("./ns3", {"run", "timeline_pressure.cc"});
+  ns3Process->start("./ns3", {"run", "timeline_crossing.cc"});
 
   // ===============================
   // 2. Timeline View
   // ===============================
-  if (!m_timelineView) {
-    m_timelineView = new PpduTimelineView(this);
-    m_timelineView->setWindowTitle("PPDU Timeline");
-    m_timelineView->resize(1200, 400);
-    m_timelineView->show();
+  // if (!m_timelineView) {
+  //   m_timelineView = new PpduTimelineView(this);
+  //   m_timelineView->Num_ap = this->Num_ap;
+  //   m_timelineView->Num_sta = this->Num_sta;
+  //   m_timelineView->setWindowTitle("PPDU Timeline");
+  //   m_timelineView->resize(1200, 400);
+  //   m_timelineView->show();
 
-    connect(m_timelineView, &PpduTimelineView::timelineClosed,
-            this, &Simu_Config::requestCleanup);
-  }
+  //   connect(m_timelineView, &PpduTimelineView::timelineClosed,
+  //           this, &Simu_Config::requestCleanup);
+  // }
 
   // ===============================
   // 3. PPDU Reader Thread
@@ -420,8 +503,9 @@ void Simu_Config::Create_And_StartThread() {
           m_ppduReader, &QtPpduReader::run);
 
   connect(m_ppduReader, &QtPpduReader::ppduReady,
-          m_timelineView, &PpduTimelineView::append,
-          Qt::QueuedConnection);
+        this, &Simu_Config::ppduReady,
+        Qt::QueuedConnection);
+
 
   // reader 自己结束时，线程退出
   connect(m_ppduReader, &QtPpduReader::finished, this, [this] {

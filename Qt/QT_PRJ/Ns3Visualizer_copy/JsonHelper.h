@@ -331,8 +331,8 @@ public:
     bool SetBuildingToJson(const BuildingConfig *);
     bool SetStaToJson(const Sta *, qint8);
     bool SetApToJson(const Ap *, qint8);
-
     bool SaveJsonObjToRoute(const QJsonObject, const QString);
+    void reset();
 
     QJsonObject m_building_config;
     QJsonObject *m_sta_config = nullptr;

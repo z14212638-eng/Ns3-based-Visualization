@@ -35,6 +35,7 @@
 #include <ns3/wifi-net-device.h>
 
 #include <iostream>
+#include <optional>
 #include <string>
 #include <iterator>
 #include <map>

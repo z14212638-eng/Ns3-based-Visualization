@@ -17,6 +17,7 @@ struct PPDU_Meta
 {
     ppdu_id_t id;
     uint16_t node_id;
+    uint8_t channel_id;
 
     uint8_t frame_type;
     uint8_t mcs;

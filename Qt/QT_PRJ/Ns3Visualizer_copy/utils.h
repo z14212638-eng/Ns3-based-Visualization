@@ -28,3 +28,10 @@ inline void centerWindow(QWidget *window)
         window->move(x, y);
     });
 }
+
+class ResettableBase
+{
+    public:
+    virtual ~ResettableBase() = default;
+    virtual void resetPage() = 0;
+};

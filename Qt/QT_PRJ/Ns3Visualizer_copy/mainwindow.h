@@ -20,6 +20,7 @@
 #include "configgraphicsview.h"
 #include "edca_config.h"
 #include "JsonHelper.h"
+#include "timeline_display.h"
 #include "legend_overlay.h"
 #include "ppdu_timeline_view.h"
 #include "simu_config.h"
@@ -41,6 +42,7 @@ public:
     void closeEvent(QCloseEvent *event) override;
     void switchTo(int index);
     void back();
+    void resetMain();
 
 private:
     Ui::MainWindow *ui;
@@ -56,6 +58,7 @@ private:
     Ap_config *apConfigPage;
     Edca_config *edcaConfig;//ui-only
     Antenna *antenna;//ui-only
+    Timeline_Display *timelineDisplay;
 
     /*Menu_Actions & SideBar_Actions*/
     QAction *homeAction;

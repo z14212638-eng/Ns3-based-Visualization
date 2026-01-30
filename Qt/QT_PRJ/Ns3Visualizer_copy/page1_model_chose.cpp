@@ -20,6 +20,54 @@ Page1_model_chose::Page1_model_chose(QWidget *parent)
     ui->label_3->installEventFilter(this);
 }
 
+void Page1_model_chose::resetPage()
+{
+    // 1️⃣ 逻辑数据
+    sceneName.clear();
+    Scene.clear();   // 你头文件里还有一个 Scene，别忘了
+
+    // 2️⃣ ToolBox 回到第一页
+    if (ui->toolBox && ui->toolBox->count() > 0)
+        ui->toolBox->setCurrentIndex(0);
+
+    // 3️⃣ 主 listWidget
+    if (ui->listWidget)
+    {
+        ui->listWidget->setCurrentRow(-1);
+        if (ui->listWidget->count() > 0)
+            ui->listWidget->setCurrentRow(0);
+    }
+
+    // 4️⃣ 第二个 listWidget（如果存在）
+    if (auto *lw2 = findChild<QListWidget *>("listWidget_2"))
+    {
+        lw2->setCurrentRow(-1);
+        if (lw2->count() > 0)
+            lw2->setCurrentRow(0);
+    }
+
+    // 5️⃣ 文本区
+    ui->textBrowser->clear();
+    ui->textBrowser_2->clear();
+
+    // 6️⃣ 预览区
+    ui->label_3->clear();
+    ui->label_3->setText("No Preview");
+    ui->label_3->setAlignment(Qt::AlignCenter);
+    ui->label_3->setScaledContents(false);
+
+    // 7️⃣ 滚动条复位
+    if (ui->textBrowser->verticalScrollBar())
+        ui->textBrowser->verticalScrollBar()->setValue(0);
+
+    if (ui->textBrowser_2->verticalScrollBar())
+        ui->textBrowser_2->verticalScrollBar()->setValue(0);
+
+    qDebug() << "[Page1_model_chose] resetPage() done";
+}
+
+
+
 QString Page1_model_chose::GetSceneName()
 {
     this->sceneName.clear();
@@ -74,22 +122,7 @@ void Page1_model_chose::on_pushButton_5_clicked()
 
 void Page1_model_chose::on_pushButton_3_clicked()
 {
-    if (ui->checkBox->isChecked())
-    {
-        emit ConfigSimulation();
-    }
-    else
-    {
-        ;
-    }
-}
-
-void Page1_model_chose::on_checkBox_checkStateChanged(const Qt::CheckState &arg1)
-{
-    if(arg1==Qt::Checked)
-    {
-        emit ConfigSimulation();
-    }
+   emit ConfigSimulation();
 }
 
 
@@ -108,5 +141,11 @@ bool Page1_model_chose::eventFilter(QObject *obj, QEvent *event)
         return true;
     }
     return QWidget::eventFilter(obj, event);
+}
+
+
+void Page1_model_chose::on_pushButton_clicked()
+{
+    emit ConfigSimulation();
 }
 

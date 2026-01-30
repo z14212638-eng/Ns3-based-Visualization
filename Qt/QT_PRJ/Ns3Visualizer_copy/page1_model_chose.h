@@ -4,6 +4,10 @@
 #include <QWidget>
 #include <QEvent>
 #include <QMouseEvent>
+#include <QTextBrowser>
+#include <QScrollBar>
+
+
 #include "simu_config.h"
 #include "utils.h"
 #include "image_viewer.h"
@@ -12,7 +16,7 @@ namespace Ui {
 class Page1_model_chose;
 }
 
-class Page1_model_chose : public QWidget
+class Page1_model_chose : public QWidget, public ResettableBase
 {
     Q_OBJECT
 
@@ -22,6 +26,7 @@ public:
     QString GetSceneName();
     QString Scene = "";
     Simu_Config *simu_config = new(Simu_Config);
+    void resetPage() override;
 private slots:
     void on_pushButton_4_clicked();
 
@@ -29,7 +34,9 @@ private slots:
 
     void on_pushButton_3_clicked();
 
-    void on_checkBox_checkStateChanged(const Qt::CheckState &arg1);
+
+
+    void on_pushButton_clicked();
 
 signals:
     void BackToMain();

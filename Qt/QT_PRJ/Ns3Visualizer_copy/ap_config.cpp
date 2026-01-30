@@ -8,6 +8,7 @@ Ap_config::Ap_config(QWidget *parent)
 
     centerWindow(this);
 
+    ui->tabWidget->setCurrentIndex(0);
     if (!ui->checkBox_4->isChecked())
     {
         pos_set = true;
@@ -712,5 +713,136 @@ void Ap_config::on_pushButton_2_clicked()
 {
     qDebug() << "Add Traffic button clicked!";
     emit Traffic_Set();
+}
+
+void Ap_config::resetPage()
+{
+    qDebug() << "[Ap_config] resetPage()";
+
+    // ===============================
+    // 1️⃣ 内部状态变量
+    // ===============================
+    Building_range = {0, 0, 0};
+    m_position     = {0, 0, 0};
+    ApIndex        = 0;
+
+    pos_set      = false;
+    mobility_set = false;
+    phymac_set   = false;
+    beacon_set   = false;
+    Rts_Cts_set  = false;
+    Qos_set      = false;
+    Ssid_set     = false;
+
+    // ===============================
+    // 2️⃣ Tab 状态
+    // ===============================
+    ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget->setTabEnabled(3, false); // Page4 依赖 phymac_set
+
+    // ===============================
+    // 3️⃣ Page1：Position
+    // ===============================
+    ui->checkBox_4->setChecked(true); // random position off
+
+    ui->doubleSpinBox->setEnabled(true);
+    ui->doubleSpinBox_2->setEnabled(true);
+    ui->doubleSpinBox_3->setEnabled(true);
+
+    ui->doubleSpinBox->setValue(0.0);
+    ui->doubleSpinBox_2->setValue(0.0);
+    ui->doubleSpinBox_3->setValue(0.0);
+
+    // ===============================
+    // 4️⃣ Page2：Mobility
+    // ===============================
+    ui->checkBox_3->setChecked(false); // mobility off
+
+    ui->comboBox->setEnabled(false);
+    ui->comboBox_2->setEnabled(false);
+
+    ui->doubleSpinBox_4->setEnabled(false);
+    ui->doubleSpinBox_5->setEnabled(false);
+    ui->doubleSpinBox_14->setEnabled(false);
+    ui->doubleSpinBox_15->setEnabled(false);
+    ui->doubleSpinBox_16->setEnabled(false);
+    ui->doubleSpinBox_17->setEnabled(false);
+    ui->doubleSpinBox_18->setEnabled(false);
+
+    ui->doubleSpinBox_4->setValue(0);
+    ui->doubleSpinBox_5->setValue(0);
+    ui->doubleSpinBox_14->setValue(0);
+    ui->doubleSpinBox_15->setValue(0);
+    ui->doubleSpinBox_16->setValue(0);
+    ui->doubleSpinBox_17->setValue(0);
+    ui->doubleSpinBox_18->setValue(0);
+
+    // ===============================
+    // 5️⃣ Page3：PHY / MAC
+    // ===============================
+    // ui->lineEdit->clear();                  // SSID
+    ui->comboBox_3->setCurrentIndex(0);     // band
+    ui->comboBox_4->setCurrentIndex(0);     // phy model
+    ui->comboBox_5->setCurrentIndex(5);     // standard（你原本默认）
+    ui->comboBox_7->setCurrentIndex(0);
+    ui->comboBox_8->setCurrentIndex(0);
+
+    ui->spinBox->setValue(1);               // channel
+    ui->spinBox_3->setValue(0);             // RTS threshold
+
+    ui->doubleSpinBox_6->setValue(0.0);     // TxPower
+    ui->doubleSpinBox_7->setValue(0.0);     // Slot
+    ui->doubleSpinBox_8->setValue(0.0);     // Sifs
+    ui->doubleSpinBox_9->setValue(0.0);
+    ui->doubleSpinBox_10->setValue(0.0);
+    ui->doubleSpinBox_11->setValue(0.0);
+
+    ui->checkBox->setChecked(false);         // Beacon
+    ui->doubleSpinBox_12->setEnabled(false);
+    ui->doubleSpinBox_13->setEnabled(false);
+    ui->checkBox_2->setEnabled(false);
+
+    ui->checkBox_5->setChecked(false);       // RTS/CTS
+    ui->spinBox_3->setEnabled(false);
+
+    ui->checkBox_6->setChecked(false);       // QoS
+    ui->comboBox_6->setEnabled(false);
+    ui->pushButton_8->setEnabled(false);
+
+    // ===============================
+    // 6️⃣ Page4：Traffic / EDCA
+    // ===============================
+    ui->tableWidget->setRowCount(0);
+
+    // ui->lineEdit_2->clear();
+    ui->comboBox_9->setCurrentIndex(0);
+    ui->comboBox_10->setCurrentIndex(0);
+    ui->doubleSpinBox_19->setValue(0);
+    ui->doubleSpinBox_20->setValue(0);
+
+    ui->checkBox_7->setChecked(false);
+    ui->checkBox_8->setChecked(false);
+    ui->checkBox_9->setChecked(false);
+    ui->checkBox_10->setChecked(false);
+
+    ui->comboBox_11->setEnabled(false);
+    ui->comboBox_12->setEnabled(false);
+    ui->comboBox_14->setEnabled(false);
+
+    ui->spinBox_22->setValue(0);
+    ui->spinBox_23->setValue(0);
+    ui->spinBox_24->setValue(0);
+    ui->spinBox_25->setValue(0);
+    ui->spinBox_26->setValue(0);
+    ui->spinBox_27->setValue(0);
+    ui->spinBox_28->setValue(0);
+    ui->spinBox_29->setValue(0);
+
+    // ===============================
+    // 7️⃣ Channel / Band 约束恢复
+    // ===============================
+    Restrict_channel();
+
+    qDebug() << "[Ap_config] resetPage() done";
 }
 

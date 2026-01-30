@@ -8,6 +8,8 @@ node_config::node_config(QWidget *parent)
 
     centerWindow(this);
 
+    
+    ui->tabWidget->setCurrentIndex(0);
     if (!ui->checkBox_2->isChecked())
     {
         pos_set = true;
@@ -693,4 +695,126 @@ void node_config::on_pushButton_7_clicked()
     emit LoadOneStaConfig();
     StaIndex++;
     emit Finish_setting_sta();
+}
+
+void node_config::resetPage()
+{
+    qDebug() << "[node_config] resetPage()";
+
+    // ===============================
+    // 1️⃣ 内部状态变量
+    // ===============================
+    Building_range = {0, 0, 0};
+    m_position     = {0, 0, 0};
+    StaIndex       = 0;
+
+    pos_set      = false;
+    mobility_set = false;
+    phymac_set   = false;
+    beacon_set   = false;
+    Rts_Cts_set  = false;
+    Qos_set      = false;
+    Ssid_set     = false;
+
+    // ===============================
+    // 2️⃣ Tab 状态
+    // ===============================
+    ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget->setTabEnabled(3, false); // Page3 需要 phy/mac 完成
+
+    // ===============================
+    // 3️⃣ Position（Page1）
+    // ===============================
+    ui->checkBox_2->setChecked(true);
+    ui->doubleSpinBox->setEnabled(true);
+    ui->doubleSpinBox_2->setEnabled(true);
+    ui->doubleSpinBox_3->setEnabled(true);
+
+    ui->doubleSpinBox->setValue(0.0);
+    ui->doubleSpinBox_2->setValue(0.0);
+    ui->doubleSpinBox_3->setValue(0.0);
+
+    // ===============================
+    // 4️⃣ Mobility（Page2）
+    // ===============================
+    ui->checkBox->setChecked(false);
+
+    ui->comboBox->setEnabled(false);
+    ui->comboBox_2->setEnabled(false);
+
+    ui->doubleSpinBox_8->setEnabled(false);
+    ui->doubleSpinBox_9->setEnabled(false);
+    ui->doubleSpinBox_10->setEnabled(false);
+    ui->doubleSpinBox_11->setEnabled(false);
+    ui->doubleSpinBox_4->setEnabled(false);
+    ui->doubleSpinBox_5->setEnabled(false);
+    ui->doubleSpinBox_7->setEnabled(false);
+
+    ui->doubleSpinBox_8->setValue(0);
+    ui->doubleSpinBox_9->setValue(0);
+    ui->doubleSpinBox_10->setValue(0);
+    ui->doubleSpinBox_11->setValue(0);
+    ui->doubleSpinBox_4->setValue(0);
+    ui->doubleSpinBox_5->setValue(0);
+    ui->doubleSpinBox_7->setValue(0);
+
+    // ===============================
+    // 5️⃣ PHY / MAC（Page3）
+    // ===============================
+    // ui->lineEdit->clear();              // SSID
+    ui->comboBox_3->setCurrentIndex(0); // band
+    ui->comboBox_4->setCurrentIndex(0); // phy model
+    ui->comboBox_5->setCurrentIndex(5); // standard (你原来默认 5)
+    ui->comboBox_7->setCurrentIndex(0);
+    ui->comboBox_8->setCurrentIndex(0);
+
+    ui->spinBox->setValue(1);
+    ui->spinBox_3->setValue(0);
+    ui->spinBox_4->setValue(0);
+    ui->spinBox_5->setValue(0);
+
+    ui->doubleSpinBox_6->setValue(0.0);
+
+    ui->checkBox_5->setChecked(false); // RTS/CTS
+    ui->checkBox_6->setChecked(false); // QoS
+
+    ui->spinBox_3->setEnabled(false);
+    ui->comboBox_6->setEnabled(false);
+    ui->pushButton_8->setEnabled(false);
+
+    // ===============================
+    // 6️⃣ EDCA / Traffic（Page4）
+    // ===============================
+    ui->tableWidget->setRowCount(0);
+
+    // ui->lineEdit_2->clear();
+    ui->comboBox_9->setCurrentIndex(0);
+    ui->comboBox_10->setCurrentIndex(0);
+    ui->doubleSpinBox_19->setValue(0);
+    ui->doubleSpinBox_20->setValue(0);
+
+    ui->checkBox_8->setChecked(false);
+    ui->checkBox_9->setChecked(false);
+    ui->checkBox_10->setChecked(false);
+    ui->checkBox_11->setChecked(false);
+
+    ui->comboBox_11->setEnabled(false);
+    ui->comboBox_12->setEnabled(false);
+    ui->comboBox_14->setEnabled(false);
+
+    ui->spinBox_22->setValue(0);
+    ui->spinBox_23->setValue(0);
+    ui->spinBox_24->setValue(0);
+    ui->spinBox_25->setValue(0);
+    ui->spinBox_26->setValue(0);
+    ui->spinBox_27->setValue(0);
+    ui->spinBox_28->setValue(0);
+    ui->spinBox_29->setValue(0);
+
+    // ===============================
+    // 7️⃣ Channel / Band 约束重新生效
+    // ===============================
+    Restrict_channel();
+
+    qDebug() << "[node_config] resetPage() done";
 }

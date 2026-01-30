@@ -12,7 +12,7 @@ namespace Ui
     class Ap_config;
 }
 
-class Ap_config : public QWidget
+class Ap_config : public QWidget,public ResettableBase
 {
     Q_OBJECT
 
@@ -29,6 +29,7 @@ public:
     void Get_Edca_Config(Ap &, Edca_config &);
     void Get_Antenna_Config(Ap &, Antenna &);
     void Get_Traffic_Config(Ap &);
+    void resetPage() override;
 
 signals:
     void Finish_setting_ap();

@@ -26,6 +26,7 @@ SOURCES += \
     shm.cpp\
     ppdu_info_overlay.cpp\
     legend_overlay.cpp\
+    timeline_display.cpp \
     visualizer_config.cpp\
     utils.cpp\
     indus_widget.cpp\
@@ -48,6 +49,7 @@ HEADERS += \
     shm.h\
     ppdu_info_overlay.h\
     legend_overlay.h\
+    timeline_display.h \
     visualizer_config.h\
     utils.h\
     indus_widget.h\
@@ -61,6 +63,7 @@ FORMS += \
     node_config.ui \
     page1_model_chose.ui \
     simu_config.ui\
+    timeline_display.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

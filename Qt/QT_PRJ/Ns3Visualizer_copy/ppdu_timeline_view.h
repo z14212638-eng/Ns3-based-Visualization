@@ -12,6 +12,12 @@
 #include "legend_overlay.h"
 #include "utils.h"
 
+enum class TimelineRowMode
+{
+    ByAp,
+    ByChannel
+};
+
 struct TimeRangeStats
 {
     uint64_t durationNs = 0;
@@ -25,7 +31,7 @@ struct TimeRangeStats
     double utilization = 0.0; // [0,1]
 };
 
-class PpduTimelineView : public QWidget
+class PpduTimelineView : public QWidget,public ResettableBase
 {
     Q_OBJECT
 public:
@@ -37,6 +43,10 @@ public:
     
     void append(const PpduVisualItem &ppdu);
     void clear();
+    void resetPage() override;
+
+    size_t Num_ap;
+    size_t Num_sta;
 
 signals:
     void timelineClosed();
@@ -57,6 +67,7 @@ private slots:
     void onSaveImage();
     void onToggleLegend();
     void onSetTimeRange();
+    void onToggleChannelView();
     TimeRangeStats computeStats(uint64_t startNs, uint64_t endNs) const;
     void showStatsOverlay(const TimeRangeStats &stats, const QPoint &globalPos);
 
@@ -69,6 +80,7 @@ private:
     /* ===== logic ===== */
     bool hasOverlap(int idx) const;
     int hitTest(const QPoint &pos) const;
+    uint64_t rowKey(const PpduVisualItem &ppdu) const;
 
 private:
     QVector<PpduVisualItem> m_items;
@@ -82,6 +94,8 @@ private:
 
     /* row layout (IMPORTANT: shared!) */
     int m_rowHeight = 30;
+    QPoint m_mousePos;
+
 
     /* margins */
     int m_leftMargin = 60;
@@ -101,6 +115,7 @@ private:
     QPushButton *m_btnLegend = nullptr;
     QPushButton *m_btnSetTimeRange = nullptr;
     QPushButton *quitButton = nullptr;
+    QPushButton *m_btnChannel = nullptr;
 
     PpduInfoOverlay *m_overlay = nullptr;
     LegendOverlay *m_legendOverlay = nullptr;
@@ -120,4 +135,7 @@ private:
     double m_rangeEnd = 1.0;   // [0,1]
 
     int m_lastRangeX = 0;
+
+    /* ===== view mode ===== */
+    TimelineRowMode m_rowMode;
 };

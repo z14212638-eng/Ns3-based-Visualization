@@ -9,7 +9,7 @@ namespace Ui
     class Edca_config;
 }
 
-class Edca_config : public QDialog
+class Edca_config : public QDialog,public ResettableBase
 {
     Q_OBJECT
 
@@ -67,6 +67,7 @@ public:
     bool is_ap;
     bool is_sta;
 
+    void resetPage() override;
 signals:
     void BackToLastPage();
 private slots:
