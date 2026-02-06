@@ -1,6 +1,10 @@
 #include "page1_model_chose.h"
 #include "ui_page1_model_chose.h"
 
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+
 Page1_model_chose::Page1_model_chose(QWidget *parent)
     : QWidget(parent), ui(new Ui::Page1_model_chose)
 {
@@ -11,6 +15,11 @@ Page1_model_chose::Page1_model_chose(QWidget *parent)
     tb->setContentsMargins(0, 0, 0, 0);
     tb->document()->setDocumentMargin(2);
 
+    if (ui->listWidget)
+        ui->listWidget->clear();
+    if (auto *lw2 = findChild<QListWidget *>("listWidget_2"))
+        lw2->clear();
+
     ui->listWidget->setCornerWidget(0);
     ui->listWidget->setCurrentRow(0);
 
@@ -18,19 +27,27 @@ Page1_model_chose::Page1_model_chose(QWidget *parent)
     ui->textBrowser_2->font());
 
     ui->label_3->installEventFilter(this);
+
+    connect(ui->listWidget, &QListWidget::currentItemChanged, this,
+            [=]() { updateMarkdownForSelection(); });
+    if (auto *lw2 = findChild<QListWidget *>("listWidget_2"))
+    {
+        connect(lw2, &QListWidget::currentItemChanged, this,
+                [=]() { updateMarkdownForSelection(); });
+    }
 }
 
 void Page1_model_chose::resetPage()
 {
-    // 1️⃣ 逻辑数据
     sceneName.clear();
-    Scene.clear();   // 你头文件里还有一个 Scene，别忘了
+    Scene.clear();   
 
-    // 2️⃣ ToolBox 回到第一页
+    refreshModelLists();
+
     if (ui->toolBox && ui->toolBox->count() > 0)
         ui->toolBox->setCurrentIndex(0);
 
-    // 3️⃣ 主 listWidget
+
     if (ui->listWidget)
     {
         ui->listWidget->setCurrentRow(-1);
@@ -38,7 +55,6 @@ void Page1_model_chose::resetPage()
             ui->listWidget->setCurrentRow(0);
     }
 
-    // 4️⃣ 第二个 listWidget（如果存在）
     if (auto *lw2 = findChild<QListWidget *>("listWidget_2"))
     {
         lw2->setCurrentRow(-1);
@@ -46,17 +62,14 @@ void Page1_model_chose::resetPage()
             lw2->setCurrentRow(0);
     }
 
-    // 5️⃣ 文本区
     ui->textBrowser->clear();
     ui->textBrowser_2->clear();
 
-    // 6️⃣ 预览区
     ui->label_3->clear();
     ui->label_3->setText("No Preview");
     ui->label_3->setAlignment(Qt::AlignCenter);
     ui->label_3->setScaledContents(false);
 
-    // 7️⃣ 滚动条复位
     if (ui->textBrowser->verticalScrollBar())
         ui->textBrowser->verticalScrollBar()->setValue(0);
 
@@ -66,20 +79,108 @@ void Page1_model_chose::resetPage()
     qDebug() << "[Page1_model_chose] resetPage() done";
 }
 
+QListWidget *Page1_model_chose::currentSceneList() const
+{
+    QWidget *page = ui->toolBox->currentWidget();
+    if (!page)
+        return nullptr;
+
+    QListWidget *lw = page->findChild<QListWidget *>("listWidget");
+    if (!lw)
+        lw = page->findChild<QListWidget *>("listWidget_2");
+
+    return lw;
+}
+
+QString Page1_model_chose::currentSceneBaseDir() const
+{
+    QWidget *page = ui->toolBox->currentWidget();
+    if (!page)
+        return "";
+
+    if (page->findChild<QListWidget *>("listWidget"))
+        return ns3Path + "/contrib/SniffUtils/Simulation/Default/Simple";
+    if (page->findChild<QListWidget *>("listWidget_2"))
+        return ns3Path + "/contrib/SniffUtils/Simulation/Default/Complex";
+
+    return "";
+}
+
+void Page1_model_chose::refreshModelLists()
+{
+    if (ui->listWidget)
+        ui->listWidget->clear();
+
+    if (auto *lw2 = findChild<QListWidget *>("listWidget_2"))
+        lw2->clear();
+
+    if (ns3Path.isEmpty())
+        return;
+
+    QDir simpleDir(ns3Path + "/contrib/SniffUtils/Simulation/Default/Simple");
+    if (simpleDir.exists() && ui->listWidget)
+    {
+        QStringList dirs = simpleDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot,
+                                               QDir::Name);
+        for (const QString &name : dirs)
+            ui->listWidget->addItem(name);
+        if (ui->listWidget->count() > 0)
+            ui->listWidget->setCurrentRow(0);
+    }
+
+    QDir complexDir(ns3Path + "/contrib/SniffUtils/Simulation/Default/Complex");
+    if (complexDir.exists())
+    {
+        if (auto *lw2 = findChild<QListWidget *>("listWidget_2"))
+        {
+            QStringList dirs = complexDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot,
+                                                    QDir::Name);
+            for (const QString &name : dirs)
+                lw2->addItem(name);
+            if (lw2->count() > 0)
+                lw2->setCurrentRow(0);
+        }
+    }
+}
+
+void Page1_model_chose::updateMarkdownForSelection()
+{
+    QListWidget *lw = currentSceneList();
+    if (!lw || !lw->currentItem())
+    {
+        ui->textBrowser_2->clear();
+        return;
+    }
+
+    const QString baseDir = currentSceneBaseDir();
+    if (baseDir.isEmpty())
+    {
+        ui->textBrowser_2->clear();
+        return;
+    }
+
+    const QString sceneName = lw->currentItem()->text();
+    const QString mdPath = baseDir + "/" + sceneName + "/info.md";
+
+    QFile mdFile(mdPath);
+    if (!mdFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        ui->textBrowser_2->clear();
+        return;
+    }
+
+    QTextStream in(&mdFile);
+    const QString content = in.readAll();
+    ui->textBrowser_2->document()->setMarkdown(content);
+}
+
 
 
 QString Page1_model_chose::GetSceneName()
 {
     this->sceneName.clear();
 
-    QWidget *page = ui->toolBox->currentWidget();
-    if (!page)
-        return "";
-
-    QListWidget *lw = page->findChild<QListWidget *>("listWidget");
-    if (!lw)
-        lw = page->findChild<QListWidget *>("listWidget_2");
-
+    QListWidget *lw = currentSceneList();
     if (!lw)
         return "";
 
@@ -113,16 +214,42 @@ void Page1_model_chose::on_pushButton_5_clicked()
     else
         ui->textBrowser->append(name);
 
-    ui->label_3->setPixmap(QPixmap(
-        "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/Test_Design_1/PPDU_TIMELINE/picture.png"));
-    ui->label_3->setAlignment(Qt::AlignCenter);
-    ui->label_3->setScaledContents(true);
+    const QString baseDir = currentSceneBaseDir();
+    if (!baseDir.isEmpty() && !name.isEmpty())
+    {
+        const QString sceneDir = baseDir + "/" + name;
+
+        const QString ccPath = sceneDir + "/" + name + ".cc";
+        const QString scratchPath = ns3Path + "/scratch/" + name + ".cc";
+        if (QFile::exists(ccPath))
+        {
+            if (QFile::exists(scratchPath))
+                QFile::remove(scratchPath);
+            QFile::copy(ccPath, scratchPath);
+        }
+
+        const QString jpgPath = sceneDir + "/" + name + ".jpg";
+        QPixmap pix(jpgPath);
+        if (!pix.isNull())
+        {
+            ui->label_3->setPixmap(pix);
+            ui->label_3->setAlignment(Qt::AlignCenter);
+            ui->label_3->setScaledContents(true);
+        }
+        else
+        {
+            ui->label_3->clear();
+            ui->label_3->setText("No Preview");
+            ui->label_3->setAlignment(Qt::AlignCenter);
+            ui->label_3->setScaledContents(false);
+        }
+    }
 }
 
 
 void Page1_model_chose::on_pushButton_3_clicked()
 {
-   emit ConfigSimulation();
+    emit RunSelectedSimulation();
 }
 
 

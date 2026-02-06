@@ -25,7 +25,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="documentMode">
       <bool>false</bool>
@@ -668,7 +668,7 @@
            <rect>
             <x>10</x>
             <y>20</y>
-            <width>61</width>
+            <width>101</width>
             <height>21</height>
            </rect>
           </property>
@@ -990,9 +990,9 @@
          <widget class="QLabel" name="label_32">
           <property name="geometry">
            <rect>
-            <x>90</x>
+            <x>150</x>
             <y>10</y>
-            <width>51</width>
+            <width>71</width>
             <height>41</height>
            </rect>
           </property>
@@ -1003,7 +1003,7 @@
          <widget class="QComboBox" name="comboBox_6">
           <property name="geometry">
            <rect>
-            <x>150</x>
+            <x>240</x>
             <y>10</y>
             <width>111</width>
             <height>41</height>

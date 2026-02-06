@@ -189,5 +189,9 @@ QTextBrowser
     font-size : 18px;
 }
 
+QTextEdit QScrollBar::add-line,
+QTextEdit QScrollBar::sub-line {
+    height: 0px;
+}
 
 /* =========================

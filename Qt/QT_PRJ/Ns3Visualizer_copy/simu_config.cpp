@@ -2,6 +2,9 @@
 #include "ui_simu_config.h"
 #include "visualizer_config.h"
 
+#include <QFile>
+#include <boost/interprocess/shared_memory_object.hpp>
+
 Simu_Config::Simu_Config(QWidget *parent)
     : QWidget(parent), ui(new Ui::Simu_Config) {
   ui->setupUi(this);
@@ -147,6 +150,7 @@ void Simu_Config::update_json(QGraphicsScene *scene,
 void Simu_Config::on_pushButton_8_clicked() { emit update(); }
 
 void Simu_Config::Update_json_map(JsonHelper &json_helper) {
+  json_helper.ensureRunDirectories();
   // ===============================
   // 1. 用当前 scene 中的 NodeItem 更新 json
   // ===============================
@@ -281,6 +285,7 @@ void Simu_Config::cleanupAndExit() {
   // ===============================
   if (m_ppduReader) {
     qDebug() << "Stopping PPDU reader";
+    m_ppduReader->clearBuffer();
     m_ppduReader->stop();
     m_ppduReader->deleteLater();
     m_ppduReader = nullptr;
@@ -304,6 +309,17 @@ void Simu_Config::cleanupAndExit() {
     ns3Process = nullptr;
   }
 
+  if (!m_copiedScratchPath.isEmpty()) {
+    if (QFile::exists(m_copiedScratchPath))
+      QFile::remove(m_copiedScratchPath);
+    m_copiedScratchPath.clear();
+  } else if (!m_selectedScene.isEmpty() && !m_ns3Path.isEmpty()) {
+    const QString scratchPath =
+        m_ns3Path + "/scratch/" + m_selectedScene + ".cc";
+    if (QFile::exists(scratchPath))
+      QFile::remove(scratchPath);
+  }
+
   // ===============================
   // 3. 关闭 Timeline
   // ===============================
@@ -318,98 +334,110 @@ void Simu_Config::cleanupAndExit() {
   // 5. 关闭自己
   // ===============================
   close();
+  cleaning = false;
 }
 
-void Simu_Config::resetPage()
-{
-    qDebug() << "[Simu_Config] resetPage()";
+void Simu_Config::resetPage() {
+  qDebug() << "[Simu_Config] resetPage()";
 
-    // ===============================
-    // 1️⃣ 停止仿真相关资源（但不 close 自己）
-    // ===============================
-    if (m_ppduReader) {
-        m_ppduReader->stop();
-        m_ppduReader->deleteLater();
-        m_ppduReader = nullptr;
+  // ===============================
+  // 1️⃣ 停止仿真相关资源（但不 close 自己）
+  // ===============================
+  if (m_ppduReader) {
+    m_ppduReader->clearBuffer();
+    m_ppduReader->stop();
+    m_ppduReader->deleteLater();
+    m_ppduReader = nullptr;
+  }
+
+  if (m_ppduThread) {
+    m_ppduThread->quit();
+    m_ppduThread->wait();
+    m_ppduThread->deleteLater();
+    m_ppduThread = nullptr;
+  }
+
+  if (ns3Process) {
+    ns3Process->kill();
+    ns3Process->deleteLater();
+    ns3Process = nullptr;
+  }
+
+  // ===============================
+  // 2️⃣ Scene 清理（删除 NodeItem + 建筑框）
+  // ===============================
+  if (scene) {
+    const auto items = scene->items();
+    for (QGraphicsItem *item : items) {
+      scene->removeItem(item);
+      delete item;
     }
-
-    if (m_ppduThread) {
-        m_ppduThread->quit();
-        m_ppduThread->wait();
-        m_ppduThread->deleteLater();
-        m_ppduThread = nullptr;
-    }
-
-    if (ns3Process) {
-        ns3Process->kill();
-        ns3Process->deleteLater();
-        ns3Process = nullptr;
-    }
-
-    // ===============================
-    // 2️⃣ Scene 清理（删除 NodeItem + 建筑框）
-    // ===============================
-    if (scene) {
-        const auto items = scene->items();
-        for (QGraphicsItem *item : items) {
-            scene->removeItem(item);
-            delete item;
-        }
-        scene->clear();
-    }
-
-    // ===============================
-    // 3️⃣ UI 组件回退
-    // ===============================
-    ui->tabWidget->setCurrentIndex(0);
-
-    ui->doubleSpinBox->setValue(10);
-    ui->doubleSpinBox_2->setValue(10);
-    ui->doubleSpinBox_3->setValue(5);
-    ui->doubleSpinBox_4->setValue(0);
-
-    ui->comboBox->setCurrentIndex(0);
-    ui->comboBox_2->setCurrentIndex(0);
-
-    ui->lcdNumber->display(0);
-    ui->lcdNumber_2->display(0);
-
-    ui->pushButton_7->setEnabled(true);
-    ui->pushButton_7->setText("Check");
-
-    // ===============================
-    // 4️⃣ 内部状态清零
-    // ===============================
-    Num_ap = 0;
-    Num_sta = 0;
-    building_range = {0, 0, 0};
-
-    // ===============================
-    // 5️⃣ GraphicsView 复位
-    // ===============================
-    ui->graphicsView->resetTransform();
-    ui->graphicsView->setScene(scene);
-
-    //rebuildScene();
-    qDebug() << "[Simu_Config] resetPage() done";
-}
-
-void Simu_Config::rebuildScene()
-{
-    if (!scene)
-        scene = new QGraphicsScene(this);
-
     scene->clear();
+  }
 
-    if (building_range[0] <= 0 || building_range[1] <= 0) {
-        qDebug() << "[Simu_Config] skip draw building (invalid range)";
-        return;
-    }
+  // ===============================
+  // 3️⃣ UI 组件回退
+  // ===============================
+  ui->tabWidget->setCurrentIndex(0);
 
-    Draw_the_config_map();
+  ui->doubleSpinBox->setValue(10);
+  ui->doubleSpinBox_2->setValue(10);
+  ui->doubleSpinBox_3->setValue(5);
+  ui->doubleSpinBox_4->setValue(0);
+
+  ui->comboBox->setCurrentIndex(0);
+  ui->comboBox_2->setCurrentIndex(0);
+
+  ui->lcdNumber->display(0);
+  ui->lcdNumber_2->display(0);
+
+  ui->pushButton_7->setEnabled(true);
+  ui->pushButton_7->setText("Check");
+
+  // ===============================
+  // 4️⃣ 内部状态清零
+  // ===============================
+  Num_ap = 0;
+  Num_sta = 0;
+  building_range = {0, 0, 0};
+  m_hasPpdu.store(false);
+  m_selectedScene.clear();
+
+  // ===============================
+  // 5️⃣ GraphicsView 复位
+  // ===============================
+  ui->graphicsView->resetTransform();
+  ui->graphicsView->setScene(scene);
+
+  // rebuildScene();
+  qDebug() << "[Simu_Config] resetPage() done";
 }
 
+void Simu_Config::setNs3Path(const QString &path) {
+  m_ns3Path = path;
+}
 
+void Simu_Config::setSelectedScene(const QString &sceneName) {
+  m_selectedScene = sceneName;
+}
+
+void Simu_Config::resetSimuScene() {
+  m_selectedScene.clear();
+}
+
+void Simu_Config::rebuildScene() {
+  if (!scene)
+    scene = new QGraphicsScene(this);
+
+  scene->clear();
+
+  if (building_range[0] <= 0 || building_range[1] <= 0) {
+    qDebug() << "[Simu_Config] skip draw building (invalid range)";
+    return;
+  }
+
+  Draw_the_config_map();
+}
 
 void Simu_Config::requestCleanup() {
   // 延迟调用 cleanupAndExit，确保事件队列空
@@ -417,6 +445,7 @@ void Simu_Config::requestCleanup() {
 }
 
 void Simu_Config::Load_General_Json(JsonHelper &json_helper) {
+  json_helper.ensureRunDirectories();
   QJsonObject Building;
   double x_range = ui->doubleSpinBox->value();
   double y_range = ui->doubleSpinBox_2->value();
@@ -443,38 +472,190 @@ void Simu_Config::Load_General_Json(JsonHelper &json_helper) {
 }
 
 void Simu_Config::Create_And_StartThread() {
+
   // ===============================
   // 防止重复启动
   // ===============================
+
+  if (m_ppduReader) {
+    m_ppduReader->stop();
+    m_ppduReader->clearBuffer(); // <-- 主动清理，防止残留
+    m_ppduReader->deleteLater();
+    m_ppduReader = nullptr;
+  }
+
   if (ns3Process || m_ppduThread || m_ppduReader) {
     qWarning() << "Simulation already running";
     return;
+  }
+
+  if (m_ns3Path.isEmpty()) {
+    qWarning() << "NS-3 path not set";
+    return;
+  }
+
+  // DIY 模式暂时硬编码为 timeline_crossing.cc
+  // 自适应场景选择逻辑先保留，待后续启用
+  // if (m_selectedScene.isEmpty()) {
+  //   qWarning() << "No scene selected";
+  //   return;
+  // }
+
+  m_hasPpdu.store(false);
+
+  m_copiedScratchPath.clear();
+
+  if (!m_selectedScene.isEmpty())
+  {
+    const QString scratchPath = m_ns3Path + "/scratch/" + m_selectedScene + ".cc";
+    if (!QFile::exists(scratchPath))
+    {
+      const QString simplePath = m_ns3Path +
+                                 "/contrib/SniffUtils/Simulation/Default/Simple/" +
+                                 m_selectedScene + "/" + m_selectedScene + ".cc";
+      const QString complexPath = m_ns3Path +
+                                  "/contrib/SniffUtils/Simulation/Default/Complex/" +
+                                  m_selectedScene + "/" + m_selectedScene + ".cc";
+
+      QString sourcePath;
+      if (QFile::exists(simplePath))
+      {
+        sourcePath = simplePath;
+      }
+      else if (QFile::exists(complexPath))
+      {
+        sourcePath = complexPath;
+      }
+
+      if (sourcePath.isEmpty())
+      {
+        qWarning() << "Scene source not found in Default folders:" << m_selectedScene;
+        return;
+      }
+
+      if (!QFile::copy(sourcePath, scratchPath))
+      {
+        qWarning() << "Failed to copy scene to scratch:" << scratchPath;
+        return;
+      }
+
+      m_copiedScratchPath = scratchPath;
+    }
   }
 
   // ===============================
   // 1. ns-3 process
   // ===============================
   ns3Process = new QProcess(this);
-  ns3Process->setWorkingDirectory("/home/zk/Visualization/ns-3.46");
+  ns3Process->setWorkingDirectory(m_ns3Path);
 
-  connect(ns3Process, &QProcess::started, this, [] {
-    qDebug() << "ns-3 started";
-  });
+  connect(ns3Process, &QProcess::started, this,
+          [] { qDebug() << "ns-3 started"; });
 
   connect(ns3Process,
-          QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-          this,
+          QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
           [this](int code, QProcess::ExitStatus status) {
             qDebug() << "ns-3 finished:" << code << status;
-
-            // 核心：ns-3 结束 ⇒ 触发清理
-            //requestCleanup();
-
             ns3Process->deleteLater();
             ns3Process = nullptr;
+            if (m_ppduReader)
+              m_ppduReader->stop();
+
+            if (!m_copiedScratchPath.isEmpty()) {
+              if (QFile::exists(m_copiedScratchPath))
+                QFile::remove(m_copiedScratchPath);
+              m_copiedScratchPath.clear();
+            }
+
+            if (!m_hasPpdu.load())
+              emit sniffFailed();
           });
 
-  ns3Process->start("./ns3", {"run", "timeline_crossing.cc"});
+  // ===============================
+  // 3. PPDU Reader Thread
+  // ===============================
+  m_ppduThread = new QThread(this);
+  m_ppduReader = new QtPpduReader;
+
+  m_ppduReader->moveToThread(m_ppduThread);
+
+  connect(m_ppduThread, &QThread::started, m_ppduReader, &QtPpduReader::run);
+
+  connect(m_ppduReader, &QtPpduReader::ppduReady, this,
+          [this](const PpduVisualItem &item) {
+            m_hasPpdu.store(true);
+            emit ppduReady(item);
+          },
+          Qt::DirectConnection);
+
+  // reader 自己结束时，线程退出
+  connect(m_ppduReader, &QtPpduReader::finished, this, [this] {
+    if (m_ppduThread) {
+      m_ppduReader->clearBuffer();
+      m_ppduThread->quit();
+    }
+  });
+
+  m_ppduThread->start();
+
+  // 先清理共享内存，避免残留数据
+  boost::interprocess::shared_memory_object::remove("Ns3PpduSharedMemory");
+
+  const bool isDiy = m_selectedScene.isEmpty();
+  const QString sceneToRun =
+      isDiy ? QStringLiteral("QNs3-example.cc") : (m_selectedScene + ".cc");
+  QStringList args = {"run", sceneToRun};
+  if (isDiy)
+  {
+    args << "--" << "--ns3path" << m_ns3Path;
+  }
+  {
+    QProcess buildProcess;
+    buildProcess.setWorkingDirectory(m_ns3Path);
+    QStringList buildArgs = {"build"};
+    if (!isDiy)
+    {
+      buildArgs << ("scratch/" + m_selectedScene);
+    }
+
+    buildProcess.start("./ns3", buildArgs);
+    if (!buildProcess.waitForFinished(-1))
+    {
+      qWarning() << "ns-3 build did not finish";
+      return;
+    }
+
+    const QByteArray buildOut = buildProcess.readAllStandardOutput();
+    if (!buildOut.isEmpty())
+    {
+      emit ns3OutputReady(QString::fromUtf8(buildOut));
+    }
+
+    const QByteArray buildErr = buildProcess.readAllStandardError();
+    if (!buildErr.isEmpty())
+    {
+      emit ns3OutputReady(QString::fromUtf8(buildErr));
+    }
+
+    const int exitCode = buildProcess.exitCode();
+    if (exitCode != 0)
+    {
+      qWarning() << "ns-3 build failed with code" << exitCode;
+      return;
+    }
+  }
+  ns3Process->start("./ns3", args);
+
+  /*LINK the Terminal */
+  connect(ns3Process, &QProcess::readyReadStandardOutput, this, [this]() {
+    QByteArray out = ns3Process->readAllStandardOutput();
+    emit ns3OutputReady(QString::fromUtf8(out));
+  });
+
+  connect(ns3Process, &QProcess::readyReadStandardError, this, [this]() {
+    QByteArray out = ns3Process->readAllStandardError();
+    emit ns3OutputReady(QString::fromUtf8(out));
+  });
 
   // ===============================
   // 2. Timeline View
@@ -490,33 +671,10 @@ void Simu_Config::Create_And_StartThread() {
   //   connect(m_timelineView, &PpduTimelineView::timelineClosed,
   //           this, &Simu_Config::requestCleanup);
   // }
-
   // ===============================
-  // 3. PPDU Reader Thread
+  // 4. PPDU Reader Thread
   // ===============================
-  m_ppduThread = new QThread(this);
-  m_ppduReader = new QtPpduReader;
-
-  m_ppduReader->moveToThread(m_ppduThread);
-
-  connect(m_ppduThread, &QThread::started,
-          m_ppduReader, &QtPpduReader::run);
-
-  connect(m_ppduReader, &QtPpduReader::ppduReady,
-        this, &Simu_Config::ppduReady,
-        Qt::QueuedConnection);
-
-
-  // reader 自己结束时，线程退出
-  connect(m_ppduReader, &QtPpduReader::finished, this, [this] {
-    if (m_ppduThread) {
-      m_ppduThread->quit();
-    }
-  });
-
-  m_ppduThread->start();
 }
-
 
 // Finnal Check , Run the Simulation , Load the General Json
 void Simu_Config::on_pushButton_9_clicked() {

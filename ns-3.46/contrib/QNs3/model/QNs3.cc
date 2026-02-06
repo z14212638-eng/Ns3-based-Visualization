@@ -375,6 +375,7 @@ from_json(const json& j, NodeConfig& nodeConfig)
     j.at("Mobility").get_to(nodeConfig.mobility);
     j.at("Id").get_to(nodeConfig.Id);
     j.at("Channel_number").get_to(nodeConfig.Channel_number);
+    j.at("Frequency").get_to(nodeConfig.Frequency);
     j.at("Qos").get_to(nodeConfig.qos);
     j.at("Antenna").get_to(nodeConfig.antenna);
     j.at("Bandwidth").get_to(nodeConfig.Bandwidth);
@@ -765,13 +766,85 @@ std::vector<std::string>
 GetFilesInFolder(const std::string& folderPath, const std::string& extension)
 {
     std::vector<std::string> files;
-    if (!fs::exists(folderPath) || !fs::is_directory(folderPath))
+
+    auto resolveLatestDesigned = [](const fs::path& input) -> fs::path {
+        if (fs::exists(input) && fs::is_directory(input))
+        {
+            return input;
+        }
+
+        fs::path base;
+        for (fs::path p = input; !p.empty(); p = p.parent_path())
+        {
+            if (p.filename() == "Designed")
+            {
+                base = p;
+                break;
+            }
+        }
+
+        if (base.empty() || !fs::exists(base) || !fs::is_directory(base))
+        {
+            return input;
+        }
+
+        fs::path latest;
+        std::optional<fs::file_time_type> latestTime;
+        for (const auto& entry : fs::directory_iterator(base))
+        {
+            if (!entry.is_directory())
+            {
+                continue;
+            }
+
+            const auto name = entry.path().filename().string();
+            if (name.rfind("Designed_", 0) != 0)
+            {
+                continue;
+            }
+
+            std::error_code ec;
+            const auto t = fs::last_write_time(entry.path(), ec);
+            if (ec)
+            {
+                continue;
+            }
+
+            if (!latestTime.has_value() || t > *latestTime)
+            {
+                latestTime = t;
+                latest = entry.path();
+            }
+        }
+
+        if (latest.empty())
+        {
+            return input;
+        }
+
+        std::string tail = input.filename().string();
+        if (tail.empty())
+        {
+            tail = input.parent_path().filename().string();
+        }
+        if (tail == "GeneralJson" || tail == "StaConfigJson" || tail == "ApConfigJson")
+        {
+            return latest / tail;
+        }
+
+        return latest;
+    };
+
+    const fs::path resolvedPath = resolveLatestDesigned(folderPath);
+
+    if (!fs::exists(resolvedPath) || !fs::is_directory(resolvedPath))
     {
-        std::cerr << "Route does not exist or is not a directory: " << folderPath << std::endl;
+        std::cerr << "Route does not exist or is not a directory: " << resolvedPath.string()
+                  << std::endl;
         return files;
     }
 
-    for (const auto& entry : fs::directory_iterator(folderPath))
+    for (const auto& entry : fs::directory_iterator(resolvedPath))
     {
         if (fs::is_regular_file(entry.status()))
         {
@@ -782,7 +855,8 @@ GetFilesInFolder(const std::string& folderPath, const std::string& extension)
         }
     }
 
-    std::cout << "Loaded " << files.size() << " files from folder: " << folderPath << std::endl;
+    std::cout << "Loaded " << files.size() << " files from folder: "
+              << resolvedPath.string() << std::endl;
     return files;
 }
 
@@ -825,6 +899,10 @@ LoadGeneralConfig(const std::string& path)
 {
     GeneralConfig generalConfig;
     std::vector<std::string> files = GetFilesInFolder(path, ".json");
+    if (files.empty())
+    {
+        throw std::runtime_error("No general config JSON found in folder: " + path);
+    }
     generalConfig = LoadGeneralConfigFromFile(files[0]);
     return generalConfig;
 }

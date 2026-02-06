@@ -1,4 +1,5 @@
 #include "QNs3-helper.h"
+#include "ns3/wifi-phy-operating-channel.h"
 
 namespace ns3
 {
@@ -25,7 +26,7 @@ QNs3Helper::Configure_WifiStandard(const std::string& standard)
 }
 
 void
-Configure_GI(const Ptr<WifiPhy>& phy, const int gi, const std::string& standard)
+QNs3Helper::Configure_GI(const Ptr<WifiPhy>& phy, const int gi, const std::string& standard)
 {
     auto it = standard_map.find(standard);
     auto standard_enum = WIFI_STANDARD_80211n;
@@ -34,6 +35,8 @@ Configure_GI(const Ptr<WifiPhy>& phy, const int gi, const std::string& standard)
         standard_enum = it->second;
     }
 
+    const int giValue = gi;
+
     switch (standard_enum)
     {
     case WIFI_STANDARD_80211a:
@@ -41,39 +44,69 @@ Configure_GI(const Ptr<WifiPhy>& phy, const int gi, const std::string& standard)
     case WIFI_STANDARD_80211g:
         break;
     case WIFI_STANDARD_80211n: {
-        if (gi == 400 && phy->GetDevice()->GetHtConfiguration())
+        if (giValue == 400 && phy && phy->GetDevice() && phy->GetDevice()->GetHtConfiguration())
         {
             Config::SetDefault("ns3::HtConfiguration::ShortGuardIntervalSupported",
                                BooleanValue(true));
         }
+        break;
     }
     case WIFI_STANDARD_80211ac: {
-        if (gi == 400 && phy->GetDevice()->GetVhtConfiguration())
+        if (giValue == 400 && phy && phy->GetDevice() && phy->GetDevice()->GetVhtConfiguration())
         {
             Config::SetDefault("ns3::VhtConfiguration::ShortGuardIntervalSupported",
                                BooleanValue(true));
         }
+        break;
     }
     case WIFI_STANDARD_80211ax: {
-        auto HE = phy->GetDevice()->GetHeConfiguration();
-         HE->SetGuardInterval(MicroSeconds(gi));
+        if (phy && phy->GetDevice())
+        {
+            auto HE = phy->GetDevice()->GetHeConfiguration();
+            if (HE)
+            {
+                int heGi = giValue;
+                if (heGi != 800 && heGi != 1600 && heGi != 3200)
+                {
+                    heGi = 800;
+                }
+                HE->SetGuardInterval(NanoSeconds(heGi));
+            }
+        }
+        break;
     }
+    default:
+        break;
     }
 }
 
 std::string
-QNs3Helper::Configure_RateCtrlManager(std::optional<std::string> rate_ctrl_manager)
+QNs3Helper::Configure_RateCtrlManager(std::optional<std::string> rate_ctrl_manager,
+                                      std::optional<std::string> standard)
 {
     static const std::unordered_map<std::string, std::string> manager_map = {
         {"Aarf", "ns3::AarfWifiManager"},
         {"Aarfcd", "ns3::AarfcdWifiManager"},
-        {"Aminstrel", "ns3::AminstrelWifiManager"},
+        {"Amrr", "ns3::AmrrWifiManager"},
+        {"Arf", "ns3::ArfWifiManager"},
+        {"Cara", "ns3::CaraWifiManager"},
+        {"Rraa", "ns3::RraaWifiManager"},
+        {"Onoe", "ns3::OnoeWifiManager"},
         {"Minstrel", "ns3::MinstrelWifiManager"},
         {"MinstrelHt", "ns3::MinstrelHtWifiManager"},
         {"Ideal", "ns3::IdealWifiManager"},
-        {"Arf", "ns3::ArfWifiManager"},
-        {"Onoe", "ns3::OnoeWifiManager"},
+        {"Constant", "ns3::ConstantRateWifiManager"},
         {"ConstantRate", "ns3::ConstantRateWifiManager"},
+        {"ThompsonSampling", "ns3::ThompsonSamplingWifiManager"},
+        {"ThomsonSampling", "ns3::ThompsonSamplingWifiManager"},
+    };
+
+    auto is_ht_like = [](const std::optional<std::string>& stdName) {
+        if (!stdName.has_value())
+        {
+            return false;
+        }
+        return *stdName == "802.11n" || *stdName == "802.11ac" || *stdName == "802.11ax";
     };
 
     if (rate_ctrl_manager.has_value())
@@ -85,11 +118,16 @@ QNs3Helper::Configure_RateCtrlManager(std::optional<std::string> rate_ctrl_manag
                                                                 << ".Defaulting to Aarf");
             return "ns3::AarfWifiManager";
         }
+        if (*rate_ctrl_manager == "Minstrel" && is_ht_like(standard))
+        {
+            return "ns3::MinstrelHtWifiManager";
+        }
         return it->second;
     }
     else
     {
-        return "ns3::AarfWifiManager";
+        return is_ht_like(standard) ? "ns3::MinstrelHtWifiManager"
+                                    : "ns3::AarfWifiManager";
     }
 }
 
@@ -107,33 +145,164 @@ QNs3Helper::BuildChannelSettings(const NodeConfig& cfg)
 WifiPhyBand
 Determine_Band(const double& frequency)
 {
-    if (frequency >= 5900 && frequency <= 6500)
+    if (frequency >= 5925 && frequency <= 7125)
     {
         return WIFI_PHY_BAND_6GHZ;
     }
-    else if (frequency >= 5600 && frequency <= 5900)
+    else if (frequency >= 4900 && frequency < 5925)
     {
-        if (frequency >= 5000 && frequency <= 5900)
-        {
-            return WIFI_PHY_BAND_5GHZ;
-        }
-        else if (frequency >= 2400 && frequency <= 2500)
-        {
-            return WIFI_PHY_BAND_2_4GHZ;
-        }
+        return WIFI_PHY_BAND_5GHZ;
+    }
+    else if (frequency >= 2400 && frequency <= 2500)
+    {
+        return WIFI_PHY_BAND_2_4GHZ;
     }
     return WIFI_PHY_BAND_UNSPECIFIED;
 }
 
-WifiChannelConfig
-QNs3Helper::Configure_BandChannel(const NodeConfig& node)
+uint8_t CalcPrimary20Index(uint32_t bandwidthMHz)
 {
-    WifiChannelConfig channel_config;
-    WifiPhyBand band = Determine_Band(node.Frequency);
-    WifiChannelConfig::Segment segment(static_cast<uint8_t>(node.Channel_number),
-                                       MHz_u{static_cast<double>(node.Bandwidth)},
+    if (bandwidthMHz < 20 || bandwidthMHz % 20 != 0)
+        throw std::runtime_error("Invalid channel bandwidth");
+
+    // default: lowest 20 MHz as primary
+    return 0;
+}
+
+
+WifiChannelConfig
+QNs3Helper::Configure_BandChannel(const NodeConfig& nodeconfig)
+{
+    auto standardFromString = [](const std::string& standard) {
+        const auto it = standard_map.find(standard);
+        if (it != standard_map.end())
+        {
+            return it->second;
+        }
+        return WIFI_STANDARD_80211n;
+    };
+
+    auto collectChannels = [](WifiPhyBand band, uint32_t bw) {
+        std::vector<uint8_t> channels;
+        const auto targetWidth = MHz_u{static_cast<double>(bw)};
+        for (const auto& info : WifiPhyOperatingChannel::GetFrequencyChannels())
+        {
+            if (info.band != band)
+            {
+                continue;
+            }
+            if (info.width != targetWidth)
+            {
+                continue;
+            }
+            channels.push_back(info.number);
+        }
+        std::sort(channels.begin(), channels.end());
+        channels.erase(std::unique(channels.begin(), channels.end()), channels.end());
+        return channels;
+    };
+
+    auto pickNearestChannel = [](const std::vector<uint8_t>& channels, int channelNumber) -> uint8_t {
+        if (channels.empty())
+        {
+            return 0;
+        }
+        uint8_t best = channels.front();
+        int bestDiff = std::abs(channelNumber - static_cast<int>(best));
+        for (auto ch : channels)
+        {
+            const int diff = std::abs(channelNumber - static_cast<int>(ch));
+            if (diff < bestDiff)
+            {
+                best = ch;
+                bestDiff = diff;
+            }
+        }
+        return best;
+    };
+
+    const auto standardEnum = standardFromString(nodeconfig.Standard);
+
+    uint32_t bw = static_cast<uint32_t>(nodeconfig.Bandwidth);
+    if (bw != 20 && bw != 40 && bw != 80 && bw != 160)
+    {
+        bw = 20;
+    }
+
+    WifiPhyBand band = Determine_Band(nodeconfig.Frequency);
+
+    // If band is unspecified or mismatched, infer from channel number.
+    const int channelNumber = nodeconfig.Channel_number;
+    if (band == WIFI_PHY_BAND_UNSPECIFIED)
+    {
+        const auto ch24 = collectChannels(WIFI_PHY_BAND_2_4GHZ, bw);
+        const auto ch5 = collectChannels(WIFI_PHY_BAND_5GHZ, bw);
+        const auto ch6 = collectChannels(WIFI_PHY_BAND_6GHZ, bw);
+
+        if (std::find(ch24.begin(), ch24.end(), channelNumber) != ch24.end())
+        {
+            band = WIFI_PHY_BAND_2_4GHZ;
+        }
+        else if (std::find(ch5.begin(), ch5.end(), channelNumber) != ch5.end())
+        {
+            band = WIFI_PHY_BAND_5GHZ;
+        }
+        else if (std::find(ch6.begin(), ch6.end(), channelNumber) != ch6.end())
+        {
+            band = WIFI_PHY_BAND_6GHZ;
+        }
+    }
+
+    if (band == WIFI_PHY_BAND_UNSPECIFIED)
+    {
+        band = WIFI_PHY_BAND_5GHZ;
+    }
+
+    // Validate bandwidth for band; fallback to a supported width
+    auto validChannels = collectChannels(band, bw);
+    if (validChannels.empty())
+    {
+        if (band == WIFI_PHY_BAND_2_4GHZ)
+        {
+            bw = (bw == 40) ? 40 : 20;
+        }
+        else
+        {
+            bw = 20;
+        }
+        validChannels = collectChannels(band, bw);
+    }
+
+    uint8_t chosenChannel = 0;
+    if (!validChannels.empty())
+    {
+        if (std::find(validChannels.begin(), validChannels.end(), channelNumber) != validChannels.end())
+        {
+            chosenChannel = static_cast<uint8_t>(channelNumber);
+        }
+        else
+        {
+            chosenChannel = pickNearestChannel(validChannels, channelNumber);
+        }
+    }
+    else
+    {
+        try
+        {
+            chosenChannel = WifiPhyOperatingChannel::GetDefaultChannelNumber(
+                MHz_u{static_cast<double>(bw)}, standardEnum, band);
+        }
+        catch (const std::exception&)
+        {
+            chosenChannel = (band == WIFI_PHY_BAND_2_4GHZ) ? 1 : 36;
+        }
+    }
+
+    uint8_t p20Index = CalcPrimary20Index(bw);
+    WifiChannelConfig::Segment segment(static_cast<uint8_t>(chosenChannel),
+                                       MHz_u{static_cast<double>(bw)},
                                        band,
-                                       0);
+                                       p20Index);
     return WifiChannelConfig(segment);
 }
 
@@ -161,6 +330,8 @@ QNs3Helper::ConfigurePhy(const NodeConfig& cfg, const Ptr<WifiNetDevice>& device
     phy->SetOperatingChannel(Configure_BandChannel(cfg));
     phy->SetTxPowerStart(cfg.Tx_power);
     phy->SetTxPowerEnd(cfg.Tx_power);
+    Configure_GI(phy, cfg.Guard_interval, cfg.Standard);
+    //Not recommended to set slot and sifs
     if (cfg.Slot)
     {
         phy->SetSlot(MicroSeconds(*cfg.Slot));

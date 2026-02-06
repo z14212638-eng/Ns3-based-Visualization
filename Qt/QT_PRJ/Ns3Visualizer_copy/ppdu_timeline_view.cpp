@@ -337,25 +337,47 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
             painter.drawText(8, y + 5,
                              QString("NODE %1").arg(row + 1));
 
-        // -------- hover 显示 MAC 地址 --------
+        // -------- hover 显示信息（AP: MAC；Channel: 频段） --------
         QRect labelRect(0, y - rowH / 2, m_leftMargin - 10, rowH);
 
         if (labelRect.contains(m_mousePos)) // m_mousePos 在 mouseMoveEvent 里更新
         {
-            QString mac;
-            uint64_t addr = it.key();
-            QStringList parts;
-            for (int i = 5; i >= 0; --i)
+            if (m_rowMode == TimelineRowMode::ByChannel)
             {
-                parts << QString("%1")
-                             .arg((addr >> (i * 8)) & 0xFF, 2, 16, QChar('0'));
-            }
-            mac = parts.join(":").toUpper();
+                // 按信道视图：根据信道号显示 2.4G / 5G
+                int ch = static_cast<int>(it.key());
 
-            QToolTip::showText(
-                mapToGlobal(QPoint(8, y)),
-                mac,
-                this);
+                QString band;
+                if (ch >= 1 && ch <= 14)
+                    band = "2.4G";
+                else
+                    band = "5G";
+
+                QString tip = QString("Channel %1 (%2)").arg(ch).arg(band);
+
+                QToolTip::showText(
+                    mapToGlobal(QPoint(8, y)),
+                    tip,
+                    this);
+            }
+            else
+            {
+                // 按 AP 视图：保持原来的 MAC 地址显示
+                QString mac;
+                uint64_t addr = it.key();
+                QStringList parts;
+                for (int i = 5; i >= 0; --i)
+                {
+                    parts << QString("%1")
+                                 .arg((addr >> (i * 8)) & 0xFF, 2, 16, QChar('0'));
+                }
+                mac = parts.join(":").toUpper();
+
+                QToolTip::showText(
+                    mapToGlobal(QPoint(8, y)),
+                    mac,
+                    this);
+            }
         }
     }
     painter.setPen(QColor(180, 180, 180));

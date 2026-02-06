@@ -12,6 +12,7 @@
 #include <QTimer>
 
 #include "page1_model_chose.h"
+#include "greeting.h"
 #include "utils.h"
 #include "indus_widget.h"
 #include "antennas.h"
@@ -43,6 +44,9 @@ public:
     void switchTo(int index);
     void back();
     void resetMain();
+    bool isValidNs3Directory(const QString &path);
+    void onBrowseNs3Dir();
+    void setNs3Path();
 
 private:
     Ui::MainWindow *ui;
@@ -59,6 +63,7 @@ private:
     Edca_config *edcaConfig;//ui-only
     Antenna *antenna;//ui-only
     Timeline_Display *timelineDisplay;
+    Greeting *greetingPage;
 
     /*Menu_Actions & SideBar_Actions*/
     QAction *homeAction;
@@ -69,5 +74,8 @@ private:
     Sta sta_now;
     BuildingConfig buildingConfig;//including ap_list and sta_list
     JsonHelper jsonhelper;
+
+    /*Prequisites*/
+    bool ns3PathValid;
 };
 #endif // MAINWINDOW_H

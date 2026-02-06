@@ -90,6 +90,9 @@ SniffUtils::Initialize(NetDeviceContainer sender,
         phy->TraceConnectWithoutContext("PhyTxEnd",
                                         MakeCallback(&SniffUtils::Sniff_tx_packet_end, this));
 
+        phy->TraceConnectWithoutContext("MonitorSnifferTx",
+                                        MakeCallback(&SniffUtils::Sniff_tx_packet_begin, this));
+
         phy->TraceConnectWithoutContext("PhyTxDrop",
                                         MakeCallback(&SniffUtils::Sniff_drop_packet_phy, this));
 
@@ -101,30 +104,41 @@ SniffUtils::Initialize(NetDeviceContainer sender,
     return true;
 }
 
-uint8_t FreqToChannel(double freqMHz)
+uint8_t
+FreqToChannel(double freqMHz)
 {
-    if (freqMHz >= 2412 && freqMHz <= 2484)   
+    if (freqMHz >= 2412 && freqMHz <= 2484)
+    {
         return static_cast<uint8_t>((freqMHz - 2407) / 5);
+    }
     else if (freqMHz >= 5180 && freqMHz <= 5825)
+    {
         return static_cast<uint8_t>((freqMHz - 5000) / 5);
+    }
     else if (freqMHz >= 5955 && freqMHz <= 7115)
+    {
         return static_cast<uint8_t>((freqMHz - 5955) / 5);
-    return 0; 
+    }
+    return 0;
 }
 
-uint8_t GetPpduPrimaryChannel(const Ptr<const WifiPpdu>& ppdu)
+uint8_t
+GetPpduPrimaryChannel(const Ptr<const WifiPpdu>& ppdu)
 {
     std::vector<MHz_u> freqs = ppdu->GetTxCenterFreqs();
-    if (freqs.empty()) return 0;
+    if (freqs.empty())
+    {
+        return 0;
+    }
 
     double centerFreq = freqs[0]; // 主中心频率
     return FreqToChannel(centerFreq);
 }
 
-
 /**
  * @brief Finally tag the PPDU with the result of the sniffing.
- * @attention We can not deduce the result of the rx when we start sniffing,so waiting until the end of the PPDU to tag it.
+ * @attention We can not deduce the result of the rx when we start sniffing,so
+ * waiting until the end of the PPDU to tag it.
  *
  * @param id find the PPDU by its id.
  */
@@ -183,7 +197,7 @@ SniffUtils::Sniff_tx_packet_begin(Ptr<const Packet> packet,
                                   MpduInfo mpdu_info,
                                   uint16_t sta_id)
 {
-    std::cout << "SniffUtils::Sniff_tx_packet_begin" << std::endl;
+    ;
 }
 
 void
@@ -207,8 +221,8 @@ SniffUtils::Sniff_rx_packet_begin(Ptr<const Packet> packet,
 
     auto& current_ppdu = *m_active_ppdu;
     PPDU_Meta& meta = m_ring->records[current_ppdu.ring_index];
-    meta.sta_id = sta_id;
-    int16_t snr_db_x10 = static_cast<int16_t>(std::round((noise.signal - noise.noise) * 10));
+
+    uint16_t snr_db_x10 = static_cast<uint16_t>(std::round((noise.signal - noise.noise) * 10));
 
     current_ppdu.snr_sum += snr_db_x10;
     current_ppdu.snr_cnt++;
@@ -298,6 +312,9 @@ SniffUtils::Sniff_ppdu_begin(Ptr<const WifiPpdu> ppdu, const WifiTxVector& tx_ve
     uint8_t channels = GetPpduPrimaryChannel(ppdu);
     meta.channel_id = channels;
 
+    /* 确定 STA ID */
+    meta.sta_id = 65535;
+
     /*Frame_Type*/
     meta.frame_type = static_cast<uint8_t>(psdu_sample->GetHeader(0).GetType());
 
@@ -372,7 +389,8 @@ AppendPpdu(RingBuffer* buffer, const PPDU_Meta& ppdu)
 void
 ShmExample()
 {
-    managed_shared_memory shm(open_or_create, SHM_NAME, 1024UL * 1024 * 1024); // 1GB
+    managed_shared_memory shm(open_or_create, SHM_NAME,
+                              1024UL * 1024 * 1024); // 1GB
 
     RingBuffer* ring = shm.find_or_construct<RingBuffer>("PpduRing")();
     ring->write_index = 0;
@@ -394,7 +412,6 @@ ShmExample()
     ppdu.tx_end_ns = 1200;
     ppdu.tx_duration_ns = ppdu.tx_end_ns - ppdu.tx_start_ns;
     ppdu.rx_state = 1; // success
-
 
     AppendPpdu(ring, ppdu);
 
@@ -459,7 +476,7 @@ SniffUtils::PrintPpduMeta(uint32_t ring_index) const
         std::cout << "Collision @   : " << m.collision_time_ns << " ns\n";
     }
 
-    if(m.snr_margin_db_x10 != 0)
+    if (m.snr_margin_db_x10 != 0)
     {
         std::cout << "SNR        : " << m.snr_margin_db_x10 / 10.0 << " dB\n";
     }

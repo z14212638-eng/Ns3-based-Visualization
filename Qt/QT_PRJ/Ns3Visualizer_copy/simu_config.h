@@ -20,6 +20,7 @@
 #include <QThread>
 #include <QWidget>
 #include <QtGlobal>
+#include <atomic>
 #include <functional>
 #include <qprocess.h>
 
@@ -45,6 +46,9 @@ public:
   void cleanupAndExit();
   void resetPage() override;
   void rebuildScene();
+  void setNs3Path(const QString &path);
+  void setSelectedScene(const QString &sceneName);
+  void resetSimuScene();
 
 signals:
   void BackToLastPage();
@@ -55,7 +59,10 @@ signals:
   void LoadGeneralConfig();
   void ppduReady(const PpduVisualItem &item);
   void CreateAndStartThread();
+  void ns3OutputReady(const QString &text);
   void simulation_end();
+  void sniffFailed();
+  
 
 private slots:
   void on_pushButton_clicked();
@@ -77,6 +84,10 @@ private:
   QThread *m_ppduThread = nullptr;
   QtPpduReader *m_ppduReader = nullptr;
   QProcess *ns3Process = nullptr;
+  QString m_ns3Path;
+  QString m_selectedScene;
+  std::atomic_bool m_hasPpdu{false};
+  QString m_copiedScratchPath;
 
   QVector<double> building_range = {0, 0, 0};
 };

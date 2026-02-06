@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
     address.Assign(apDevices);
     address.Assign(staDevices);
 
-    // ===== Application (关键：UdpEcho) =====
+    // ===== Application =====
     UdpEchoServerHelper server(9);
     auto serverApp = server.Install(apNode.Get(0));
     serverApp.Start(Seconds(1.0));
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-    // ===== SniffUtils (MUST be BEFORE Run) =====
+    // ===== SniffUtils =====
     using namespace boost::interprocess;
     shared_memory_object::remove("Ns3PpduSharedMemory");
 

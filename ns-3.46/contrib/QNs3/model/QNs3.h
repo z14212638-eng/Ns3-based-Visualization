@@ -280,8 +280,11 @@ struct GeneralConfig
     std::string WallType;
     std::vector<double> range;
     double SimulationTime;
-    std::string path = "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/Test_Design_1/";
+    std::string ns3Path;
+    std::string jsonPath = "contrib/SniffUtils/Simulation/Designed/";
+    std::string path = ns3Path + jsonPath;
 };
+    
 
 
 std::ostream& PrintGeneralConfig(const GeneralConfig& , std::ostream&);

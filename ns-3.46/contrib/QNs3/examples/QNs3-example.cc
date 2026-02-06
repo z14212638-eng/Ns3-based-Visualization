@@ -44,7 +44,8 @@ main(int argc, char* argv[])
     WifiMacHelper mac;
     Ssid ssid(apConfigs.front().Ssid);
 
-    wifi.SetRemoteStationManager(Configure_RateCtrlManager(apConfigs.front().Rate_ctr_algo));
+    wifi.SetRemoteStationManager(
+        Configure_RateCtrlManager(apConfigs.front().Rate_ctr_algo, apConfigs.front().Standard));
     mac.SetType("ns3::ApWifiMac",
                 "Ssid",
                 SsidValue(ssid),

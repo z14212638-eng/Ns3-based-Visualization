@@ -42,10 +42,94 @@ Ap_config::Ap_config(QWidget *parent)
 // restrict the bandwidth,channel number and the frequency
 void Ap_config::Restrict_channel()
 {
+    auto apply_slot_sifs = [this]()
+    {
+        auto standard = get_standard_from_string(
+            ui->comboBox_5->currentText().toStdString());
+
+        bool updated = false;
+        double slot = ui->doubleSpinBox_7->value();
+        double sifs = ui->doubleSpinBox_8->value();
+
+        switch (standard)
+        {
+        case Standard_MAP::k80211b:
+            slot = 20.0;
+            sifs = 10.0;
+            updated = true;
+            break;
+
+        case Standard_MAP::k80211a:
+        case Standard_MAP::k80211g:
+        case Standard_MAP::k80211n:
+        case Standard_MAP::k80211ac:
+        case Standard_MAP::k80211ax:
+            slot = 9.0;
+            sifs = 16.0;
+            updated = true;
+            break;
+
+        default:
+            break;
+        }
+
+        if (updated)
+        {
+            ui->doubleSpinBox_7->setValue(slot);
+            ui->doubleSpinBox_8->setValue(sifs);
+        }
+
+        ui->doubleSpinBox_7->setEnabled(false);
+        ui->doubleSpinBox_8->setEnabled(false);
+    };
+
+    auto apply_rate_control = [this]()
+    {
+        auto standard = get_standard_from_string(
+            ui->comboBox_5->currentText().toStdString());
+
+        auto is_allowed = [standard](const QString &name)
+        {
+            if (standard == Standard_MAP::k80211b)
+            {
+                return name == "Aarf" || name == "Amrr" || name == "Arf" ||
+                       name == "Cara" || name == "Onoe" || name == "Rraa" ||
+                       name == "Ideal" || name == "Constant";
+            }
+            if (standard == Standard_MAP::k80211a || standard == Standard_MAP::k80211g)
+            {
+                return name == "Aarf" || name == "Amrr" || name == "Arf" ||
+                       name == "Cara" || name == "Onoe" || name == "Rraa" ||
+                       name == "Minstrel" || name == "Ideal" || name == "Constant";
+            }
+            // 802.11n/ac/ax
+            return name == "Minstrel" || name == "Ideal" || name == "Constant" ||
+                   name == "ThomsonSampling";
+        };
+
+        int firstAllowed = -1;
+        for (int i = 0; i < ui->comboBox_7->count(); ++i)
+        {
+            const QString item = ui->comboBox_7->itemText(i);
+            const bool allowed = is_allowed(item);
+            ui->comboBox_7->setItemData(i, QVariant(allowed ? 1 : 0), Qt::UserRole - 1);
+            if (allowed && firstAllowed == -1)
+            {
+                firstAllowed = i;
+            }
+        }
+
+        if (firstAllowed != -1 &&
+            !is_allowed(ui->comboBox_7->currentText()))
+        {
+            ui->comboBox_7->setCurrentIndex(firstAllowed);
+        }
+    };
+
     connect(ui->comboBox_5,
             &QComboBox::currentTextChanged,
             this,
-            [this](const QString &text)
+            [this, apply_slot_sifs, apply_rate_control](const QString &text)
             {
                 auto standard = get_standard_from_string(text.toStdString());
 
@@ -84,12 +168,15 @@ void Ap_config::Restrict_channel()
                 default:
                     break;
                 }
+
+                apply_slot_sifs();
+                apply_rate_control();
             });
 
     connect(ui->comboBox_3,
             &QComboBox::currentTextChanged,
             this,
-            [this](const QString &text)
+            [this, apply_slot_sifs](const QString &text)
             {
                 ui->comboBox_16->clear();
 
@@ -113,6 +200,8 @@ void Ap_config::Restrict_channel()
                     ui->spinBox->setSingleStep(4);
                     ui->spinBox->setValue(36);
                 }
+
+                apply_slot_sifs();
             });
 
     connect(ui->comboBox_16,
@@ -144,6 +233,9 @@ void Ap_config::Restrict_channel()
                     ui->spinBox->setValue(50);
                 }
             });
+
+    apply_slot_sifs();
+    apply_rate_control();
 }
 
 Ap_config::~Ap_config()
@@ -793,6 +885,8 @@ void Ap_config::resetPage()
     ui->doubleSpinBox_6->setValue(0.0);     // TxPower
     ui->doubleSpinBox_7->setValue(0.0);     // Slot
     ui->doubleSpinBox_8->setValue(0.0);     // Sifs
+    ui->doubleSpinBox_7->setEnabled(false);
+    ui->doubleSpinBox_8->setEnabled(false);
     ui->doubleSpinBox_9->setValue(0.0);
     ui->doubleSpinBox_10->setValue(0.0);
     ui->doubleSpinBox_11->setValue(0.0);

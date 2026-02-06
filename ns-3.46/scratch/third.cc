@@ -167,7 +167,8 @@ main(int argc, char* argv[])
 
     using namespace boost::interprocess;
     shared_memory_object::remove("Ns3PpduSharedMemory");
-    
+
+    // Create a sniffer to capture the ppdu data from the wifi devices
     Ptr<SniffUtils> sniffer = CreateObject<SniffUtils>();
     sniffer->Initialize(staDevices, apDevices, 10);
 

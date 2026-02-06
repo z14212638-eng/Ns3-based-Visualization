@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QTextBrowser>
 #include <QScrollBar>
+#include <QListWidget>
 
 
 #include "simu_config.h"
@@ -25,8 +26,10 @@ public:
     ~Page1_model_chose();
     QString GetSceneName();
     QString Scene = "";
+    QString ns3Path = "";
     Simu_Config *simu_config = new(Simu_Config);
     void resetPage() override;
+    void refreshModelLists();
 private slots:
     void on_pushButton_4_clicked();
 
@@ -34,17 +37,20 @@ private slots:
 
     void on_pushButton_3_clicked();
 
-
-
     void on_pushButton_clicked();
 
 signals:
     void BackToMain();
     void ConfigSimulation();
+    void RunSelectedSimulation();
 private:
     Ui::Page1_model_chose *ui;
     QString sceneName = "";
     bool eventFilter(QObject *obj, QEvent *event) override;
+    QListWidget *currentSceneList() const;
+    QString currentSceneBaseDir() const;
+    void updateMarkdownForSelection();
+    
 };
 
 #endif // PAGE1_MODEL_CHOSE_H

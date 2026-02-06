@@ -332,18 +332,24 @@ public:
     bool SetStaToJson(const Sta *, qint8);
     bool SetApToJson(const Ap *, qint8);
     bool SaveJsonObjToRoute(const QJsonObject, const QString);
+    void ensureRunDirectories();
     void reset();
 
     QJsonObject m_building_config;
     QJsonObject *m_sta_config = nullptr;
     QJsonObject *m_ap_config = nullptr;
     std::shared_ptr<BuildingConfig> m_building = std::make_shared<BuildingConfig>();
-    QString Ap_file_path = "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/Test_Design_1/ApConfigJson/Ap_";
-    QString Sta_file_path = "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/Test_Design_1/StaConfigJson/Sta_";
-    QString General_file_path = "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/Test_Design_1/GeneralJson/";
+    QString Base_dir = "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/";
+    QString Run_dir = "";
+    QString Ap_file_path = "";
+    QString Sta_file_path = "";
+    QString General_file_path = "";
 
     QVector<QJsonObject> m_sta_config_list = {};
     QVector<QJsonObject> m_ap_config_list = {};
+
+private:
+    bool run_dir_initialized = false;
 };
 
 double get_true_random_double(double, double);

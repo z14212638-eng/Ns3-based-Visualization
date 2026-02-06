@@ -65,7 +65,7 @@ void Antenna::on_buttonBox_accepted() {
   // 🛡 兜底：用户删光了
   if (antenna_list.isEmpty()) {
     antenna_list.append(
-        std::make_shared<Antenna_Config>("IsotropicAntennaModel", 0, 360));
+        std::make_shared<Antenna_Config>("Isotropic", 0, 360));
   }
 
   emit BackToLastPage();
@@ -96,12 +96,12 @@ void Antenna::insertDefaultAntenna() {
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(1);
 
-    ui->tableWidget->setItem(0, 0, new QTableWidgetItem("IsotropicAntennaModel"));
+    ui->tableWidget->setItem(0, 0, new QTableWidgetItem("Isotropic"));
     ui->tableWidget->setItem(0, 1, new QTableWidgetItem("0"));
     ui->tableWidget->setItem(0, 2, new QTableWidgetItem("360"));
 
     antenna_list.clear();
     antenna_list.append(
-        std::make_shared<Antenna_Config>("IsotropicAntennaModel", 0, 360)
+        std::make_shared<Antenna_Config>("Isotropic", 0, 360)
     );
 }

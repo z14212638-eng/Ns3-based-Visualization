@@ -19,7 +19,15 @@ MainWindow::MainWindow(QWidget *parent)
   addToolBar(Qt::TopToolBarArea, topToolBar);
   homeAction = topToolBar->addAction("Home");
   connect(homeAction, &QAction::triggered, this, [=]() { switchTo(0); });
-  topToolBar->addAction("Settings");
+  QAction *pathAction =
+      new QAction(QIcon(":/icons/folder.svg"), tr("NS-3 Path"), this);
+
+  pathAction->setToolTip(tr("Set NS-3 working directory"));
+  topToolBar->addAction(pathAction);
+
+  connect(pathAction, &QAction::triggered, this, &MainWindow::onBrowseNs3Dir);
+  topToolBar->setIconSize(QSize(24, 24));
+  topToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
   /* ================== Central Widget ================== */
   QWidget *central = new QWidget(this);
@@ -55,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
   edcaConfig = new Edca_config(this);
   antenna = new Antenna(this);
   timelineDisplay = new Timeline_Display(this);
+  greetingPage = new Greeting(this);
 
   stack->addWidget(page1);           // index 0
   stack->addWidget(simuConfig);      // index 1
@@ -63,8 +72,9 @@ MainWindow::MainWindow(QWidget *parent)
   stack->addWidget(edcaConfig);      // index 4
   stack->addWidget(antenna);         // index 5
   stack->addWidget(timelineDisplay); // index 6
+  stack->addWidget(greetingPage);
 
-  switchTo(0);
+  switchTo(stack->indexOf(greetingPage));
 
   /* ================== Layout Assemble ================== */
   mainLayout->addWidget(leftSidebar);
@@ -73,11 +83,42 @@ MainWindow::MainWindow(QWidget *parent)
 
   /* ================== Signal & Slot ================== */
 
+  /*greetingPage*/
+  connect(greetingPage, &Greeting::nextPage, this, [=]() { switchTo(0); });
   /*Page_1_model_chose*/
-  connect(page1, &Page1_model_chose::BackToMain, this, [=]() { switchTo(0); });
+  connect(page1, &Page1_model_chose::BackToMain, this, [=]() { switchTo(stack->indexOf(greetingPage)); });
 
   connect(page1, &Page1_model_chose::ConfigSimulation, this,
-          [=]() { switchTo(1); });
+          [=]() {
+            if (simuConfig)
+              simuConfig->setSelectedScene(QString());
+            simuConfig->resetSimuScene();
+            switchTo(1);
+          });
+
+  connect(page1, &Page1_model_chose::RunSelectedSimulation, this,
+          [=]() {
+            if (!ns3PathValid) {
+              QMessageBox::warning(
+                  this,
+                  tr("NS-3 not configured"),
+                  tr("Please set the NS-3 directory before starting a simulation."));
+              return;
+            }
+            const QString sceneName = page1->GetSceneName();
+            if (sceneName.isEmpty()) {
+              QMessageBox::warning(this, tr("No Scene"),
+                                   tr("Please select a scene first."));
+              return;
+            }
+            if (simuConfig) {
+              simuConfig->setSelectedScene(sceneName);
+            }
+            if (timelineDisplay)
+              timelineDisplay->resetPage();
+            simuConfig->Create_And_StartThread();
+            switchTo(6);
+          });
   /*Simu_Config*/
   connect(simuConfig, &Simu_Config::BackToLastPage, this,
           [=]() { switchTo(0); });
@@ -93,11 +134,14 @@ MainWindow::MainWindow(QWidget *parent)
   connect(simuConfig, &Simu_Config::LoadGeneralConfig, this,
           [=]() { simuConfig->Load_General_Json(jsonhelper); });
 
+  connect(simuConfig, &Simu_Config::ns3OutputReady, timelineDisplay,
+          &Timeline_Display::appendOutput);
   connect(simuConfig, &Simu_Config::CreateAndStartThread, this, [=]() {
     auto *tv = timelineDisplay->timelineView();
     tv->Num_ap = simuConfig->Num_ap;
     tv->Num_sta = simuConfig->Num_sta;
-    tv->clear();
+    if (timelineDisplay)
+      timelineDisplay->resetPage();
     simuConfig->Create_And_StartThread();
 
     switchTo(6);
@@ -177,6 +221,10 @@ MainWindow::MainWindow(QWidget *parent)
   /*Timeline_Display*/
   connect(simuConfig, &Simu_Config::ppduReady, timelineDisplay->timelineView(),
           &PpduTimelineView::append, Qt::QueuedConnection);
+  connect(simuConfig, &Simu_Config::ppduReady, timelineDisplay,
+          &Timeline_Display::appendPpdu, Qt::QueuedConnection);
+    connect(simuConfig, &Simu_Config::sniffFailed, timelineDisplay,
+      &Timeline_Display::showSniffFail, Qt::QueuedConnection);
   /*Timeline_Display*/
   connect(timelineDisplay->timelineView(), &PpduTimelineView::quit_simulation,
           this, [=]() {
@@ -185,7 +233,7 @@ MainWindow::MainWindow(QWidget *parent)
             if (simuConfig) {
               simuConfig->requestCleanup();
             }
-            switchTo(0);
+            switchTo(stack->indexOf(greetingPage));
             resetMain();
           });
 
@@ -220,44 +268,85 @@ void MainWindow::closeEvent(QCloseEvent *event) {
   event->accept();
 }
 
-void MainWindow::resetMain()
-{
-    qDebug() << "[MainWindow] resetMain()";
+void MainWindow::resetMain() {
+  qDebug() << "[MainWindow] resetMain()";
 
-    // ===============================
-    // 1️⃣ 清空导航历史
-    // ===============================ap
-    history.clear();
+  // ===============================
+  // 1️⃣ 清空导航历史
+  // ===============================ap
+  history.clear();
 
-    // ===============================
-    // 2️⃣ 停止 & reset 仿真核心页
-    // ===============================
-    if (simuConfig) {
-        simuConfig->resetPage();
-    }
+  // ===============================
+  // 2️⃣ 停止 & reset 仿真核心页
+  // ===============================
+  if (simuConfig) {
+    simuConfig->resetPage();
+  }
 
-    // ===============================
-    // 3️⃣ reset 所有页面（UI 状态）
-    // ===============================
-    if (page1) page1->resetPage();
-    if (nodeConfigPage) nodeConfigPage->resetPage();
-    if (apConfigPage) apConfigPage->resetPage();
-    if (edcaConfig) edcaConfig->resetPage();
-    if (antenna) antenna->resetPage();
-    if (timelineDisplay) timelineDisplay->resetPage();
+  // ===============================
+  // 3️⃣ reset 所有页面（UI 状态）
+  // ===============================
+  if (page1)
+    page1->resetPage();
+  if (nodeConfigPage)
+    nodeConfigPage->resetPage();
+  if (apConfigPage)
+    apConfigPage->resetPage();
+  if (edcaConfig)
+    edcaConfig->resetPage();
+  if (antenna)
+    antenna->resetPage();
+  if (timelineDisplay)
+    timelineDisplay->resetPage();
+  if (greetingPage)
+    greetingPage->resetPage();
 
-    // ===============================
-    // 4️⃣ 清空运行期数据结构
-    // ===============================
-    ap_now = Ap{};
-    sta_now = Sta{};
-    buildingConfig = BuildingConfig{};
-    jsonhelper.reset(); 
-    // ===============================
-    // 5️⃣ 回到首页
-    // ===============================
-    stack->setCurrentIndex(0);
+  // ===============================
+  // 4️⃣ 清空运行期数据结构
+  // ===============================
+  ap_now = Ap{};
+  sta_now = Sta{};
+  buildingConfig = BuildingConfig{};
+  jsonhelper.reset();
+  // ===============================
+  // 5️⃣ 回到首页
+  // ===============================
+  stack->setCurrentIndex(stack->indexOf(greetingPage));
 
-    qDebug() << "[MainWindow] resetAll() done";
+  qDebug() << "[MainWindow] resetAll() done";
 }
 
+void MainWindow::onBrowseNs3Dir() {
+  QString dir = QFileDialog::getExistingDirectory(
+      this, tr("Select NS-3 Directory"), QDir::homePath(),
+      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+  if (dir.isEmpty())
+    return;
+
+  if (isValidNs3Directory(dir)) {
+    ns3PathValid = true;
+    this->greetingPage->ns3Path = dir;
+    this->page1->ns3Path = dir;
+    this->page1->refreshModelLists();
+    if (simuConfig)
+      simuConfig->setNs3Path(dir);
+    greetingPage->setNs3Path(dir);
+    QMessageBox::information(this, tr("NS-3"),
+                             tr("Valid NS-3 directory selected."));
+  } else {
+    QMessageBox::warning(
+        this, tr("NS-3"),
+        tr("The selected directory is not a valid NS-3 directory."));
+        ns3PathValid = false;
+  }
+}
+
+bool MainWindow::isValidNs3Directory(const QString &path) {
+  QDir dir(path);
+
+  if (!dir.exists())
+    return false;
+
+  return dir.exists("src") && dir.exists("scratch");
+}

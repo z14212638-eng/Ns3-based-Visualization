@@ -1,6 +1,7 @@
 #include "qt_ppdu_reader.h"
 #include "ppdu_adapter.h"
 #include "visualizer_config.h"
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <QThread>
 #include <QDebug>
 
@@ -37,6 +38,8 @@ void QtPpduReader::run()
     if (!m_running || !m_ring)
         return;
 
+    // Do not drain here to avoid dropping early PPDU data
+
     uint64_t ppduCount = 0;
 
     while (m_running)
@@ -45,14 +48,23 @@ void QtPpduReader::run()
         {
             scoped_lock<interprocess_mutex> lock(m_ring->mutex);
 
-            // 等待数据或退出信号
-            m_ring->cond.wait(lock, [&]
-            {
-                return m_ring->read_index != m_ring->write_index || !m_running;
-            });
+            // 等待数据或退出信号，加入超时防止挂死
+            bool hasData = m_ring->cond.wait_for(
+                lock, boost::posix_time::milliseconds(100),
+                [&] { return m_ring->read_index != m_ring->write_index || !m_running; });
 
-            if (!m_running)
+            // 超时且没有数据，检查 ns-3 是否已退出
+            if (!m_running && m_ring->read_index == m_ring->write_index)
+            {
+                qDebug() << "[PPDU] ns-3 ended and ring buffer empty, exiting reader";
                 break;
+            }
+
+            if (m_ring->read_index == m_ring->write_index)
+            {
+                // 没有新数据，继续循环
+                continue;
+            }
 
             uint32_t idx = m_ring->read_index % MAX_PPDU_NUM;
             PPDU_Meta shmPpdu = m_ring->records[idx];
@@ -92,7 +104,28 @@ void QtPpduReader::run()
         m_shm = nullptr;
         m_ring = nullptr;
     }
+
+    emit finished();
 }
+
+
+void QtPpduReader::clearBuffer()
+{
+    if (m_ring)
+    {
+        try
+        {
+            scoped_lock<interprocess_mutex> lock(m_ring->mutex);
+            m_ring->read_index = m_ring->write_index;
+            qDebug() << "[PPDU] Ring buffer drained";
+        }
+        catch (...)
+        {
+            qDebug() << "[PPDU] Failed to drain ring buffer";
+        }
+    }
+}
+
 
 // 安全 stop
 void QtPpduReader::stop()

@@ -38,7 +38,8 @@ class QNs3Helper
     static WifiStandard Configure_WifiStandard(const std::string& standard);
     static void Configure_GI(const Ptr<WifiPhy>& phy, const int gi, const std::string& standard);
     static std::string BuildChannelSettings(const NodeConfig& cfg);
-    static std::string Configure_RateCtrlManager(std::optional<std::string> rate_ctrl_manager);
+    static std::string Configure_RateCtrlManager(std::optional<std::string> rate_ctrl_manager,
+                           std::optional<std::string> standard = std::nullopt);
     static WifiChannelConfig Configure_BandChannel(const NodeConfig& node);
     static void ConfigurePhy(const NodeConfig& cfg, const Ptr<WifiNetDevice>& device);
     static void ConfigureRtsCts(const NodeConfig& cfg, const Ptr<WifiNetDevice>& device);

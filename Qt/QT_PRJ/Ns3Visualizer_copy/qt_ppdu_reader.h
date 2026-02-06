@@ -15,6 +15,7 @@ public:
 public slots:
     void run(); 
     void stop(); 
+    void clearBuffer();
 
 signals:
     void ppduReady(const PpduVisualItem& ppdu);

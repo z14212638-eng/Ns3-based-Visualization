@@ -1,4 +1,5 @@
 #include "JsonHelper.h"
+#include <QDateTime>
 
 
 double get_true_random_double(double min, double max)
@@ -46,6 +47,29 @@ bool JsonHelper::SaveJsonObjToRoute(const QJsonObject jsonObj, const QString fil
     file.close();
 
     return true;
+}
+
+void JsonHelper::ensureRunDirectories()
+{
+    if (run_dir_initialized)
+        return;
+
+    const QString timestamp = QDateTime::currentDateTime().toString("yy_M_d_HHmm");
+    Run_dir = Base_dir + "Designed_" + timestamp + "/";
+
+    const QString apDir = Run_dir + "ApConfigJson";
+    const QString staDir = Run_dir + "StaConfigJson";
+    const QString generalDir = Run_dir + "GeneralJson";
+
+    QDir().mkpath(apDir);
+    QDir().mkpath(staDir);
+    QDir().mkpath(generalDir);
+
+    Ap_file_path = apDir + "/Ap_";
+    Sta_file_path = staDir + "/Sta_";
+    General_file_path = generalDir + "/";
+
+    run_dir_initialized = true;
 }
 
 bool JsonHelper::SetApToJson(const Ap *ap, qint8 id)
@@ -511,4 +535,11 @@ void JsonHelper::reset()
     m_building_config["Ap_num"]  = 0;
     m_building_config["Sta_pos_list"] = QJsonArray();
     m_building_config["Ap_pos_list"]  = QJsonArray();
+
+    // 6️⃣ reset run directory (next run will create a new folder)
+    run_dir_initialized = false;
+    Run_dir.clear();
+    Ap_file_path.clear();
+    Sta_file_path.clear();
+    General_file_path.clear();
 }

@@ -43,7 +43,7 @@
         </column>
         <item row="0" column="0">
          <property name="text">
-          <string>Istropic</string>
+          <string>Isotropic</string>
          </property>
         </item>
         <item row="0" column="1">

@@ -1,9 +1,10 @@
 #include "timeline_display.h"
 #include "ui_timeline_display.h"
-
 #include "ppdu_timeline_view.h"
+#include "throughput_chart.h"
 
 #include <QVBoxLayout>
+#include <QTextEdit>
 
 Timeline_Display::Timeline_Display(QWidget *parent)
     : QWidget(parent)
@@ -20,6 +21,11 @@ Timeline_Display::Timeline_Display(QWidget *parent)
     auto *layout = new QVBoxLayout(ui->frame_3);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_timelineView);
+
+    m_throughputChart = new ThroughputChartWidget(ui->frame);
+    auto *chartLayout = new QVBoxLayout(ui->frame);
+    chartLayout->setContentsMargins(0, 0, 0, 0);
+    chartLayout->addWidget(m_throughputChart);
 }
 
 PpduTimelineView* Timeline_Display::timelineView() const
@@ -36,10 +42,40 @@ void Timeline_Display::resetPage()
 {
     if (!m_timelineView)
         return;
-
-    // 让 TimelineView 自己回到“刚创建”的状态
+    ui->textEdit->clear();
+   
     m_timelineView->resetPage();
+    if (m_throughputChart)
+        m_throughputChart->reset();
 
     qDebug() << "[Timeline_Display] resetPage() done";
+}
+
+void Timeline_Display::appendOutput(const QString &text)
+{
+    if (ui->frame_2) { 
+        QTextEdit *edit = ui->frame_2->findChild<QTextEdit *>("textEdit");
+        if (edit) {
+            edit->setReadOnly(true);
+            edit->append(text);
+            edit->moveCursor(QTextCursor::End);
+        }
+    }
+}
+
+void Timeline_Display::appendPpdu(const PpduVisualItem &ppdu)
+{
+    if (m_throughputChart)
+        m_throughputChart->appendPpdu(ppdu);
+}
+
+void Timeline_Display::showSniffFail()
+{
+    if (m_timelineView)
+        m_timelineView->resetPage();
+    if (m_throughputChart)
+        m_throughputChart->reset();
+
+    appendOutput("Sniff Fail");
 }
 

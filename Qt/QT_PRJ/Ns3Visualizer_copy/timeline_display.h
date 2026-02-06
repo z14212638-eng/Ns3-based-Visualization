@@ -12,6 +12,7 @@
 #include "utils.h"
 
 class PpduTimelineView;
+class ThroughputChartWidget;
 
 namespace Ui {
 class Timeline_Display;
@@ -28,7 +29,12 @@ public:
     PpduTimelineView* timelineView() const;
     void resetPage() override;
 
+    void appendOutput(const QString &text); 
+    void appendPpdu(const PpduVisualItem &ppdu);
+    void showSniffFail();
+
 private:
     Ui::Timeline_Display *ui;
     PpduTimelineView *m_timelineView = nullptr;
+    ThroughputChartWidget *m_throughputChart = nullptr;
 };

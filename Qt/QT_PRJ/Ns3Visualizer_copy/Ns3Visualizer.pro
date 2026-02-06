@@ -14,6 +14,7 @@ SOURCES += \
     ap_config.cpp \
     configgraphicsview.cpp \
     edca_config.cpp \
+    greeting.cpp \
     main.cpp \
     mainwindow.cpp \
     node_config.cpp \
@@ -30,7 +31,8 @@ SOURCES += \
     visualizer_config.cpp\
     utils.cpp\
     indus_widget.cpp\
-    image_viewer.cpp
+    image_viewer.cpp \
+    throughput_chart.cpp
 
 HEADERS += \
     JsonHelper.h \
@@ -38,6 +40,7 @@ HEADERS += \
     ap_config.h \
     configgraphicsview.h \
     edca_config.h \
+    greeting.h \
     mainwindow.h \
     node_config.h \
     page1_model_chose.h \
@@ -53,12 +56,14 @@ HEADERS += \
     visualizer_config.h\
     utils.h\
     indus_widget.h\
-    image_viewer.h
+    image_viewer.h \
+    throughput_chart.h
 
 FORMS += \
     antennas.ui \
     ap_config.ui \
     edca_config.ui \
+    greeting.ui \
     mainwindow.ui \
     node_config.ui \
     page1_model_chose.ui \

@@ -5,18 +5,18 @@
             {
                 "Beamwidth": 360,
                 "MaxGain": 0,
-                "type": "IsotropicAntennaModel"
+                "type": "Isotropic"
             }
         ],
         "set": true
     },
     "Bandwidth": 40,
-    "Channel_number": 1,
+    "Channel_number": 36,
     "EnableAssocFailRetry": true,
-    "Frequency": 5005,
+    "Frequency": 5180,
     "Guard_interval": 800,
     "Id": 0,
-    "MaxMissedBeacons": 0,
+    "MaxMissedBeacons": 10,
     "Mobility": {
         "boundaries": [
             0,
@@ -33,11 +33,11 @@
     },
     "Phy_model": "Yans",
     "Position": [
-        5.239838568902149,
-        4.336527756783082,
-        4.313998837808433
+        8.908810399609996,
+        2.2828883066436982,
+        1.9059017203395
     ],
-    "ProbeRequestTimeout": 0,
+    "ProbeRequestTimeout": 500,
     "Qos": {
         "Edca_choose": "AC_VO",
         "Edca_params": {
@@ -77,12 +77,12 @@
             "set": true,
             "type": "AC_BE"
         },
-        "Qos_support": false
+        "Qos_support": true
     },
     "Rate_ctrl_algo": "Aarf",
     "Rts_Cts": {
-        "Threshold": 0,
-        "set": false
+        "Threshold": -2,
+        "set": true
     },
     "Ssid": "Ns3WiFi",
     "Standard": "802.11ax",
@@ -94,7 +94,7 @@
                     {
                         "enabled": false,
                         "meanDataRate": 0,
-                        "packetSize": 0,
+                        "packetSize": 1200,
                         "peakDataRate": 0,
                         "trafficType": "CBR",
                         "type": "AC_VI"
@@ -102,21 +102,21 @@
                     {
                         "enabled": false,
                         "interval": 20,
-                        "packetSize": 0,
+                        "packetSize": 160,
                         "trafficType": "CBR",
                         "type": "AC_VO"
                     },
                     {
                         "DataRate": 0,
                         "enabled": false,
-                        "packetSize": 0,
+                        "packetSize": 1024,
                         "trafficType": "CBR",
                         "type": "AC_BE"
                     },
                     {
                         "DataRate": 0,
                         "enabled": false,
-                        "packetSize": 0,
+                        "packetSize": 1024,
                         "trafficType": "CBR",
                         "type": "AC_BK"
                     }
@@ -132,7 +132,7 @@
                     {
                         "enabled": false,
                         "meanDataRate": 0,
-                        "packetSize": 0,
+                        "packetSize": 1200,
                         "peakDataRate": 0,
                         "trafficType": "CBR",
                         "type": "AC_VI"
@@ -140,21 +140,59 @@
                     {
                         "enabled": false,
                         "interval": 20,
-                        "packetSize": 0,
+                        "packetSize": 160,
                         "trafficType": "CBR",
                         "type": "AC_VO"
                     },
                     {
                         "DataRate": 0,
                         "enabled": false,
-                        "packetSize": 0,
+                        "packetSize": 1024,
                         "trafficType": "CBR",
                         "type": "AC_BE"
                     },
                     {
                         "DataRate": 0,
                         "enabled": false,
-                        "packetSize": 0,
+                        "packetSize": 1024,
+                        "trafficType": "CBR",
+                        "type": "AC_BK"
+                    }
+                ],
+                "EndTime": 0,
+                "FlowId": "flow_1",
+                "Protocol": "UDP",
+                "StartTime": 0
+            },
+            {
+                "Direction": "downlink",
+                "EDCA_Traffic": [
+                    {
+                        "enabled": false,
+                        "meanDataRate": 0,
+                        "packetSize": 1200,
+                        "peakDataRate": 0,
+                        "trafficType": "CBR",
+                        "type": "AC_VI"
+                    },
+                    {
+                        "enabled": false,
+                        "interval": 20,
+                        "packetSize": 160,
+                        "trafficType": "CBR",
+                        "type": "AC_VO"
+                    },
+                    {
+                        "DataRate": 0,
+                        "enabled": false,
+                        "packetSize": 1024,
+                        "trafficType": "CBR",
+                        "type": "AC_BE"
+                    },
+                    {
+                        "DataRate": 0,
+                        "enabled": false,
+                        "packetSize": 1024,
                         "trafficType": "CBR",
                         "type": "AC_BK"
                     }
@@ -167,5 +205,5 @@
         ]
     },
     "TxQueue": "DropTail",
-    "Tx_power": 0
+    "Tx_power": 20
 }
