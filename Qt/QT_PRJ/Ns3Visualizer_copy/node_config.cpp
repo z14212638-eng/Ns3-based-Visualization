@@ -809,13 +809,13 @@ void node_config::resetPage()
     // 5️⃣ PHY / MAC（Page3）
     // ===============================
     // ui->lineEdit->clear();              // SSID
-    ui->comboBox_3->setCurrentIndex(0); // band
-    ui->comboBox_4->setCurrentIndex(0); // phy model
-    ui->comboBox_5->setCurrentIndex(5); // standard (你原来默认 5)
+    ui->comboBox_3->setCurrentText("5G"); // band
+    ui->comboBox_4->setCurrentIndex(0);   // phy model
+    ui->comboBox_5->setCurrentText("802.11ax"); // standard
     ui->comboBox_7->setCurrentIndex(0);
     ui->comboBox_8->setCurrentIndex(0);
 
-    ui->spinBox->setValue(1);
+    ui->spinBox->setValue(36);
     ui->spinBox_3->setValue(0);
     ui->spinBox_4->setValue(0);
     ui->spinBox_5->setValue(0);

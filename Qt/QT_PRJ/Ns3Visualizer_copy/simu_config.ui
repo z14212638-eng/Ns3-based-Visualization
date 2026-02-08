@@ -701,33 +701,6 @@
                     <height>53</height>
                    </size>
                   </property>
-                  <widget class="QCheckBox" name="checkBox">
-                   <property name="geometry">
-                    <rect>
-                     <x>0</x>
-                     <y>10</y>
-                     <width>291</width>
-                     <height>36</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>200</width>
-                     <height>36</height>
-                    </size>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <pointsize>16</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Presenting All PPDU</string>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
                  </widget>
                 </item>
                 <item>

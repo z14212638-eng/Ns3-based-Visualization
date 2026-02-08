@@ -15,8 +15,7 @@ n0 ---- n1   n2   n3   n4
 | Parameter | Value |
 | --- | --- |
 | SniffPPDU | False |
-| Number of nodes | 2 |
-| Node IP | 10.1.1.0 |
+| MaxPackets | 1 |
 | Link bandwidth | -- |
 | Link delay | 2ms |
 | Packet size | 1024 bytes |

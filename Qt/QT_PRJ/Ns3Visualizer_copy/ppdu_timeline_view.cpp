@@ -32,7 +32,7 @@ static constexpr int kRangeBarMargin = 10;
 
 PpduTimelineView::PpduTimelineView(QWidget *parent)
     : QWidget(parent),
-      m_rowMode(TimelineRowMode::ByAp) // ★ NEW
+      m_rowMode(TimelineRowMode::ByAp) 
 {
     setMouseTracking(true);
 
@@ -51,14 +51,14 @@ PpduTimelineView::PpduTimelineView(QWidget *parent)
     connect(m_btnSetTimeRange, &QPushButton::clicked,
             this, &PpduTimelineView::onSetTimeRange);
 
-    // ★ NEW: Channel View Button
-    m_btnChannel = new QPushButton("CH", this);
+    // Channel View Button
+    m_btnChannel = new QPushButton("C", this);
     m_btnChannel->setFixedSize(32, 26);
     m_btnChannel->move(76, 8);
     connect(m_btnChannel, &QPushButton::clicked,
             this, &PpduTimelineView::onToggleChannelView);
 
-    quitButton = new QPushButton("QUIT", this);
+    quitButton = new QPushButton("quit", this);
 
     quitButton->setFixedSize(120, 30);
     quitButton->move(112, 8);

@@ -31,8 +31,9 @@ Greeting::~Greeting()
 
 void Greeting::resetPage()
 {
-    ui->lineEdit->clear();
-    qDebug()<<"GreetingPage destroyed()";
+    if (!ns3Path.isEmpty())
+        ui->lineEdit->setText(ns3Path);
+    qDebug()<<"GreetingPage resetPage()";
 }
 
 void Greeting::on_pushButton_2_clicked()

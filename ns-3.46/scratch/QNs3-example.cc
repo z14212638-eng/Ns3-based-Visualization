@@ -158,6 +158,7 @@ main(int argc, char* argv[])
     Ipv4AddressHelper address;
     Ipv4InterfaceContainer apIfaces;
     Ipv4InterfaceContainer staIfaces;
+    std::vector<Ipv4Address> staAddrs(staNodes.GetN());
 
     for (uint32_t i = 0; i < apCount; ++i)
     {
@@ -166,19 +167,23 @@ main(int argc, char* argv[])
 
         NetDeviceContainer devs;
         devs.Add(apDevices.Get(i));
+
+        std::vector<uint32_t> staIndices;
         for (uint32_t j = 0; j < staNodes.GetN(); ++j)
         {
             if (apCount != 0 && (j % apCount) == i)
             {
                 devs.Add(staDevices.Get(j));
+                staIndices.push_back(j);
             }
         }
 
         auto ifaces = address.Assign(devs);
         apIfaces.Add(ifaces.Get(0));
-        for (uint32_t k = 1; k < ifaces.GetN(); ++k)
+        for (uint32_t k = 0; k < staIndices.size(); ++k)
         {
-            staIfaces.Add(ifaces.Get(k));
+            staIfaces.Add(ifaces.Get(k + 1));
+            staAddrs[staIndices[k]] = ifaces.GetAddress(k + 1);
         }
     }
 
@@ -186,46 +191,66 @@ main(int argc, char* argv[])
 
     // ========= App =========
     const uint16_t basePort = 9000;
+    const uint16_t basePortUp = 10000;
 
-    // One server per AP
-    for (uint32_t i = 0; i < apNodes.GetN(); ++i)
+    // One server per STA (AP sends downlink to every STA)
+    for (uint32_t i = 0; i < staNodes.GetN(); ++i)
     {
         const uint16_t port = basePort + i;
+        UdpServerHelper server(port);
+        auto serverApps = server.Install(staNodes.Get(i));
+        serverApps.Start(Seconds(0.5));
+        serverApps.Stop(Seconds(duration));
+    }
+
+    // One server per AP (STAs send uplink to APs)
+    for (uint32_t i = 0; i < apNodes.GetN(); ++i)
+    {
+        const uint16_t port = basePortUp + i;
         UdpServerHelper server(port);
         auto serverApps = server.Install(apNodes.Get(i));
         serverApps.Start(Seconds(0.5));
         serverApps.Stop(Seconds(duration));
     }
 
-    // STAs generate traffic toward APs (round-robin) with varied load
-    for (uint32_t i = 0; i < staNodes.GetN(); ++i)
+    // Each AP sends to all its associated STAs (downlink)
+    for (uint32_t apIdx = 0; apIdx < apNodes.GetN(); ++apIdx)
     {
-        const uint32_t apIdx = apNodes.GetN() == 0 ? 0 : (i % apNodes.GetN());
-        const uint16_t port = basePort + apIdx;
+        for (uint32_t staIdx = 0; staIdx < staNodes.GetN(); ++staIdx)
+        {
+            if (apNodes.GetN() != 0 && (staIdx % apNodes.GetN()) != apIdx)
+            {
+                continue;
+            }
+
+            const uint16_t port = basePort + staIdx;
+            const Ipv4Address staAddr = staAddrs[staIdx];
+
+            UdpClientHelper client(staAddr, port);
+            client.SetAttribute("MaxPackets", UintegerValue(0xFFFFFFFF));
+            client.SetAttribute("Interval", TimeValue(MilliSeconds(80)));
+            client.SetAttribute("PacketSize", UintegerValue(1200));
+
+            auto clientApps = client.Install(apNodes.Get(apIdx));
+            clientApps.Start(Seconds(1.0 + 0.001 * staIdx));
+            clientApps.Stop(Seconds(duration));
+        }
+    }
+
+    // Each STA sends to its associated AP (uplink), creating cross traffic
+    for (uint32_t staIdx = 0; staIdx < staNodes.GetN(); ++staIdx)
+    {
+        const uint32_t apIdx = apNodes.GetN() == 0 ? 0 : (staIdx % apNodes.GetN());
+        const uint16_t port = basePortUp + apIdx;
         const Ipv4Address apAddr = apIfaces.GetAddress(apIdx);
 
         UdpClientHelper client(apAddr, port);
         client.SetAttribute("MaxPackets", UintegerValue(0xFFFFFFFF));
+        client.SetAttribute("Interval", TimeValue(MilliSeconds(80)));
+        client.SetAttribute("PacketSize", UintegerValue(1000));
 
-        const uint32_t profile = i % 3;
-        if (profile == 0)
-        {
-            client.SetAttribute("Interval", TimeValue(MilliSeconds(10)));
-            client.SetAttribute("PacketSize", UintegerValue(512));
-        }
-        else if (profile == 1)
-        {
-            client.SetAttribute("Interval", TimeValue(MilliSeconds(20)));
-            client.SetAttribute("PacketSize", UintegerValue(1200));
-        }
-        else
-        {
-            client.SetAttribute("Interval", TimeValue(MilliSeconds(40)));
-            client.SetAttribute("PacketSize", UintegerValue(800));
-        }
-
-        auto clientApps = client.Install(staNodes.Get(i));
-        clientApps.Start(Seconds(1.0));
+        auto clientApps = client.Install(staNodes.Get(staIdx));
+        clientApps.Start(Seconds(1.0 + 0.002 * staIdx));
         clientApps.Stop(Seconds(duration));
     }
 
@@ -233,9 +258,8 @@ main(int argc, char* argv[])
     using namespace boost::interprocess;
     shared_memory_object::remove("Ns3PpduSharedMemory");
 
-    Ptr<SniffUtils> sniffer = CreateObject<SniffUtils>();
-    sniffer->Initialize(staDevices, apDevices, duration);
-
+    Ptr<SniffUtils> Sniff_Utils = CreateObject<SniffUtils>();
+    Sniff_Utils->Initialize(staDevices, apDevices, duration);
     // ========= Run =========
     Simulator::Stop(Seconds(duration));
     Simulator::Run();

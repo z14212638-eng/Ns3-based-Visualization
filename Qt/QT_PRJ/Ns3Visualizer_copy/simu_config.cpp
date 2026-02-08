@@ -2,7 +2,13 @@
 #include "ui_simu_config.h"
 #include "visualizer_config.h"
 
+#include <QCheckBox>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QFile>
+#include <QFormLayout>
+#include <QLabel>
+#include <QSpinBox>
 #include <boost/interprocess/shared_memory_object.hpp>
 
 Simu_Config::Simu_Config(QWidget *parent)
@@ -151,15 +157,9 @@ void Simu_Config::on_pushButton_8_clicked() { emit update(); }
 
 void Simu_Config::Update_json_map(JsonHelper &json_helper) {
   json_helper.ensureRunDirectories();
-  // ===============================
-  // 1. 用当前 scene 中的 NodeItem 更新 json
-  // ===============================
+
   update_json(scene, json_helper.m_building_config);
 
-  // ===============================
-  // 2. 只删除 NodeItem（AP / STA）
-  //    ⚠️ 必须 removeItem + delete
-  // ===============================
   if (scene) {
     const auto items = scene->items(); // 拷贝，避免遍历时修改
     for (QGraphicsItem *item : items) {
@@ -170,9 +170,6 @@ void Simu_Config::Update_json_map(JsonHelper &json_helper) {
     }
   }
 
-  // ===============================
-  // 3. 重建 NodeItem（building 边框不动）
-  // ===============================
   double width = building_range[0];
   double height = building_range[1];
   double scale = 40.0;
@@ -250,15 +247,9 @@ void Simu_Config::Update_json_map(JsonHelper &json_helper) {
     }
   }
 
-  // ===============================
-  // 4. 更新 LCD
-  // ===============================
   ui->lcdNumber->display(static_cast<int>(apList.size()));
   ui->lcdNumber_2->display(static_cast<int>(staList.size()));
 
-  // ===============================
-  // 5. 写回 JSON 文件
-  // ===============================
   for (const auto &item : json_helper.m_ap_config_list) {
     QString path = json_helper.Ap_file_path +
                    QString::number(item["Id"].toInt() + 1) + ".json";
@@ -280,9 +271,8 @@ void Simu_Config::cleanupAndExit() {
 
   qDebug() << "cleanupAndExit()";
 
-  // ===============================
-  // 1. 停止 Reader
-  // ===============================
+  // 停止 Reader
+
   if (m_ppduReader) {
     qDebug() << "Stopping PPDU reader";
     m_ppduReader->clearBuffer();
@@ -299,9 +289,7 @@ void Simu_Config::cleanupAndExit() {
     m_ppduThread = nullptr;
   }
 
-  // ===============================
-  // 2. 停止 ns-3（如果还活着）
-  // ===============================
+  // 停止 ns-3（如果还活着）
   if (ns3Process) {
     qDebug() << "Killing ns-3";
     ns3Process->kill();
@@ -320,19 +308,6 @@ void Simu_Config::cleanupAndExit() {
       QFile::remove(scratchPath);
   }
 
-  // ===============================
-  // 3. 关闭 Timeline
-  // ===============================
-  // if (m_timelineView) {
-  //   qDebug() << "Closing timeline view";
-  //   m_timelineView->close();
-  //   m_timelineView->deleteLater();
-  //   m_timelineView = nullptr;
-  // }
-
-  // ===============================
-  // 5. 关闭自己
-  // ===============================
   close();
   cleaning = false;
 }
@@ -340,9 +315,6 @@ void Simu_Config::cleanupAndExit() {
 void Simu_Config::resetPage() {
   qDebug() << "[Simu_Config] resetPage()";
 
-  // ===============================
-  // 1️⃣ 停止仿真相关资源（但不 close 自己）
-  // ===============================
   if (m_ppduReader) {
     m_ppduReader->clearBuffer();
     m_ppduReader->stop();
@@ -363,9 +335,6 @@ void Simu_Config::resetPage() {
     ns3Process = nullptr;
   }
 
-  // ===============================
-  // 2️⃣ Scene 清理（删除 NodeItem + 建筑框）
-  // ===============================
   if (scene) {
     const auto items = scene->items();
     for (QGraphicsItem *item : items) {
@@ -375,9 +344,6 @@ void Simu_Config::resetPage() {
     scene->clear();
   }
 
-  // ===============================
-  // 3️⃣ UI 组件回退
-  // ===============================
   ui->tabWidget->setCurrentIndex(0);
 
   ui->doubleSpinBox->setValue(10);
@@ -394,18 +360,12 @@ void Simu_Config::resetPage() {
   ui->pushButton_7->setEnabled(true);
   ui->pushButton_7->setText("Check");
 
-  // ===============================
-  // 4️⃣ 内部状态清零
-  // ===============================
   Num_ap = 0;
   Num_sta = 0;
   building_range = {0, 0, 0};
   m_hasPpdu.store(false);
   m_selectedScene.clear();
 
-  // ===============================
-  // 5️⃣ GraphicsView 复位
-  // ===============================
   ui->graphicsView->resetTransform();
   ui->graphicsView->setScene(scene);
 
@@ -413,17 +373,13 @@ void Simu_Config::resetPage() {
   qDebug() << "[Simu_Config] resetPage() done";
 }
 
-void Simu_Config::setNs3Path(const QString &path) {
-  m_ns3Path = path;
-}
+void Simu_Config::setNs3Path(const QString &path) { m_ns3Path = path; }
 
 void Simu_Config::setSelectedScene(const QString &sceneName) {
   m_selectedScene = sceneName;
 }
 
-void Simu_Config::resetSimuScene() {
-  m_selectedScene.clear();
-}
+void Simu_Config::resetSimuScene() { m_selectedScene.clear(); }
 
 void Simu_Config::rebuildScene() {
   if (!scene)
@@ -440,7 +396,6 @@ void Simu_Config::rebuildScene() {
 }
 
 void Simu_Config::requestCleanup() {
-  // 延迟调用 cleanupAndExit，确保事件队列空
   QTimer::singleShot(0, this, &Simu_Config::cleanupAndExit);
 }
 
@@ -473,13 +428,9 @@ void Simu_Config::Load_General_Json(JsonHelper &json_helper) {
 
 void Simu_Config::Create_And_StartThread() {
 
-  // ===============================
-  // 防止重复启动
-  // ===============================
-
   if (m_ppduReader) {
     m_ppduReader->stop();
-    m_ppduReader->clearBuffer(); // <-- 主动清理，防止残留
+    m_ppduReader->clearBuffer();
     m_ppduReader->deleteLater();
     m_ppduReader = nullptr;
   }
@@ -505,36 +456,31 @@ void Simu_Config::Create_And_StartThread() {
 
   m_copiedScratchPath.clear();
 
-  if (!m_selectedScene.isEmpty())
-  {
-    const QString scratchPath = m_ns3Path + "/scratch/" + m_selectedScene + ".cc";
-    if (!QFile::exists(scratchPath))
-    {
-      const QString simplePath = m_ns3Path +
-                                 "/contrib/SniffUtils/Simulation/Default/Simple/" +
-                                 m_selectedScene + "/" + m_selectedScene + ".cc";
-      const QString complexPath = m_ns3Path +
-                                  "/contrib/SniffUtils/Simulation/Default/Complex/" +
-                                  m_selectedScene + "/" + m_selectedScene + ".cc";
+  if (!m_selectedScene.isEmpty()) {
+    const QString scratchPath =
+        m_ns3Path + "/scratch/" + m_selectedScene + ".cc";
+    if (!QFile::exists(scratchPath)) {
+      const QString simplePath =
+          m_ns3Path + "/contrib/SniffUtils/Simulation/Default/Simple/" +
+          m_selectedScene + "/" + m_selectedScene + ".cc";
+      const QString complexPath =
+          m_ns3Path + "/contrib/SniffUtils/Simulation/Default/Complex/" +
+          m_selectedScene + "/" + m_selectedScene + ".cc";
 
       QString sourcePath;
-      if (QFile::exists(simplePath))
-      {
+      if (QFile::exists(simplePath)) {
         sourcePath = simplePath;
-      }
-      else if (QFile::exists(complexPath))
-      {
+      } else if (QFile::exists(complexPath)) {
         sourcePath = complexPath;
       }
 
-      if (sourcePath.isEmpty())
-      {
-        qWarning() << "Scene source not found in Default folders:" << m_selectedScene;
+      if (sourcePath.isEmpty()) {
+        qWarning() << "Scene source not found in Default folders:"
+                   << m_selectedScene;
         return;
       }
 
-      if (!QFile::copy(sourcePath, scratchPath))
-      {
+      if (!QFile::copy(sourcePath, scratchPath)) {
         qWarning() << "Failed to copy scene to scratch:" << scratchPath;
         return;
       }
@@ -543,9 +489,6 @@ void Simu_Config::Create_And_StartThread() {
     }
   }
 
-  // ===============================
-  // 1. ns-3 process
-  // ===============================
   ns3Process = new QProcess(this);
   ns3Process->setWorkingDirectory(m_ns3Path);
 
@@ -571,9 +514,6 @@ void Simu_Config::Create_And_StartThread() {
               emit sniffFailed();
           });
 
-  // ===============================
-  // 3. PPDU Reader Thread
-  // ===============================
   m_ppduThread = new QThread(this);
   m_ppduReader = new QtPpduReader;
 
@@ -581,12 +521,13 @@ void Simu_Config::Create_And_StartThread() {
 
   connect(m_ppduThread, &QThread::started, m_ppduReader, &QtPpduReader::run);
 
-  connect(m_ppduReader, &QtPpduReader::ppduReady, this,
-          [this](const PpduVisualItem &item) {
-            m_hasPpdu.store(true);
-            emit ppduReady(item);
-          },
-          Qt::DirectConnection);
+  connect(
+      m_ppduReader, &QtPpduReader::ppduReady, this,
+      [this](const PpduVisualItem &item) {
+        m_hasPpdu.store(true);
+        emit ppduReady(item);
+      },
+      Qt::DirectConnection);
 
   // reader 自己结束时，线程退出
   connect(m_ppduReader, &QtPpduReader::finished, this, [this] {
@@ -605,41 +546,35 @@ void Simu_Config::Create_And_StartThread() {
   const QString sceneToRun =
       isDiy ? QStringLiteral("QNs3-example.cc") : (m_selectedScene + ".cc");
   QStringList args = {"run", sceneToRun};
-  if (isDiy)
-  {
+  if (isDiy) {
     args << "--" << "--ns3path" << m_ns3Path;
   }
   {
     QProcess buildProcess;
     buildProcess.setWorkingDirectory(m_ns3Path);
     QStringList buildArgs = {"build"};
-    if (!isDiy)
-    {
+    if (!isDiy) {
       buildArgs << ("scratch/" + m_selectedScene);
     }
 
     buildProcess.start("./ns3", buildArgs);
-    if (!buildProcess.waitForFinished(-1))
-    {
+    if (!buildProcess.waitForFinished(-1)) {
       qWarning() << "ns-3 build did not finish";
       return;
     }
 
     const QByteArray buildOut = buildProcess.readAllStandardOutput();
-    if (!buildOut.isEmpty())
-    {
+    if (!buildOut.isEmpty()) {
       emit ns3OutputReady(QString::fromUtf8(buildOut));
     }
 
     const QByteArray buildErr = buildProcess.readAllStandardError();
-    if (!buildErr.isEmpty())
-    {
+    if (!buildErr.isEmpty()) {
       emit ns3OutputReady(QString::fromUtf8(buildErr));
     }
 
     const int exitCode = buildProcess.exitCode();
-    if (exitCode != 0)
-    {
+    if (exitCode != 0) {
       qWarning() << "ns-3 build failed with code" << exitCode;
       return;
     }
@@ -670,10 +605,6 @@ void Simu_Config::Create_And_StartThread() {
 
   //   connect(m_timelineView, &PpduTimelineView::timelineClosed,
   //           this, &Simu_Config::requestCleanup);
-  // }
-  // ===============================
-  // 4. PPDU Reader Thread
-  // ===============================
 }
 
 // Finnal Check , Run the Simulation , Load the General Json
@@ -681,31 +612,86 @@ void Simu_Config::on_pushButton_9_clicked() {
   if (ui->lcdNumber->intValue() != 0 && ui->lcdNumber_2->intValue() != 0) {
     QMessageBox msgBox(QMessageBox::Information, "Attention",
                        "SIMULATION RUNNING ...", QMessageBox::Ok, this);
-    msgBox.adjustSize();
 
-    QRect parentRect = this->geometry();
-    QPoint center =
-        parentRect.center() - QPoint(msgBox.width() / 2, msgBox.height() / 2);
+    msgBox.setWindowModality(Qt::WindowModal);
 
-    msgBox.move(center);
+    // 在窗口真正 show 之后再 move
+    QTimer::singleShot(0, this, [this, &msgBox]() {
+      QRect parentRect = this->frameGeometry();
+      QRect boxRect = msgBox.frameGeometry();
+
+      QPoint center = parentRect.center() - boxRect.center();
+
+      msgBox.move(center);
+    });
+
     msgBox.exec();
   } else {
     QMessageBox msgBox(QMessageBox::Critical, "Error",
                        "At least one AP and one STA is needed", QMessageBox::Ok,
                        this);
-    msgBox.adjustSize();
 
-    QRect parentRect = this->geometry();
-    QPoint center =
-        parentRect.center() - QPoint(msgBox.width() / 2, msgBox.height() / 2);
+    msgBox.setWindowModality(Qt::WindowModal);
 
-    msgBox.move(center);
+    QTimer::singleShot(0, this, [this, &msgBox]() {
+      QRect parentRect = this->frameGeometry();
+      QRect boxRect = msgBox.frameGeometry();
+
+      QPoint center = parentRect.center() - boxRect.center();
+
+      msgBox.move(center);
+    });
+
     msgBox.exec();
     return;
   }
+
+  QDialog dialog(this);
+  dialog.setWindowTitle(tr("PPDU Settings"));
+  dialog.setModal(true);
+
+  QVBoxLayout *mainLayout = new QVBoxLayout(&dialog);
+
+  QLabel *title =
+      new QLabel(tr("Choose precise mode and sampling rate"), &dialog);
+  mainLayout->addWidget(title);
+
+  QCheckBox *preciseCheck = new QCheckBox(tr("Enable precise mode"), &dialog);
+  preciseCheck->setChecked(g_ppduViewConfig.preciseMode.load());
+  mainLayout->addWidget(preciseCheck);
+
+  QFormLayout *formLayout = new QFormLayout();
+  QSpinBox *sampleSpin = new QSpinBox(&dialog);
+  sampleSpin->setRange(1, 1000);
+  const int currentRate = g_ppduViewConfig.sampleRate.load();
+  sampleSpin->setValue(currentRate > 0 ? currentRate : 10);
+  formLayout->addRow(tr("Sample rate (1/N)"), sampleSpin);
+  mainLayout->addLayout(formLayout);
+
+  auto updateSampleEnabled = [=](bool precise) {
+    sampleSpin->setEnabled(!precise);
+  };
+  updateSampleEnabled(preciseCheck->isChecked());
+  connect(preciseCheck, &QCheckBox::toggled, this, updateSampleEnabled);
+
+  QDialogButtonBox *buttons = new QDialogButtonBox(
+      QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
+  mainLayout->addWidget(buttons);
+  connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+  connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+  if (dialog.exec() != QDialog::Accepted)
+    return;
+
+  const bool precise = preciseCheck->isChecked();
+  g_ppduViewConfig.preciseMode.store(precise);
+  g_ppduViewConfig.absoluteRate.store(precise);
+  g_ppduViewConfig.sampleRate.store(precise ? 1 : sampleSpin->value());
+
   emit LoadGeneralConfig();
 }
 
+//嗯嗯这个按钮没有必要复活了,因为采样专门有弹窗了
 void Simu_Config::on_checkBox_checkStateChanged(const Qt::CheckState &state) {
   bool checked = (state == Qt::Checked);
 

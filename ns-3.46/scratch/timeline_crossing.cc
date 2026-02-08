@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     uint32_t numAp = 2;
     uint32_t numStaPerAp = 3;
     double simTime = 20.0;        // seconds
-    uint32_t intervalMs = 40;     // STA -> AP interval, smaller traffic
+    uint32_t intervalMs = 40;     // STA -> AP interval, slightly smaller traffic
 
     // ===== Node Containers =====
     NodeContainer apNodes;
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
         UdpClientHelper client(apAddr, port);
         client.SetAttribute("MaxPackets", UintegerValue(0xFFFFFFFF));
         client.SetAttribute("Interval", TimeValue(MilliSeconds(intervalMs)));
-        client.SetAttribute("PacketSize", UintegerValue(1200));
+        client.SetAttribute("PacketSize", UintegerValue(1000));
 
         auto clientApp = client.Install(sta);
         clientApp.Start(Seconds(1.0));

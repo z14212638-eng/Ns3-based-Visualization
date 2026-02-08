@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Ns3Visualizer
+Exec=Ns3Visualizer
+Icon=Ns3Visualizer
+Categories=Development;Science;
+Terminal=false

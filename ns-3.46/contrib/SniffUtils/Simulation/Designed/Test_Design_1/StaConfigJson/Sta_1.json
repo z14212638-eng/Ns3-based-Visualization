@@ -5,7 +5,7 @@
             {
                 "Beamwidth": 360,
                 "MaxGain": 0,
-                "type": "Isotropic"
+                "type": "IsotropicAntennaModel"
             }
         ],
         "set": true
@@ -33,9 +33,9 @@
     },
     "Phy_model": "Yans",
     "Position": [
-        8.908810399609996,
-        2.2828883066436982,
-        1.9059017203395
+        5.53071550626564,
+        3.850889264081445,
+        4.672758970747094
     ],
     "ProbeRequestTimeout": 500,
     "Qos": {
@@ -88,6 +88,44 @@
     "Standard": "802.11ax",
     "Traffic": {
         "Flows": [
+            {
+                "Direction": "downlink",
+                "EDCA_Traffic": [
+                    {
+                        "enabled": false,
+                        "meanDataRate": 0,
+                        "packetSize": 1200,
+                        "peakDataRate": 0,
+                        "trafficType": "CBR",
+                        "type": "AC_VI"
+                    },
+                    {
+                        "enabled": false,
+                        "interval": 20,
+                        "packetSize": 160,
+                        "trafficType": "CBR",
+                        "type": "AC_VO"
+                    },
+                    {
+                        "DataRate": 0,
+                        "enabled": false,
+                        "packetSize": 1024,
+                        "trafficType": "CBR",
+                        "type": "AC_BE"
+                    },
+                    {
+                        "DataRate": 0,
+                        "enabled": false,
+                        "packetSize": 1024,
+                        "trafficType": "CBR",
+                        "type": "AC_BK"
+                    }
+                ],
+                "EndTime": 0,
+                "FlowId": "flow_1",
+                "Protocol": "UDP",
+                "StartTime": 0
+            },
             {
                 "Direction": "downlink",
                 "EDCA_Traffic": [

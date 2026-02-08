@@ -616,6 +616,9 @@
        </item>
        <item row="9" column="3" rowspan="2">
         <widget class="QComboBox" name="comboBox_5">
+         <property name="currentText">
+          <string>802.11a</string>
+         </property>
          <item>
           <property name="text">
            <string>802.11a</string>

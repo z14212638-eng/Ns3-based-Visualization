@@ -4,6 +4,15 @@
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
+#include <QToolBox>
+#include <QCheckBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QLabel>
+#include <QSpinBox>
+
+#include "visualizer_config.h"
 
 Page1_model_chose::Page1_model_chose(QWidget *parent)
     : QWidget(parent), ui(new Ui::Page1_model_chose)
@@ -19,6 +28,8 @@ Page1_model_chose::Page1_model_chose(QWidget *parent)
         ui->listWidget->clear();
     if (auto *lw2 = findChild<QListWidget *>("listWidget_2"))
         lw2->clear();
+    if (auto *lw3 = findChild<QListWidget *>("listWidget_3"))
+        lw3->clear();
 
     ui->listWidget->setCornerWidget(0);
     ui->listWidget->setCurrentRow(0);
@@ -27,6 +38,8 @@ Page1_model_chose::Page1_model_chose(QWidget *parent)
     ui->textBrowser_2->font());
 
     ui->label_3->installEventFilter(this);
+    ui->pushButton->setText("Not Implemented");
+    //ui->pushButton->setEnabled(false);
 
     connect(ui->listWidget, &QListWidget::currentItemChanged, this,
             [=]() { updateMarkdownForSelection(); });
@@ -34,6 +47,21 @@ Page1_model_chose::Page1_model_chose(QWidget *parent)
     {
         connect(lw2, &QListWidget::currentItemChanged, this,
                 [=]() { updateMarkdownForSelection(); });
+    }
+        if (auto *lw3 = findChild<QListWidget *>("listWidget_3"))
+        {
+        connect(lw3, &QListWidget::currentItemChanged, this,
+            [=]() { updateMarkdownForSelection(); });
+        }
+
+    if (ui->toolBox)
+    {
+        connect(ui->toolBox, &QToolBox::currentChanged, this, [=](int) {
+            QListWidget *lw = currentSceneList();
+            if (lw && lw->currentRow() < 0 && lw->count() > 0)
+                lw->setCurrentRow(0);
+            updateMarkdownForSelection();
+        });
     }
 }
 
@@ -62,6 +90,13 @@ void Page1_model_chose::resetPage()
             lw2->setCurrentRow(0);
     }
 
+    if (auto *lw3 = findChild<QListWidget *>("listWidget_3"))
+    {
+        lw3->setCurrentRow(-1);
+        if (lw3->count() > 0)
+            lw3->setCurrentRow(0);
+    }
+
     ui->textBrowser->clear();
     ui->textBrowser_2->clear();
 
@@ -88,6 +123,8 @@ QListWidget *Page1_model_chose::currentSceneList() const
     QListWidget *lw = page->findChild<QListWidget *>("listWidget");
     if (!lw)
         lw = page->findChild<QListWidget *>("listWidget_2");
+    if (!lw)
+        lw = page->findChild<QListWidget *>("listWidget_3");
 
     return lw;
 }
@@ -102,6 +139,8 @@ QString Page1_model_chose::currentSceneBaseDir() const
         return ns3Path + "/contrib/SniffUtils/Simulation/Default/Simple";
     if (page->findChild<QListWidget *>("listWidget_2"))
         return ns3Path + "/contrib/SniffUtils/Simulation/Default/Complex";
+    if (page->findChild<QListWidget *>("listWidget_3"))
+        return ns3Path + "/scratch";
 
     return "";
 }
@@ -113,6 +152,8 @@ void Page1_model_chose::refreshModelLists()
 
     if (auto *lw2 = findChild<QListWidget *>("listWidget_2"))
         lw2->clear();
+    if (auto *lw3 = findChild<QListWidget *>("listWidget_3"))
+        lw3->clear();
 
     if (ns3Path.isEmpty())
         return;
@@ -141,6 +182,26 @@ void Page1_model_chose::refreshModelLists()
                 lw2->setCurrentRow(0);
         }
     }
+
+    QDir scratchDir(ns3Path + "/scratch");
+    if (scratchDir.exists())
+    {
+        if (auto *lw3 = findChild<QListWidget *>("listWidget_3"))
+        {
+            QStringList files = scratchDir.entryList(QStringList() << "*.cc",
+                                                     QDir::Files | QDir::Readable,
+                                                     QDir::Name);
+            for (const QString &file : files)
+            {
+                QString name = file;
+                if (name.endsWith(".cc"))
+                    name.chop(3);
+                lw3->addItem(name);
+            }
+            if (lw3->count() > 0)
+                lw3->setCurrentRow(0);
+        }
+    }
 }
 
 void Page1_model_chose::updateMarkdownForSelection()
@@ -149,6 +210,16 @@ void Page1_model_chose::updateMarkdownForSelection()
     if (!lw || !lw->currentItem())
     {
         ui->textBrowser_2->clear();
+        return;
+    }
+
+    if (lw->objectName() == "listWidget_3")
+    {
+        ui->textBrowser_2->clear();
+        ui->label_3->clear();
+        ui->label_3->setText("No Preview");
+        ui->label_3->setAlignment(Qt::AlignCenter);
+        ui->label_3->setScaledContents(false);
         return;
     }
 
@@ -217,6 +288,16 @@ void Page1_model_chose::on_pushButton_5_clicked()
     const QString baseDir = currentSceneBaseDir();
     if (!baseDir.isEmpty() && !name.isEmpty())
     {
+        QListWidget *lw = currentSceneList();
+        if (lw && lw->objectName() == "listWidget_3")
+        {
+            ui->label_3->clear();
+            ui->label_3->setText("No Preview");
+            ui->label_3->setAlignment(Qt::AlignCenter);
+            ui->label_3->setScaledContents(false);
+            return;
+        }
+
         const QString sceneDir = baseDir + "/" + name;
 
         const QString ccPath = sceneDir + "/" + name + ".cc";
@@ -249,6 +330,47 @@ void Page1_model_chose::on_pushButton_5_clicked()
 
 void Page1_model_chose::on_pushButton_3_clicked()
 {
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("PPDU Settings"));
+    dialog.setModal(true);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(&dialog);
+
+    QLabel *title = new QLabel(tr("Choose precise mode and sampling rate"), &dialog);
+    mainLayout->addWidget(title);
+
+    QCheckBox *preciseCheck = new QCheckBox(tr("Enable precise mode"), &dialog);
+    preciseCheck->setChecked(g_ppduViewConfig.preciseMode.load());
+    mainLayout->addWidget(preciseCheck);
+
+    QFormLayout *formLayout = new QFormLayout();
+    QSpinBox *sampleSpin = new QSpinBox(&dialog);
+    sampleSpin->setRange(1, 1000);
+    const int currentRate = g_ppduViewConfig.sampleRate.load();
+    sampleSpin->setValue(currentRate > 0 ? currentRate : 10);
+    formLayout->addRow(tr("Sample rate (1/N)"), sampleSpin);
+    mainLayout->addLayout(formLayout);
+
+    auto updateSampleEnabled = [=](bool precise) {
+        sampleSpin->setEnabled(!precise);
+    };
+    updateSampleEnabled(preciseCheck->isChecked());
+    connect(preciseCheck, &QCheckBox::toggled, this, updateSampleEnabled);
+
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                                     Qt::Horizontal, &dialog);
+    mainLayout->addWidget(buttons);
+    connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+
+    const bool precise = preciseCheck->isChecked();
+    g_ppduViewConfig.preciseMode.store(precise);
+    g_ppduViewConfig.absoluteRate.store(precise);
+    g_ppduViewConfig.sampleRate.store(precise ? 1 : sampleSpin->value());
+
     emit RunSelectedSimulation();
 }
 

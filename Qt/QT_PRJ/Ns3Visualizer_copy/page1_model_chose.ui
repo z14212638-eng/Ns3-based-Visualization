@@ -89,7 +89,7 @@
              </font>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="page">
              <property name="geometry">
@@ -97,7 +97,7 @@
                <x>0</x>
                <y>0</y>
                <width>450</width>
-               <height>307</height>
+               <height>256</height>
               </rect>
              </property>
              <property name="sizePolicy">
@@ -389,7 +389,7 @@
                <x>0</x>
                <y>0</y>
                <width>400</width>
-               <height>307</height>
+               <height>256</height>
               </rect>
              </property>
              <property name="sizePolicy">
@@ -613,6 +613,78 @@
               </widget>
              </widget>
             </widget>
+            <widget class="QWidget" name="page_3">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>400</width>
+               <height>256</height>
+              </rect>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>200</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>400</width>
+               <height>400</height>
+              </size>
+             </property>
+             <attribute name="label">
+              <string>Scratch</string>
+             </attribute>
+             <widget class="QScrollArea" name="scrollArea_3">
+              <property name="geometry">
+               <rect>
+                <x>-1</x>
+                <y>-1</y>
+                <width>400</width>
+                <height>251</height>
+               </rect>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>400</width>
+                <height>400</height>
+               </size>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="scrollAreaWidgetContents_3">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>398</width>
+                 <height>249</height>
+                </rect>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_6">
+                <item>
+                 <widget class="QListWidget" name="listWidget_3">
+                  <property name="maximumSize">
+                   <size>
+                    <width>400</width>
+                    <height>400</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>20</pointsize>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </widget>
            </widget>
           </item>
           <item>
@@ -664,7 +736,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>Design By Myself</string>
+                <string>(Not Implemented)</string>
                </property>
               </widget>
              </item>

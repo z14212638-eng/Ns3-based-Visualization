@@ -14,11 +14,11 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 
-  /* ================== ToolBar ================== */
+  /*ToolBar*/
   QToolBar *topToolBar = new QToolBar("Top Toolbar", this);
   addToolBar(Qt::TopToolBarArea, topToolBar);
-  homeAction = topToolBar->addAction("Home");
-  connect(homeAction, &QAction::triggered, this, [=]() { switchTo(0); });
+  homeAction = topToolBar->addAction("Home(don't click me[doge])");
+  // connect(homeAction, &QAction::triggered, this, [=]() { switchTo(0); });
   QAction *pathAction =
       new QAction(QIcon(":/icons/folder.svg"), tr("NS-3 Path"), this);
 
@@ -29,14 +29,14 @@ MainWindow::MainWindow(QWidget *parent)
   topToolBar->setIconSize(QSize(24, 24));
   topToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
-  /* ================== Central Widget ================== */
+  /*Central Widget*/
   QWidget *central = new QWidget(this);
   setCentralWidget(central);
 
   QHBoxLayout *mainLayout = new QHBoxLayout(central);
   mainLayout->setContentsMargins(0, 0, 0, 0);
 
-  /* ================== Left Sidebar ================== */
+  /*Left Sidebar*/
   QWidget *leftSidebar = new QWidget(central);
   leftSidebar->setFixedWidth(150);
 
@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
   leftLayout->addWidget(new QLabel("Left Panel"));
   leftLayout->addStretch();
 
-  /* ================== Right Sidebar ================== */
+  /*Right Sidebar*/
   QWidget *rightSidebar = new QWidget(central);
   rightSidebar->setFixedWidth(150);
 
@@ -52,10 +52,9 @@ MainWindow::MainWindow(QWidget *parent)
   rightLayout->addWidget(new QLabel("Right Panel"));
   rightLayout->addStretch();
 
-  /* ================== StackedWidget (核心) ================== */
   stack = new QStackedWidget(central);
 
-  /* ================== Pages ================== */
+  /*Pages*/
   page1 = new Page1_model_chose(this);
   simuConfig = new Simu_Config(this);
   nodeConfigPage = new node_config(this);
@@ -76,15 +75,34 @@ MainWindow::MainWindow(QWidget *parent)
 
   switchTo(stack->indexOf(greetingPage));
 
-  /* ================== Layout Assemble ================== */
+  /*Layout Assemble*/
   mainLayout->addWidget(leftSidebar);
   mainLayout->addWidget(stack, 1);
   mainLayout->addWidget(rightSidebar);
 
-  /* ================== Signal & Slot ================== */
+  /*Signal & Slot*/
 
   /*greetingPage*/
-  connect(greetingPage, &Greeting::nextPage, this, [=]() { switchTo(0); });
+  connect(greetingPage, &Greeting::nextPage, this, [=]() {
+    const QString currentPath = greetingPage ? greetingPage->ns3Path : QString();
+    if (currentPath.isEmpty() || !isValidNs3Directory(currentPath)) {
+      QMessageBox::warning(
+          this, tr("NS-3"),
+          tr("The selected directory is not a valid NS-3 directory."));
+      ns3PathValid = false;
+      return;
+    }
+    ns3PathValid = true;
+    if (page1)
+      page1->ns3Path = currentPath;
+    if (page1)
+      page1->refreshModelLists();
+    if (simuConfig)
+      simuConfig->setNs3Path(currentPath);
+    if (greetingPage)
+      greetingPage->setNs3Path(currentPath);
+    switchTo(0);
+  });
   /*Page_1_model_chose*/
   connect(page1, &Page1_model_chose::BackToMain, this, [=]() { switchTo(stack->indexOf(greetingPage)); });
 
@@ -237,7 +255,7 @@ MainWindow::MainWindow(QWidget *parent)
             resetMain();
           });
 
-  /* ================== Status Bar ================== */
+  /*Status Bar*/
   QStatusBar *status = new QStatusBar(this);
   setStatusBar(status);
   status->showMessage("Ready");
@@ -332,8 +350,8 @@ void MainWindow::onBrowseNs3Dir() {
     if (simuConfig)
       simuConfig->setNs3Path(dir);
     greetingPage->setNs3Path(dir);
-    QMessageBox::information(this, tr("NS-3"),
-                             tr("Valid NS-3 directory selected."));
+    // QMessageBox::information(this, tr("NS-3"),
+    //                          tr("Valid NS-3 directory selected."));
   } else {
     QMessageBox::warning(
         this, tr("NS-3"),

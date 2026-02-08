@@ -4,7 +4,7 @@
             {
                 "Beamwidth": 360,
                 "MaxGain": 0,
-                "type": "Isotropic"
+                "type": "IsotropicAntennaModel"
             }
         ],
         "set": true
@@ -38,9 +38,9 @@
     },
     "Phy_model": "Yans",
     "Position": [
-        2.0476793427765365,
-        2.5861476384267954,
-        3.047397489663539
+        2.8493441472650956,
+        5.656134112021593,
+        4.344342917066678
     ],
     "Qos": {
         "Edca_choose": "AC_VO",

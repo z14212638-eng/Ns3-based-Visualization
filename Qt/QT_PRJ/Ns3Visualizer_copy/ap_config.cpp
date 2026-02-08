@@ -873,13 +873,13 @@ void Ap_config::resetPage()
     // 5️⃣ Page3：PHY / MAC
     // ===============================
     // ui->lineEdit->clear();                  // SSID
-    ui->comboBox_3->setCurrentIndex(0);     // band
+    ui->comboBox_3->setCurrentText("5G");  // band
     ui->comboBox_4->setCurrentIndex(0);     // phy model
-    ui->comboBox_5->setCurrentIndex(5);     // standard（你原本默认）
+    ui->comboBox_5->setCurrentText("802.11ax");     // standard
     ui->comboBox_7->setCurrentIndex(0);
     ui->comboBox_8->setCurrentIndex(0);
 
-    ui->spinBox->setValue(1);               // channel
+    ui->spinBox->setValue(36);              // channel
     ui->spinBox_3->setValue(0);             // RTS threshold
 
     ui->doubleSpinBox_6->setValue(0.0);     // TxPower
