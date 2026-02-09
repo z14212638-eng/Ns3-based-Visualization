@@ -1,6 +1,7 @@
 #include "simu_config.h"
 #include "ui_simu_config.h"
 #include "visualizer_config.h"
+#include "configgraphicsview.h"
 
 #include <QCheckBox>
 #include <QDialog>
@@ -9,6 +10,12 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <QSpinBox>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QGraphicsView>
+#include <QMessageBox>
+#include <QFont>
 #include <boost/interprocess/shared_memory_object.hpp>
 
 Simu_Config::Simu_Config(QWidget *parent)
@@ -29,6 +36,29 @@ QFrame#myFrame {
 }
     
 )";
+
+  // Create enlarge button overlay on graphicsView
+  m_enlargeButton = new QPushButton("Enlarge Map", ui->graphicsView);
+  m_enlargeButton->setStyleSheet(
+      "QPushButton {"
+      "  background-color: rgba(255, 255, 255, 200);"
+      "  border: 2px solid #0078D4;"
+      "  border-radius: 5px;"
+      "  padding: 8px 15px;"
+      "  font-weight: bold;"
+      "  font-size: 11pt;"
+      "  color: #0078D4;"
+      "}"
+      "QPushButton:hover {"
+      "  background-color: rgba(0, 120, 212, 230);"
+      "  color: white;"
+      "}"
+  );
+  m_enlargeButton->setCursor(Qt::PointingHandCursor);
+  m_enlargeButton->setFixedSize(140, 40);
+  m_enlargeButton->move(10, 10);
+  m_enlargeButton->raise();
+  connect(m_enlargeButton, &QPushButton::clicked, this, &Simu_Config::showEnlargedMap);
 }
 
 Simu_Config::~Simu_Config() {
@@ -102,6 +132,9 @@ void Simu_Config::Draw_the_config_map() {
   scene->setSceneRect(sceneRect);
   QGraphicsRectItem *building = scene->addRect(sceneRect, QPen(Qt::black, 2));
   building->setZValue(0);
+  
+  // Fit the view to show the entire building
+  ui->graphicsView->fitInView(sceneRect.adjusted(-10, -10, 10, 10), Qt::KeepAspectRatio);
 }
 
 // Enable the json updated
@@ -774,4 +807,204 @@ void Simu_Config::addStaToTable(int id, const QVector<double> &pos, bool mobilit
 void Simu_Config::updateLcdNumbers() {
   ui->lcdNumber->display(ui->tableWidget_2->rowCount());
   ui->lcdNumber_2->display(ui->tableWidget->rowCount());
+}
+
+void Simu_Config::drawCoordinateAxes(QGraphicsScene *targetScene, double width, double height, double scale) {
+  if (!targetScene)
+    return;
+
+  // Draw coordinate axes
+  QPen axisPen(QColor(40, 40, 40), 3.0);
+  QPen tickPen(QColor(60, 60, 60), 2.0);
+  QPen gridPen(QColor(200, 200, 200), 1.0, Qt::DashLine);
+  
+  // X axis
+  auto *xAxis = targetScene->addLine(0, 0, width * scale, 0, axisPen);
+  xAxis->setZValue(5);
+  
+  // Y axis
+  auto *yAxis = targetScene->addLine(0, 0, 0, height * scale, axisPen);
+  yAxis->setZValue(5);
+  
+  // Draw tick marks and labels
+  double tickInterval = 1.0;  // 1 meter interval
+  if (width > 20) tickInterval = 2.0;  // Use 2m for larger areas
+  if (width > 50) tickInterval = 5.0;  // Use 5m for very large areas
+  
+  const double tickLength = 8;
+  
+  // X axis ticks and labels
+  for (double x = 0; x <= width; x += tickInterval) {
+    double screenX = x * scale;
+    
+    // Tick mark
+    auto *tick = targetScene->addLine(screenX, 0, screenX, -tickLength, tickPen);
+    tick->setZValue(5);
+    
+    // Grid line (optional)
+    if (x > 0 && x < width) {
+      auto *gridLine = targetScene->addLine(screenX, 0, screenX, height * scale, gridPen);
+      gridLine->setZValue(-1);
+    }
+    
+    // Label
+    auto *label = targetScene->addText(QString::number(x, 'f', 1));
+    label->setDefaultTextColor(QColor(20, 20, 20));
+    label->setFont(QFont("Arial", 10, QFont::Bold));
+    label->setZValue(10);
+    label->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    label->setPos(screenX - 10, -15);
+  }
+  
+  // Y axis ticks and labels
+  for (double y = 0; y <= height; y += tickInterval) {
+    double screenY = y * scale;
+    
+    // Tick mark
+    auto *tick = targetScene->addLine(0, screenY, -tickLength, screenY, tickPen);
+    tick->setZValue(5);
+    
+    // Grid line (optional)
+    if (y > 0 && y < height) {
+      auto *gridLine = targetScene->addLine(0, screenY, width * scale, screenY, gridPen);
+      gridLine->setZValue(-1);
+    }
+    
+    // Label
+    auto *label = targetScene->addText(QString::number(y, 'f', 1));
+    label->setDefaultTextColor(QColor(20, 20, 20));
+    label->setFont(QFont("Arial", 10, QFont::Bold));
+    label->setZValue(10);
+    label->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    label->setPos(-30, screenY - 10);
+  }
+  
+  // Axis labels
+  auto *xAxisLabel = targetScene->addText("X (m)");
+  xAxisLabel->setDefaultTextColor(QColor(0, 0, 0));
+  xAxisLabel->setFont(QFont("Arial", 12, QFont::Bold));
+  xAxisLabel->setZValue(10);
+  xAxisLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+  xAxisLabel->setPos(width * scale / 2 - 20, -30);
+  
+  auto *yAxisLabel = targetScene->addText("Y (m)");
+  yAxisLabel->setDefaultTextColor(QColor(0, 0, 0));
+  yAxisLabel->setFont(QFont("Arial", 12, QFont::Bold));
+  yAxisLabel->setZValue(10);
+  yAxisLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations);
+  yAxisLabel->setPos(-45, height * scale / 2 - 10);
+}
+
+void Simu_Config::showEnlargedMap() {
+  if (!scene) {
+    QMessageBox::information(this, tr("Info"), tr("Please configure the building first."));
+    return;
+  }
+
+  // Create a separate scene for the enlarged map with axes
+  auto *enlargedScene = new QGraphicsScene();
+  
+  double width = building_range[0];
+  double height = building_range[1];
+  double scale = 40.0;
+  
+  // Extend scene to include axis space
+  const double axisMargin = 50;
+  QRectF buildingRect(0, 0, width * scale, height * scale);
+  enlargedScene->setSceneRect(-axisMargin, -axisMargin, 
+                               width * scale + axisMargin * 2, 
+                               height * scale + axisMargin * 2);
+  
+  // Draw the building frame
+  QGraphicsRectItem *building = enlargedScene->addRect(buildingRect, QPen(Qt::black, 2));
+  building->setZValue(0);
+  
+  // Draw coordinate axes on the enlarged scene
+  drawCoordinateAxes(enlargedScene, width, height, scale);
+  
+  // Copy all nodes from the original scene to the enlarged scene
+  for (QGraphicsItem *item : scene->items()) {
+    if (auto *node = dynamic_cast<NodeItem *>(item)) {
+      auto *newNode = new NodeItem(buildingRect, scale);
+      newNode->m_id = node->m_id;
+      newNode->Type = node->Type;
+      newNode->x_sim = node->x_sim;
+      newNode->y_sim = node->y_sim;
+      newNode->z_sim = node->z_sim;
+      newNode->setBrush(node->brush());
+      newNode->setZValue(10);
+      newNode->setPos(node->pos());
+      newNode->finishInit();
+      
+      // Update original scene when position changes in enlarged map
+      newNode->onPositionCommitted = [this, node](int id, double nx, double ny, double nz) {
+        node->x_sim = nx;
+        node->y_sim = ny;
+        node->z_sim = nz;
+        node->setPos(nx * 40, ny * 40);
+        updateNodePositionInTable(node->Type, id, nx, ny, nz);
+      };
+      
+      enlargedScene->addItem(newNode);
+    }
+  }
+
+  // Create a dialog for the enlarged map
+  auto *dialog = new QDialog(this);
+  dialog->setWindowTitle(tr("Enlarged Map View - Interactive Mode"));
+  dialog->resize(1400, 1000);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
+
+  auto *layout = new QVBoxLayout(dialog);
+  layout->setContentsMargins(10, 10, 10, 10);
+
+  // Create a new graphics view for the enlarged map with zoom support
+  auto *enlargedView = new ConfigGraphicsView(dialog);
+  enlargedView->setScene(enlargedScene);
+  
+  // Apply the same transformation (Y-axis flip)
+  enlargedView->scale(1, -1);
+  
+  // Fit the view to show all content including axes
+  enlargedView->fitInView(enlargedScene->sceneRect(), Qt::KeepAspectRatio);
+  
+  layout->addWidget(enlargedView);
+
+  // Add info label
+  auto *infoLabel = new QLabel(
+      tr("🖱️ Mouse Wheel: Zoom | Middle/Right Click: Pan | Drag Nodes: Reposition | All changes sync with main view"), dialog);
+  infoLabel->setStyleSheet("QLabel { color: #555; font-style: italic; padding: 8px; background-color: #f0f0f0; border-radius: 4px; }");
+  infoLabel->setAlignment(Qt::AlignCenter);
+  layout->addWidget(infoLabel);
+
+  // Add button row
+  auto *buttonLayout = new QHBoxLayout();
+  
+  // Reset view button
+  auto *resetViewButton = new QPushButton(tr("Reset View"), dialog);
+  resetViewButton->setMaximumWidth(150);
+  connect(resetViewButton, &QPushButton::clicked, [enlargedView, enlargedScene]() {
+    enlargedView->resetTransform();
+    enlargedView->scale(1, -1);
+    enlargedView->fitInView(enlargedScene->sceneRect(), Qt::KeepAspectRatio);
+  });
+  
+  // Close button
+  auto *closeButton = new QPushButton(tr("Close"), dialog);
+  closeButton->setMaximumWidth(150);
+  connect(closeButton, &QPushButton::clicked, dialog, &QDialog::accept);
+  
+  buttonLayout->addStretch();
+  buttonLayout->addWidget(resetViewButton);
+  buttonLayout->addSpacing(10);
+  buttonLayout->addWidget(closeButton);
+  buttonLayout->addStretch();
+  layout->addLayout(buttonLayout);
+
+  // Clean up the enlarged scene when dialog closes
+  connect(dialog, &QDialog::finished, [enlargedScene]() {
+    delete enlargedScene;
+  });
+
+  dialog->exec();
 }

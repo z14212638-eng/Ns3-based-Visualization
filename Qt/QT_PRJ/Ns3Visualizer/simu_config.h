@@ -53,6 +53,7 @@ public:
   void addApToTable(int id, const QVector<double> &pos, bool mobility);
   void addStaToTable(int id, const QVector<double> &pos, bool mobility);
   void updateLcdNumbers();
+  void drawCoordinateAxes(QGraphicsScene *targetScene, double width, double height, double scale);
 
 signals:
   void BackToLastPage();
@@ -80,6 +81,8 @@ private slots:
   void on_pushButton_9_clicked();
 
   void on_checkBox_checkStateChanged(const Qt::CheckState &arg1);
+  
+  void showEnlargedMap();
 
 private:
   Ui::Simu_Config *ui;
@@ -94,6 +97,7 @@ private:
   QString m_copiedScratchPath;
 
   QVector<double> building_range = {0, 0, 0};
+  QPushButton *m_enlargeButton = nullptr;
 
   void updateNodePositionInTable(const QString &type, int id, double x,
                                  double y, double z);
@@ -127,6 +131,22 @@ public:
 protected:
   bool m_hovered = false;
   bool m_initialized = false;
+
+  void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
+    QGraphicsEllipseItem::mousePressEvent(event);
+    
+    // Show info when starting to drag
+    if (m_initialized && !m_infoItem->isVisible()) {
+      m_infoItem->setText(QString("Type:%1\nID: %2\nx=%3  y=%4  z=%5")
+                              .arg(Type)
+                              .arg(m_id)
+                              .arg(x_sim, 0, 'f', 2)
+                              .arg(y_sim, 0, 'f', 2)
+                              .arg(z_sim, 0, 'f', 2));
+      m_infoItem->setPos(8, 8);
+      m_infoItem->setVisible(true);
+    }
+  }
 
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
     QGraphicsEllipseItem::mouseReleaseEvent(event);
@@ -194,7 +214,16 @@ protected:
 
       x_sim = p.x() / m_scale;
       y_sim = p.y() / m_scale;
-      // std::cout << "x_sim: " << x_sim << " y_sim: " << y_sim << std::endl;
+      
+      // Update info text in real-time during dragging
+      if (m_infoItem && m_infoItem->isVisible()) {
+        m_infoItem->setText(QString("Type:%1\nID: %2\nx=%3  y=%4  z=%5")
+                                .arg(Type)
+                                .arg(m_id)
+                                .arg(x_sim, 0, 'f', 2)
+                                .arg(y_sim, 0, 'f', 2)
+                                .arg(z_sim, 0, 'f', 2));
+      }
     }
 
     return QGraphicsEllipseItem::itemChange(change, value);
