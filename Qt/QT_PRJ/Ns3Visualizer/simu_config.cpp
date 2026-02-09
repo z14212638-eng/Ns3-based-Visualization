@@ -200,6 +200,10 @@ void Simu_Config::Update_json_map(JsonHelper &json_helper) {
     ap->setPos(x * scale, y * scale);
     ap->finishInit();
 
+    ap->onPositionCommitted = [this](int id, double nx, double ny, double nz) {
+      updateNodePositionInTable(QStringLiteral("AP"), id, nx, ny, nz);
+    };
+
     scene->addItem(ap);
 
     // 同步 ap_config_list
@@ -236,6 +240,10 @@ void Simu_Config::Update_json_map(JsonHelper &json_helper) {
     sta->setPos(x * scale, y * scale);
     sta->finishInit();
 
+    sta->onPositionCommitted = [this](int id, double nx, double ny, double nz) {
+      updateNodePositionInTable(QStringLiteral("STA"), id, nx, ny, nz);
+    };
+
     scene->addItem(sta);
 
     // 同步 sta_config_list
@@ -260,6 +268,43 @@ void Simu_Config::Update_json_map(JsonHelper &json_helper) {
     QString path = json_helper.Sta_file_path +
                    QString::number(item["Id"].toInt() + 1) + ".json";
     json_helper.SaveJsonObjToRoute(item, path);
+  }
+}
+
+void Simu_Config::updateNodePositionInTable(const QString &type, int id,
+                                            double x, double y, double z) {
+  QTableWidget *table = nullptr;
+  if (type == QLatin1String("AP")) {
+    table = ui->tableWidget_2;
+  } else if (type == QLatin1String("STA")) {
+    table = ui->tableWidget;
+  } else {
+    return;
+  }
+
+  const QString posText =
+      QString("(%1, %2, %3)")
+          .arg(x, 0, 'f', 2)
+          .arg(y, 0, 'f', 2)
+          .arg(z, 0, 'f', 2);
+
+  for (int row = 0; row < table->rowCount(); ++row) {
+    auto *idItem = table->item(row, 0);
+    if (!idItem)
+      continue;
+
+    bool ok = false;
+    const int rowId = idItem->text().toInt(&ok);
+    if (!ok || rowId != id)
+      continue;
+
+    auto *posItem = table->item(row, 1);
+    if (!posItem) {
+      posItem = new QTableWidgetItem();
+      table->setItem(row, 1, posItem);
+    }
+    posItem->setText(posText);
+    break;
   }
 }
 
@@ -354,6 +399,8 @@ void Simu_Config::resetPage() {
   ui->comboBox->setCurrentIndex(0);
   ui->comboBox_2->setCurrentIndex(0);
 
+  ui->tableWidget->setRowCount(0);
+  ui->tableWidget_2->setRowCount(0);
   ui->lcdNumber->display(0);
   ui->lcdNumber_2->display(0);
 
@@ -698,4 +745,33 @@ void Simu_Config::on_checkBox_checkStateChanged(const Qt::CheckState &state) {
   g_ppduViewConfig.absoluteRate.store(checked);
   g_ppduViewConfig.preciseMode.store(checked);
   g_ppduViewConfig.sampleRate.store(checked ? 1 : 10); // 默认降采样 1/10
+}
+
+void Simu_Config::addApToTable(int id, const QVector<double> &pos, bool mobility) {
+  int row = ui->tableWidget_2->rowCount();
+  ui->tableWidget_2->insertRow(row);
+  
+  ui->tableWidget_2->setItem(row, 0, new QTableWidgetItem(QString::number(id)));
+  ui->tableWidget_2->setItem(row, 1, new QTableWidgetItem(
+    QString("(%1, %2, %3)").arg(pos[0], 0, 'f', 2).arg(pos[1], 0, 'f', 2).arg(pos[2], 0, 'f', 2)));
+  ui->tableWidget_2->setItem(row, 2, new QTableWidgetItem(mobility ? "Yes" : "No"));
+  
+  updateLcdNumbers();
+}
+
+void Simu_Config::addStaToTable(int id, const QVector<double> &pos, bool mobility) {
+  int row = ui->tableWidget->rowCount();
+  ui->tableWidget->insertRow(row);
+  
+  ui->tableWidget->setItem(row, 0, new QTableWidgetItem(QString::number(id)));
+  ui->tableWidget->setItem(row, 1, new QTableWidgetItem(
+    QString("(%1, %2, %3)").arg(pos[0], 0, 'f', 2).arg(pos[1], 0, 'f', 2).arg(pos[2], 0, 'f', 2)));
+  ui->tableWidget->setItem(row, 2, new QTableWidgetItem(mobility ? "Yes" : "No"));
+  
+  updateLcdNumbers();
+}
+
+void Simu_Config::updateLcdNumbers() {
+  ui->lcdNumber->display(ui->tableWidget_2->rowCount());
+  ui->lcdNumber_2->display(ui->tableWidget->rowCount());
 }

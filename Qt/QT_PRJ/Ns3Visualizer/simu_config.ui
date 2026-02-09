@@ -52,7 +52,7 @@
             </font>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>2</number>
            </property>
            <property name="iconSize">
             <size>
@@ -635,9 +635,9 @@
               <widget class="QWidget" name="widget_2" native="true">
                <property name="geometry">
                 <rect>
-                 <x>460</x>
+                 <x>261</x>
                  <y>20</y>
-                 <width>272</width>
+                 <width>471</width>
                  <height>451</height>
                 </rect>
                </property>

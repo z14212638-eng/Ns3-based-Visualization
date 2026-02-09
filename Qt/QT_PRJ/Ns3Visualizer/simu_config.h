@@ -14,6 +14,7 @@
 #include <QGraphicsEllipseItem>
 #include <QGraphicsRectItem>
 #include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneMouseEvent>
 #include <QGraphicsView>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
@@ -49,6 +50,9 @@ public:
   void setNs3Path(const QString &path);
   void setSelectedScene(const QString &sceneName);
   void resetSimuScene();
+  void addApToTable(int id, const QVector<double> &pos, bool mobility);
+  void addStaToTable(int id, const QVector<double> &pos, bool mobility);
+  void updateLcdNumbers();
 
 signals:
   void BackToLastPage();
@@ -90,6 +94,9 @@ private:
   QString m_copiedScratchPath;
 
   QVector<double> building_range = {0, 0, 0};
+
+  void updateNodePositionInTable(const QString &type, int id, double x,
+                                 double y, double z);
 };
 
 // NodeItem represents a movable node in the graphics scene
@@ -120,6 +127,20 @@ public:
 protected:
   bool m_hovered = false;
   bool m_initialized = false;
+
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
+    QGraphicsEllipseItem::mouseReleaseEvent(event);
+
+    if (!m_initialized)
+      return;
+
+    const QPointF p = pos();
+    x_sim = p.x() / m_scale;
+    y_sim = p.y() / m_scale;
+
+    if (onPositionCommitted)
+      onPositionCommitted(m_id, x_sim, y_sim, z_sim);
+  }
 
   void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override {
     m_hovered = true;

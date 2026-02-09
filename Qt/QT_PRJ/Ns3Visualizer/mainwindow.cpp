@@ -189,6 +189,10 @@ MainWindow::MainWindow(QWidget *parent)
     apConfigPage->Get_Antenna_Config(ap_now, *(antenna));
     apConfigPage->Get_Traffic_Config(ap_now);  // 转换所有流量配置
     jsonhelper.SetApToJson(&ap_now, apConfigPage->ApIndex);
+    
+    // 添加到表格
+    simuConfig->addApToTable(ap_now.Id, ap_now.m_position, ap_now.Mobility);
+    
     ap_now.Traffic_list.clear();
     ap_now.Antenna_list.clear();
     emit simuConfig->update();
@@ -212,6 +216,10 @@ MainWindow::MainWindow(QWidget *parent)
     nodeConfigPage->Get_Antenna_Config(sta_now, *antenna);
     nodeConfigPage->Get_Traffic_Config(sta_now);  // 转换所有流量配置
     jsonhelper.SetStaToJson(&sta_now, nodeConfigPage->StaIndex);
+    
+    // 添加到表格
+    simuConfig->addStaToTable(sta_now.Id, sta_now.m_position, sta_now.Mobility);
+    
     sta_now.Traffic_list.clear();
     sta_now.Antenna_list.clear();
     emit simuConfig->update();
