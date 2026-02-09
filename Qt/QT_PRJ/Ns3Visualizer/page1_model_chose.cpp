@@ -11,6 +11,8 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <QSpinBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 #include "visualizer_config.h"
 
@@ -396,5 +398,25 @@ bool Page1_model_chose::eventFilter(QObject *obj, QEvent *event)
 void Page1_model_chose::on_pushButton_clicked()
 {
     emit ConfigSimulation();
+}
+
+void Page1_model_chose::setJsonHelper(JsonHelper *helper) {
+    m_jsonHelper = helper;
+}
+
+void Page1_model_chose::on_load_button_clicked() {
+    // Ask user to select a project file
+    QString openFilePath = QFileDialog::getOpenFileName(
+        this,
+        tr("Load Project File"),
+        QDir::homePath(),
+        tr("NS3 Project Files (*.nsproj);;All Files (*)"));
+
+    if (openFilePath.isEmpty()) {
+        return;  // User cancelled
+    }
+
+    // Emit signal to let MainWindow handle the loading with its jsonHelper
+    emit LoadProjectRequested(openFilePath);
 }
 

@@ -550,4 +550,198 @@ void JsonHelper::reset()
     Ap_file_path.clear();
     Sta_file_path.clear();
     General_file_path.clear();
+    
+    // 7️⃣ reset project config
+    m_project_config = ProjectConfig();
+}
+
+bool JsonHelper::SaveProjectConfig(const QString &projectFilePath, const QString &projectName)
+{
+    QJsonObject projectObj;
+    
+    // Basic project info
+    projectObj["project_name"] = projectName.isEmpty() ? "Untitled_Project" : projectName;
+    projectObj["ns3_directory"] = Base_dir;
+    projectObj["run_directory"] = Run_dir;
+    
+    // Config folders
+    projectObj["ap_config_folder"] = Run_dir + "ApConfigJson";
+    projectObj["sta_config_folder"] = Run_dir + "StaConfigJson";
+    projectObj["general_config_folder"] = Run_dir + "GeneralJson";
+    
+    // Config files list
+    QJsonArray apFiles;
+    for (int i = 0; i < m_ap_config_list.size(); ++i) {
+        apFiles.append(QString("Ap_%1.json").arg(i));
+    }
+    projectObj["ap_config_files"] = apFiles;
+    
+    QJsonArray staFiles;
+    for (int i = 0; i < m_sta_config_list.size(); ++i) {
+        staFiles.append(QString("Sta_%1.json").arg(i));
+    }
+    projectObj["sta_config_files"] = staFiles;
+    
+    projectObj["general_config_file"] = "general.json";
+    
+    // Timestamps
+    QString currentTime = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
+    projectObj["created_time"] = currentTime;
+    projectObj["last_modified"] = currentTime;
+    
+    // Statistics
+    projectObj["ap_count"] = m_ap_config_list.size();
+    projectObj["sta_count"] = m_sta_config_list.size();
+    
+    // Save to file
+    bool success = SaveJsonObjToRoute(projectObj, projectFilePath);
+    
+    if (success) {
+        qDebug() << "Project configuration saved to:" << projectFilePath;
+        
+        // Update internal project config
+        m_project_config.project_name = projectName;
+        m_project_config.ns3_directory = Base_dir;
+        m_project_config.run_directory = Run_dir;
+        m_project_config.ap_config_folder = Run_dir + "ApConfigJson";
+        m_project_config.sta_config_folder = Run_dir + "StaConfigJson";
+        m_project_config.general_config_folder = Run_dir + "GeneralJson";
+        m_project_config.created_time = currentTime;
+        m_project_config.last_modified = currentTime;
+    }
+    
+    return success;
+}
+
+bool JsonHelper::LoadProjectConfig(const QString &projectFilePath)
+{
+    QFile file(projectFilePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "Failed to open project file:" << projectFilePath;
+        return false;
+    }
+    
+    QByteArray data = file.readAll();
+    file.close();
+    
+    QJsonParseError parseError;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &parseError);
+    
+    if (parseError.error != QJsonParseError::NoError) {
+        qWarning() << "Failed to parse project file:" << parseError.errorString();
+        return false;
+    }
+    
+    if (!doc.isObject()) {
+        qWarning() << "Invalid project file format";
+        return false;
+    }
+    
+    QJsonObject projectObj = doc.object();
+    
+    // Get the project directory (where the .nsproj file is located)
+    QFileInfo fileInfo(projectFilePath);
+    QString projectDir = fileInfo.absolutePath();
+    
+    // Load project configuration
+    m_project_config.project_name = projectObj["project_name"].toString();
+    m_project_config.work_directory = projectObj["work_directory"].toString();
+    m_project_config.ns3_directory = projectObj["ns3_directory"].toString();
+    m_project_config.run_directory = projectObj["run_directory"].toString();
+    
+    // Config folders (stored as relative paths, convert to absolute)
+    QString apConfigFolderRel = projectObj["ap_config_folder"].toString();
+    QString staConfigFolderRel = projectObj["sta_config_folder"].toString();
+    QString generalConfigFolderRel = projectObj["general_config_folder"].toString();
+    
+    m_project_config.ap_config_folder = projectDir + "/" + apConfigFolderRel;
+    m_project_config.sta_config_folder = projectDir + "/" + staConfigFolderRel;
+    m_project_config.general_config_folder = projectDir + "/" + generalConfigFolderRel;
+    m_project_config.general_config_file = projectObj["general_config_file"].toString();
+    m_project_config.created_time = projectObj["created_time"].toString();
+    m_project_config.last_modified = projectObj["last_modified"].toString();
+    
+    // Load file lists
+    m_project_config.ap_config_files.clear();
+    QJsonArray apFiles = projectObj["ap_config_files"].toArray();
+    for (const auto &file : apFiles) {
+        m_project_config.ap_config_files.append(file.toString());
+    }
+    
+    m_project_config.sta_config_files.clear();
+    QJsonArray staFiles = projectObj["sta_config_files"].toArray();
+    for (const auto &file : staFiles) {
+        m_project_config.sta_config_files.append(file.toString());
+    }
+    
+    // Update internal paths
+    Base_dir = m_project_config.ns3_directory;
+    Run_dir = projectDir + "/";  // Use project directory as run directory
+    Ap_file_path = m_project_config.ap_config_folder + "/Ap_";
+    Sta_file_path = m_project_config.sta_config_folder + "/Sta_";
+    General_file_path = m_project_config.general_config_folder + "/";
+    run_dir_initialized = true;
+    
+    qDebug() << "Project configuration loaded from:" << projectFilePath;
+    qDebug() << "Project directory:" << projectDir;
+    qDebug() << "Project name:" << m_project_config.project_name;
+    qDebug() << "AP count:" << m_project_config.ap_config_files.size();
+    qDebug() << "STA count:" << m_project_config.sta_config_files.size();
+    
+    // Now load the actual configuration files
+    m_ap_config_list.clear();
+    m_sta_config_list.clear();
+    
+    // Load AP configurations
+    for (const QString &apFile : m_project_config.ap_config_files) {
+        QString fullPath = m_project_config.ap_config_folder + "/" + apFile;
+        QFile apFileObj(fullPath);
+        if (apFileObj.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QJsonDocument apDoc = QJsonDocument::fromJson(apFileObj.readAll());
+            if (apDoc.isObject()) {
+                m_ap_config_list.append(apDoc.object());
+                qDebug() << "Loaded AP config:" << fullPath;
+            }
+            apFileObj.close();
+        } else {
+            qWarning() << "Failed to open AP config file:" << fullPath;
+        }
+    }
+    
+    // Load STA configurations
+    for (const QString &staFile : m_project_config.sta_config_files) {
+        QString fullPath = m_project_config.sta_config_folder + "/" + staFile;
+        QFile staFileObj(fullPath);
+        if (staFileObj.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QJsonDocument staDoc = QJsonDocument::fromJson(staFileObj.readAll());
+            if (staDoc.isObject()) {
+                m_sta_config_list.append(staDoc.object());
+                qDebug() << "Loaded STA config:" << fullPath;
+            }
+            staFileObj.close();
+        } else {
+            qWarning() << "Failed to open STA config file:" << fullPath;
+        }
+    }
+    
+    // Load general configuration
+    QString generalPath = m_project_config.general_config_folder + "/" + m_project_config.general_config_file;
+    QFile generalFile(generalPath);
+    if (generalFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QJsonDocument generalDoc = QJsonDocument::fromJson(generalFile.readAll());
+        if (generalDoc.isObject()) {
+            m_building_config = generalDoc.object();
+            qDebug() << "Loaded general config:" << generalPath;
+        }
+        generalFile.close();
+    } else {
+        qWarning() << "Failed to open general config file:" << generalPath;
+    }
+    
+    return true;
+}
+
+ProjectConfig JsonHelper::GetCurrentProjectConfig() const
+{
+    return m_project_config;
 }

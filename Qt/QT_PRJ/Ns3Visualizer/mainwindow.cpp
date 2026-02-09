@@ -9,6 +9,11 @@
 #include <QVBoxLayout>
 #include <qcombobox.h>
 #include <qthreadpool.h>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QDir>
+#include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -250,6 +255,10 @@ MainWindow::MainWindow(QWidget *parent)
             resetMain();
           });
 
+  /*Save/Load Project*/
+  connect(simuConfig, &Simu_Config::SaveProjectRequested, this, &MainWindow::onSaveProject);
+  connect(page1, &Page1_model_chose::LoadProjectRequested, this, &MainWindow::onLoadProject);
+
   /*Status Bar*/
   QStatusBar *status = new QStatusBar(this);
   setStatusBar(status);
@@ -365,3 +374,216 @@ bool MainWindow::isValidNs3Directory(const QString &path) {
 
   return dir.exists("src") && dir.exists("scratch");
 }
+
+void MainWindow::onSaveProject() {
+  qDebug() << "[MainWindow] onSaveProject()";
+
+  // Make sure configuration is up to date
+  if (simuConfig) {
+    simuConfig->updateCurrentSceneJson(jsonhelper.m_building_config);
+  }
+
+  // Ask user for project name
+  bool ok;
+  QString projectName = QInputDialog::getText(this, tr("Save Project"),
+                                              tr("Enter project name:"),
+                                              QLineEdit::Normal,
+                                              "MySimulationProject", &ok);
+  if (!ok || projectName.isEmpty()) {
+    return;  // User cancelled or entered empty name
+  }
+
+  // Ask user to select a directory where to save the project folder
+  QString baseDir = QFileDialog::getExistingDirectory(
+      this,
+      tr("Select Directory to Save Project"),
+      QDir::homePath(),
+      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+  if (baseDir.isEmpty()) {
+    return;  // User cancelled
+  }
+
+  // Create project folder
+  QString projectDir = baseDir + "/" + projectName;
+  QDir dir;
+  if (dir.exists(projectDir)) {
+    auto reply = QMessageBox::question(
+        this, tr("Folder Exists"),
+        tr("The folder '%1' already exists. Do you want to overwrite it?").arg(projectName),
+        QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::No) {
+      return;
+    }
+    // Remove existing folder
+    QDir(projectDir).removeRecursively();
+  }
+
+  if (!dir.mkpath(projectDir)) {
+    QMessageBox::critical(this, tr("Error"),
+                         tr("Failed to create project directory:\n%1").arg(projectDir));
+    return;
+  }
+
+  // Create subdirectories
+  QString apConfigDir = projectDir + "/ApConfigJson";
+  QString staConfigDir = projectDir + "/StaConfigJson";
+  QString generalConfigDir = projectDir + "/GeneralJson";
+
+  if (!dir.mkpath(apConfigDir) || !dir.mkpath(staConfigDir) || !dir.mkpath(generalConfigDir)) {
+    QMessageBox::critical(this, tr("Error"),
+                         tr("Failed to create configuration directories."));
+    return;
+  }
+
+  // Save General Config
+  QJsonObject generalConfig = jsonhelper.m_building_config;
+  QString generalFilePath = generalConfigDir + "/General.json";
+  if (!jsonhelper.SaveJsonObjToRoute(generalConfig, generalFilePath)) {
+    QMessageBox::critical(this, tr("Error"),
+                         tr("Failed to save general configuration."));
+    return;
+  }
+
+  // Save AP Configs
+  QStringList apFiles;
+  for (int i = 0; i < jsonhelper.m_ap_config_list.size(); ++i) {
+    QString apFileName = QString("Ap_%1.json").arg(i);
+    QString apFilePath = apConfigDir + "/" + apFileName;
+    if (!jsonhelper.SaveJsonObjToRoute(jsonhelper.m_ap_config_list[i], apFilePath)) {
+      QMessageBox::critical(this, tr("Error"),
+                           tr("Failed to save AP configuration %1.").arg(i));
+      return;
+    }
+    apFiles.append(apFileName);
+  }
+
+  // Save STA Configs
+  QStringList staFiles;
+  for (int i = 0; i < jsonhelper.m_sta_config_list.size(); ++i) {
+    QString staFileName = QString("Sta_%1.json").arg(i);
+    QString staFilePath = staConfigDir + "/" + staFileName;
+    if (!jsonhelper.SaveJsonObjToRoute(jsonhelper.m_sta_config_list[i], staFilePath)) {
+      QMessageBox::critical(this, tr("Error"),
+                           tr("Failed to save STA configuration %1.").arg(i));
+      return;
+    }
+    staFiles.append(staFileName);
+  }
+
+  // Save project file with relative paths
+  QString projectFilePath = projectDir + "/" + projectName + ".nsproj";
+  
+  QJsonObject projectObj;
+  projectObj["project_name"] = projectName;
+  projectObj["work_directory"] = projectDir;
+  projectObj["ns3_directory"] = jsonhelper.Base_dir;
+  
+  // Use relative paths for config folders
+  projectObj["ap_config_folder"] = "ApConfigJson";
+  projectObj["sta_config_folder"] = "StaConfigJson";
+  projectObj["general_config_folder"] = "GeneralJson";
+  
+  // Config file names (relative to their folders)
+  QJsonArray apFilesArray;
+  for (const QString &fileName : apFiles) {
+    apFilesArray.append(fileName);
+  }
+  projectObj["ap_config_files"] = apFilesArray;
+  
+  QJsonArray staFilesArray;
+  for (const QString &fileName : staFiles) {
+    staFilesArray.append(fileName);
+  }
+  projectObj["sta_config_files"] = staFilesArray;
+  
+  projectObj["general_config_file"] = "General.json";
+  
+  // Timestamps
+  QString currentTime = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
+  projectObj["created_time"] = currentTime;
+  projectObj["last_modified"] = currentTime;
+  
+  // Statistics
+  projectObj["ap_count"] = jsonhelper.m_ap_config_list.size();
+  projectObj["sta_count"] = jsonhelper.m_sta_config_list.size();
+  
+  // Save project file
+  if (!jsonhelper.SaveJsonObjToRoute(projectObj, projectFilePath)) {
+    QMessageBox::critical(this, tr("Error"),
+                         tr("Failed to save project file."));
+    return;
+  }
+
+  // Update jsonhelper's project config to reflect the saved state
+  jsonhelper.m_project_config.project_name = projectName;
+  jsonhelper.m_project_config.work_directory = projectDir;
+  jsonhelper.m_project_config.ap_config_folder = apConfigDir;
+  jsonhelper.m_project_config.sta_config_folder = staConfigDir;
+  jsonhelper.m_project_config.general_config_folder = generalConfigDir;
+  jsonhelper.m_project_config.ap_config_files = apFiles;
+  jsonhelper.m_project_config.sta_config_files = staFiles;
+  jsonhelper.m_project_config.general_config_file = "General.json";
+  jsonhelper.m_project_config.created_time = currentTime;
+  jsonhelper.m_project_config.last_modified = currentTime;
+
+  QMessageBox::information(this, tr("Success"),
+                          tr("Project saved successfully to:\n%1\n\nProject folder contains:\n- %2 AP configurations\n- %3 STA configurations\n- General configuration")
+                          .arg(projectDir)
+                          .arg(jsonhelper.m_ap_config_list.size())
+                          .arg(jsonhelper.m_sta_config_list.size()));
+  qDebug() << "Project saved to:" << projectDir;
+}
+
+void MainWindow::onLoadProject(const QString &projectPath) {
+  qDebug() << "[MainWindow] onLoadProject:" << projectPath;
+
+  // Load the project configuration
+  bool success = jsonhelper.LoadProjectConfig(projectPath);
+
+  if (success) {
+    qDebug() << "Project loaded from:" << projectPath;
+    qDebug() << "  Project name:" << jsonhelper.m_project_config.project_name;
+    qDebug() << "  APs:" << jsonhelper.m_ap_config_list.size();
+    qDebug() << "  STAs:" << jsonhelper.m_sta_config_list.size();
+    
+    // Update UI with loaded configuration (follow the original flow)
+    if (simuConfig) {
+      // 1. Load building configuration to simu_config UI (spinbox, combobox, etc.)
+      simuConfig->loadConfigFromJson(jsonhelper.m_building_config);
+      
+      // 2. Write building config and draw the map (same as "Check" button flow)
+      //    This calls Draw_the_config_map() which draws the building frame and axes
+      simuConfig->Write_building_into_config(buildingConfig, *apConfigPage, *nodeConfigPage);
+      
+      // 3. Set button state to "Checked" and switch to Node Configuration tab
+      simuConfig->setButtonChecked();
+      simuConfig->switchToTab(1);
+      
+      // 4. Update the scene with loaded AP/STA data (adds nodes and updates tables)
+      //    This calls addApToTable/addStaToTable for each node
+      simuConfig->Update_json_map(jsonhelper);
+      
+      // 5. Switch to simulation config page in main window
+      switchTo(1);
+    }
+    
+    QMessageBox::information(this, tr("Success"),
+                           tr("Project loaded successfully!\n\n"
+                              "Project: %1\n"
+                              "Building: %2 x %3 x %4 m\n"
+                              "APs: %5\n"
+                              "STAs: %6")
+                           .arg(jsonhelper.m_project_config.project_name)
+                           .arg(simuConfig->building_range[0], 0, 'f', 1)
+                           .arg(simuConfig->building_range[1], 0, 'f', 1)
+                           .arg(simuConfig->building_range[2], 0, 'f', 1)
+                           .arg(jsonhelper.m_ap_config_list.size())
+                           .arg(jsonhelper.m_sta_config_list.size()));
+  } else {
+    QMessageBox::critical(this, tr("Error"),
+                        tr("Failed to load project from:\n%1").arg(projectPath));
+    qWarning() << "Failed to load project from:" << projectPath;
+  }
+}
+

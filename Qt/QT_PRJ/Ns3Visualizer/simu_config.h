@@ -54,6 +54,13 @@ public:
   void addStaToTable(int id, const QVector<double> &pos, bool mobility);
   void updateLcdNumbers();
   void drawCoordinateAxes(QGraphicsScene *targetScene, double width, double height, double scale);
+  void setJsonHelper(JsonHelper *helper);
+  void updateCurrentSceneJson(QJsonObject &buildingConfig);
+  void loadConfigFromJson(const QJsonObject &buildingConfig);
+  void switchToTab(int index);
+  void setButtonChecked();
+
+  QVector<double> building_range = {0, 0, 0};
 
 signals:
   void BackToLastPage();
@@ -67,6 +74,7 @@ signals:
   void ns3OutputReady(const QString &text);
   void simulation_end();
   void sniffFailed();
+  void SaveProjectRequested();
   
 
 private slots:
@@ -82,6 +90,8 @@ private slots:
 
   void on_checkBox_checkStateChanged(const Qt::CheckState &arg1);
   
+  void on_saveButton_clicked();
+  
   void showEnlargedMap();
 
 private:
@@ -96,8 +106,8 @@ private:
   std::atomic_bool m_hasPpdu{false};
   QString m_copiedScratchPath;
 
-  QVector<double> building_range = {0, 0, 0};
   QPushButton *m_enlargeButton = nullptr;
+  JsonHelper *m_jsonHelper = nullptr;
 
   void updateNodePositionInTable(const QString &type, int id, double x,
                                  double y, double z);

@@ -30,6 +30,7 @@ public:
     Simu_Config *simu_config = new(Simu_Config);
     void resetPage() override;
     void refreshModelLists();
+    void setJsonHelper(JsonHelper *helper);
 private slots:
     void on_pushButton_4_clicked();
 
@@ -38,11 +39,14 @@ private slots:
     void on_pushButton_3_clicked();
 
     void on_pushButton_clicked();
+    
+    void on_load_button_clicked();
 
 signals:
     void BackToMain();
     void ConfigSimulation();
     void RunSelectedSimulation();
+    void LoadProjectRequested(const QString &projectPath);
 private:
     Ui::Page1_model_chose *ui;
     QString sceneName = "";
@@ -50,6 +54,7 @@ private:
     QListWidget *currentSceneList() const;
     QString currentSceneBaseDir() const;
     void updateMarkdownForSelection();
+    JsonHelper *m_jsonHelper = nullptr;
     
 };
 

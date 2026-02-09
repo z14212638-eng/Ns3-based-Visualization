@@ -16,6 +16,8 @@
 #include <QGraphicsView>
 #include <QMessageBox>
 #include <QFont>
+#include <QFileDialog>
+#include <QInputDialog>
 #include <boost/interprocess/shared_memory_object.hpp>
 
 Simu_Config::Simu_Config(QWidget *parent)
@@ -133,6 +135,9 @@ void Simu_Config::Draw_the_config_map() {
   QGraphicsRectItem *building = scene->addRect(sceneRect, QPen(Qt::black, 2));
   building->setZValue(0);
   
+  // Draw coordinate axes
+  drawCoordinateAxes(scene, width, height, scale);
+  
   // Fit the view to show the entire building
   ui->graphicsView->fitInView(sceneRect.adjusted(-10, -10, 10, 10), Qt::KeepAspectRatio);
 }
@@ -193,20 +198,37 @@ void Simu_Config::Update_json_map(JsonHelper &json_helper) {
 
   update_json(scene, json_helper.m_building_config);
 
+  // Clear the scene
   if (scene) {
     const auto items = scene->items(); // 拷贝，避免遍历时修改
     for (QGraphicsItem *item : items) {
-      if (auto *node = dynamic_cast<NodeItem *>(item)) {
-        scene->removeItem(node);
-        delete node;
-      }
+      scene->removeItem(item);
+      delete item;
     }
+  } else {
+    scene = new QGraphicsScene(this);
+    ui->graphicsView->setScene(scene);
+    ui->graphicsView->resetTransform();
+    ui->graphicsView->scale(1, -1);
+    ui->graphicsView->setRenderHint(QPainter::Antialiasing);
   }
+
+  // Clear tables
+  ui->tableWidget->setRowCount(0);    // STA table
+  ui->tableWidget_2->setRowCount(0);  // AP table
 
   double width = building_range[0];
   double height = building_range[1];
   double scale = 40.0;
   QRectF sceneRect(0, 0, width * scale, height * scale);
+  scene->setSceneRect(sceneRect);
+
+  // Draw building frame
+  QGraphicsRectItem *building = scene->addRect(sceneRect, QPen(Qt::black, 2));
+  building->setZValue(0);
+  
+  // Draw coordinate axes
+  drawCoordinateAxes(scene, width, height, scale);
 
   // ---------- AP ----------
   QJsonArray apList = json_helper.m_building_config["Ap_pos_list"].toArray();
@@ -220,9 +242,11 @@ void Simu_Config::Update_json_map(JsonHelper &json_helper) {
     double x = pos[0].toDouble();
     double y = pos[1].toDouble();
     double z = pos[2].toDouble();
+    int id = ap_pos["id"].toInt();
 
+    // Add to scene
     auto *ap = new NodeItem(sceneRect, scale);
-    ap->m_id = ap_pos["id"].toInt();
+    ap->m_id = id;
     ap->Type = "AP";
     ap->x_sim = x;
     ap->y_sim = y;
@@ -239,9 +263,13 @@ void Simu_Config::Update_json_map(JsonHelper &json_helper) {
 
     scene->addItem(ap);
 
+    // Add to table
+    bool mobility = ap_pos.contains("mobility") ? ap_pos["mobility"].toBool() : false;
+    addApToTable(id, QVector<double>{x, y, z}, mobility);
+
     // 同步 ap_config_list
     for (auto &cfg : json_helper.m_ap_config_list) {
-      if (cfg["Id"].toInt() == ap->m_id) {
+      if (cfg["Id"].toInt() == id) {
         cfg["Position"] = QJsonArray{x, y, z};
         break;
       }
@@ -260,9 +288,11 @@ void Simu_Config::Update_json_map(JsonHelper &json_helper) {
     double x = pos[0].toDouble();
     double y = pos[1].toDouble();
     double z = pos[2].toDouble();
+    int id = sta_pos["id"].toInt();
 
+    // Add to scene
     auto *sta = new NodeItem(sceneRect, scale);
-    sta->m_id = sta_pos["id"].toInt();
+    sta->m_id = id;
     sta->Type = "STA";
     sta->x_sim = x;
     sta->y_sim = y;
@@ -279,27 +309,60 @@ void Simu_Config::Update_json_map(JsonHelper &json_helper) {
 
     scene->addItem(sta);
 
+    // Add to table
+    bool mobility = sta_pos.contains("mobility") ? sta_pos["mobility"].toBool() : false;
+    addStaToTable(id, QVector<double>{x, y, z}, mobility);
+
     // 同步 sta_config_list
     for (auto &cfg : json_helper.m_sta_config_list) {
-      if (cfg["Id"].toInt() == sta->m_id) {
+      if (cfg["Id"].toInt() == id) {
         cfg["Position"] = QJsonArray{x, y, z};
         break;
       }
     }
   }
 
-  ui->lcdNumber->display(static_cast<int>(apList.size()));
-  ui->lcdNumber_2->display(static_cast<int>(staList.size()));
+  // Update LCD displays (already done by addApToTable/addStaToTable)
+  // ui->lcdNumber->display(static_cast<int>(apList.size()));
+  // ui->lcdNumber_2->display(static_cast<int>(staList.size()));
 
-  for (const auto &item : json_helper.m_ap_config_list) {
-    QString path = json_helper.Ap_file_path +
-                   QString::number(item["Id"].toInt() + 1) + ".json";
+  // Fit the view
+  ui->graphicsView->fitInView(sceneRect.adjusted(-50, -50, 50, 50), Qt::KeepAspectRatio);
+
+  // Save configs - use original filenames from project config if available
+  for (int i = 0; i < json_helper.m_ap_config_list.size(); ++i) {
+    const auto &item = json_helper.m_ap_config_list[i];
+    QString path;
+    
+    // Check if we have project config with original filenames
+    if (!json_helper.m_project_config.ap_config_folder.isEmpty() && 
+        i < json_helper.m_project_config.ap_config_files.size()) {
+      // Use original filename and folder from loaded project
+      QString filename = json_helper.m_project_config.ap_config_files[i];
+      path = json_helper.m_project_config.ap_config_folder + "/" + filename;
+    } else {
+      // Use default naming scheme for new projects
+      path = json_helper.Ap_file_path + QString::number(item["Id"].toInt() + 1) + ".json";
+    }
+    
     json_helper.SaveJsonObjToRoute(item, path);
   }
 
-  for (const auto &item : json_helper.m_sta_config_list) {
-    QString path = json_helper.Sta_file_path +
-                   QString::number(item["Id"].toInt() + 1) + ".json";
+  for (int i = 0; i < json_helper.m_sta_config_list.size(); ++i) {
+    const auto &item = json_helper.m_sta_config_list[i];
+    QString path;
+    
+    // Check if we have project config with original filenames
+    if (!json_helper.m_project_config.sta_config_folder.isEmpty() && 
+        i < json_helper.m_project_config.sta_config_files.size()) {
+      // Use original filename and folder from loaded project
+      QString filename = json_helper.m_project_config.sta_config_files[i];
+      path = json_helper.m_project_config.sta_config_folder + "/" + filename;
+    } else {
+      // Use default naming scheme for new projects
+      path = json_helper.Sta_file_path + QString::number(item["Id"].toInt() + 1) + ".json";
+    }
+    
     json_helper.SaveJsonObjToRoute(item, path);
   }
 }
@@ -1007,4 +1070,102 @@ void Simu_Config::showEnlargedMap() {
   });
 
   dialog->exec();
+}
+
+void Simu_Config::setJsonHelper(JsonHelper *helper) {
+  m_jsonHelper = helper;
+}
+
+void Simu_Config::updateCurrentSceneJson(QJsonObject &buildingConfig) {
+  if (scene) {
+    update_json(scene, buildingConfig);
+  }
+}
+
+void Simu_Config::loadConfigFromJson(const QJsonObject &buildingConfig) {
+  qDebug() << "[Simu_Config] loadConfigFromJson()";
+  
+  // Load Building configuration
+  if (buildingConfig.contains("Building") && buildingConfig["Building"].isObject()) {
+    QJsonObject building = buildingConfig["Building"].toObject();
+    
+    // Load range (x, y, z)
+    if (building.contains("range") && building["range"].isArray()) {
+      QJsonArray rangeArray = building["range"].toArray();
+      if (rangeArray.size() >= 3) {
+        ui->doubleSpinBox->setValue(rangeArray[0].toDouble());
+        ui->doubleSpinBox_2->setValue(rangeArray[1].toDouble());
+        ui->doubleSpinBox_3->setValue(rangeArray[2].toDouble());
+        
+        // Update building_range
+        building_range[0] = rangeArray[0].toDouble();
+        building_range[1] = rangeArray[1].toDouble();
+        building_range[2] = rangeArray[2].toDouble();
+      }
+    }
+    
+    // Load building type
+    if (building.contains("building_type")) {
+      QString buildingType = building["building_type"].toString();
+      int index = ui->comboBox->findText(buildingType);
+      if (index >= 0) {
+        ui->comboBox->setCurrentIndex(index);
+      }
+    }
+    
+    // Load wall type
+    if (building.contains("wall_type")) {
+      QString wallType = building["wall_type"].toString();
+      int index = ui->comboBox_2->findText(wallType);
+      if (index >= 0) {
+        ui->comboBox_2->setCurrentIndex(index);
+      }
+    }
+  }
+  
+  // Load simulation time
+  if (buildingConfig.contains("SimulationTime")) {
+    ui->doubleSpinBox_4->setValue(buildingConfig["SimulationTime"].toDouble());
+  }
+  
+  // Load AP and STA counts
+  if (buildingConfig.contains("Ap_num")) {
+    int apNum = buildingConfig["Ap_num"].toInt();
+    ui->lcdNumber->display(apNum);
+    Num_ap = apNum;
+  }
+  
+  if (buildingConfig.contains("Sta_num")) {
+    int staNum = buildingConfig["Sta_num"].toInt();
+    ui->lcdNumber_2->display(staNum);
+    Num_sta = staNum;
+  }
+  
+  // Don't change the button state or tab here - let the caller control the flow
+  // ui->pushButton_7->setEnabled(true);
+  // ui->pushButton_7->setText("Check");
+  // ui->tabWidget->setCurrentIndex(0);
+  
+  qDebug() << "[Simu_Config] Configuration loaded:";
+  qDebug() << "  Building range:" << building_range[0] << "x" << building_range[1] << "x" << building_range[2];
+  qDebug() << "  AP count:" << Num_ap;
+  qDebug() << "  STA count:" << Num_sta;
+}
+
+void Simu_Config::switchToTab(int index) {
+  if (ui && ui->tabWidget) {
+    ui->tabWidget->setCurrentIndex(index);
+  }
+}
+
+void Simu_Config::setButtonChecked() {
+  if (ui && ui->pushButton_7) {
+    ui->pushButton_7->setEnabled(false);
+    ui->pushButton_7->setText("Checked");
+  }
+}
+
+void Simu_Config::on_saveButton_clicked() {
+  // Emit signal to let MainWindow handle the saving with its jsonHelper
+  emit SaveProjectRequested();
 }

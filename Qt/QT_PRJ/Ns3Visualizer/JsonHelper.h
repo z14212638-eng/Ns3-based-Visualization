@@ -287,6 +287,26 @@ public:
     QVector<std::shared_ptr<Ap>> Sta_list = {};
 };
 
+class ProjectConfig
+{
+public:
+    ProjectConfig() = default;
+    ~ProjectConfig() = default;
+    
+    QString project_name = "";
+    QString work_directory = "";
+    QString ns3_directory = "";
+    QString run_directory = "";
+    QString ap_config_folder = "";
+    QString sta_config_folder = "";
+    QString general_config_folder = "";
+    QStringList ap_config_files = {};
+    QStringList sta_config_files = {};
+    QString general_config_file = "";
+    QString created_time = "";
+    QString last_modified = "";
+};
+
 class JsonHelper
 {
 public:
@@ -299,6 +319,11 @@ public:
     bool SaveJsonObjToRoute(const QJsonObject, const QString);
     void ensureRunDirectories();
     void reset();
+    
+    // Project configuration methods
+    bool SaveProjectConfig(const QString &projectFilePath, const QString &projectName = "MyProject");
+    bool LoadProjectConfig(const QString &projectFilePath);
+    ProjectConfig GetCurrentProjectConfig() const;
 
     QJsonObject m_building_config;
     QJsonObject *m_sta_config = nullptr;
@@ -312,6 +337,8 @@ public:
 
     QVector<QJsonObject> m_sta_config_list = {};
     QVector<QJsonObject> m_ap_config_list = {};
+    
+    ProjectConfig m_project_config;
 
 private:
     bool run_dir_initialized = false;

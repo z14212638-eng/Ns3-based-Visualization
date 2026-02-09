@@ -77,5 +77,9 @@ private:
 
     /*Prequisites*/
     bool ns3PathValid;
+
+private slots:
+    void onSaveProject();
+    void onLoadProject(const QString &projectPath);
 };
 #endif // MAINWINDOW_H
