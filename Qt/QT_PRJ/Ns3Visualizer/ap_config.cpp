@@ -676,6 +676,7 @@ void Ap_config::on_pushButton_7_clicked()
     emit LoadOneApConfig();
     ApIndex++;
     m_flowConfigs.clear();  // 清空流量配置，为下一个AP做准备
+    ui->tableWidget->setRowCount(0);  // 清空表格，准备配置下一个AP
     emit Finish_setting_ap();
 }
 
@@ -739,7 +740,7 @@ void Ap_config::on_pushButton_3_clicked()
 
 void Ap_config::on_pushButton_2_clicked()
 {
-    flow_dialog dialog(this);
+    flow_dialog dialog(this, true);
     
     if (dialog.exec() == QDialog::Accepted) {
         FlowConfig config = dialog.getFlowConfig();

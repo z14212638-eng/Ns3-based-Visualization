@@ -2,7 +2,7 @@
 #include "ui_flow_dialog.h"
 #include "random_variable_dialog.h"
 
-flow_dialog::flow_dialog(QWidget *parent)
+flow_dialog::flow_dialog(QWidget *parent, bool isAp)
     : QDialog(parent)
     , ui(new Ui::flow_dialog)
 {
@@ -12,6 +12,12 @@ flow_dialog::flow_dialog(QWidget *parent)
     // 初始化默认参数
     m_ontimeParams["Value"] = 1.0;
     m_offtimeParams["Value"] = 1.0;
+    
+    // 根据节点类型设置 destination 默认值
+    QString defaultDest = isAp ? "STA_1" : "AP_1";
+    ui->comboBox_direction_onoff->setCurrentText(defaultDest);
+    ui->comboBox_direction_cbr->setCurrentText(defaultDest);
+    ui->comboBox_direction_bulk->setCurrentText(defaultDest);
 }
 
 flow_dialog::~flow_dialog()

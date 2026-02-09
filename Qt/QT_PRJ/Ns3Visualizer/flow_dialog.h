@@ -40,7 +40,7 @@ class flow_dialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit flow_dialog(QWidget *parent = nullptr);
+    explicit flow_dialog(QWidget *parent = nullptr, bool isAp = true);
     ~flow_dialog();
     
     // 获取配置

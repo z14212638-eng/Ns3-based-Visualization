@@ -634,7 +634,7 @@ void node_config::Get_Traffic_Config(Sta &sta)
 }
 void node_config::on_pushButton_2_clicked()
 {
-    flow_dialog dialog(this);
+    flow_dialog dialog(this, false);
     
     if (dialog.exec() == QDialog::Accepted) {
         FlowConfig config = dialog.getFlowConfig();
@@ -715,6 +715,8 @@ void node_config::on_pushButton_7_clicked()
 
     emit LoadOneStaConfig();
     StaIndex++;
+    m_flowConfigs.clear();  // 清空流量配置，为下一个STA做准备
+    ui->tableWidget->setRowCount(0);  // 清空表格，准备配置下一个STA
     emit Finish_setting_sta();
 }
 

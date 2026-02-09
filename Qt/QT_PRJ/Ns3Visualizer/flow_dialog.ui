@@ -305,9 +305,12 @@
        </item>
        <item row="11" column="1">
         <widget class="QComboBox" name="comboBox_direction_onoff">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
          <item>
           <property name="text">
-           <string>AP_1</string>
+           <string>STA_1</string>
           </property>
          </item>
         </widget>
@@ -499,9 +502,12 @@
        </item>
        <item row="8" column="1">
         <widget class="QComboBox" name="comboBox_direction_cbr">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
          <item>
           <property name="text">
-           <string>AP_1</string>
+           <string>STA_1</string>
           </property>
          </item>
         </widget>
@@ -646,9 +652,12 @@
        </item>
        <item row="6" column="1">
         <widget class="QComboBox" name="comboBox_direction_bulk">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
          <item>
           <property name="text">
-           <string>AP_1</string>
+           <string>STA_1</string>
           </property>
          </item>
         </widget>
