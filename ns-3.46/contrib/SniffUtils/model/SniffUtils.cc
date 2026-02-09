@@ -220,7 +220,7 @@ SniffUtils::Sniff_rx_packet_begin(Ptr<const Packet> packet,
     }
 
     auto& current_ppdu = *m_active_ppdu;
-    PPDU_Meta& meta = m_ring->records[current_ppdu.ring_index];
+    // PPDU_Meta& meta = m_ring->records[current_ppdu.ring_index];
 
     uint16_t snr_db_x10 = static_cast<uint16_t>(std::round((noise.signal - noise.noise) * 10));
 

@@ -16,6 +16,9 @@ struct PpduVisualItem
     // identity
     uint32_t id;
     uint16_t nodeId;
+    uint8_t channel_number;
+    uint64_t sender;
+    uint64_t receiver;
 
     // time
     uint64_t txStartNs;

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1771</width>
-    <height>1220</height>
+    <width>2078</width>
+    <height>1122</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,13 +37,13 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>1000</height>
+             <height>800</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>800</height>
+             <height>1300</height>
             </size>
            </property>
            <property name="font">
@@ -65,27 +65,14 @@
              <string>General</string>
             </attribute>
             <layout class="QGridLayout" name="gridLayout">
-             <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>40</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>14</pointsize>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="value">
-                <double>10.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="2">
+             <item row="5" column="2">
               <widget class="QPushButton" name="pushButton_7">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>1</verstretch>
+                </sizepolicy>
+               </property>
                <property name="minimumSize">
                 <size>
                  <width>0</width>
@@ -101,6 +88,112 @@
                <property name="text">
                 <string>Finish</string>
                </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="3">
+              <widget class="QLabel" name="label">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>80</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>18</pointsize>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Building Boundaries   (0,0,0)min-(X,Y,Z)max</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QWidget" name="widget_10" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>1</horstretch>
+                 <verstretch>1</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>800</height>
+                </size>
+               </property>
+               <widget class="QLabel" name="label_2">
+                <property name="geometry">
+                 <rect>
+                  <x>20</x>
+                  <y>50</y>
+                  <width>274</width>
+                  <height>80</height>
+                 </rect>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>80</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>18</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Building Type</string>
+                </property>
+               </widget>
+               <widget class="QComboBox" name="comboBox">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>160</y>
+                  <width>221</width>
+                  <height>40</height>
+                 </rect>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>40</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>14</pointsize>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="mouseTracking">
+                 <bool>false</bool>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Residential</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Office</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Commercial</string>
+                 </property>
+                </item>
+               </widget>
               </widget>
              </item>
              <item row="1" column="0">
@@ -122,8 +215,172 @@
                </property>
               </widget>
              </item>
+             <item row="3" column="1">
+              <widget class="QWidget" name="widget_12" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>1</horstretch>
+                 <verstretch>1</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>800</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>800</height>
+                </size>
+               </property>
+               <widget class="QLabel" name="label_3">
+                <property name="geometry">
+                 <rect>
+                  <x>30</x>
+                  <y>60</y>
+                  <width>181</width>
+                  <height>80</height>
+                 </rect>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>80</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>18</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Wall Type</string>
+                </property>
+               </widget>
+               <widget class="QComboBox" name="comboBox_2">
+                <property name="geometry">
+                 <rect>
+                  <x>30</x>
+                  <y>160</y>
+                  <width>201</width>
+                  <height>40</height>
+                 </rect>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>40</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>14</pointsize>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Wood</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>ConcreteWithoutWindows</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>ConcreteWithWindows</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>StoneBlocks</string>
+                 </property>
+                </item>
+               </widget>
+              </widget>
+             </item>
+             <item row="5" column="0" colspan="2">
+              <widget class="QCommandLinkButton" name="commandLinkButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>1</horstretch>
+                 <verstretch>1</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>18</pointsize>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Draw the rooms</string>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>30</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="value">
+                <double>5.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="value">
+                <double>10.000000000000000</double>
+               </property>
+              </widget>
+             </item>
              <item row="2" column="2">
               <widget class="QWidget" name="widget_13" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>1</horstretch>
+                 <verstretch>1</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>800</height>
+                </size>
+               </property>
                <widget class="QLabel" name="label_6">
                 <property name="geometry">
                  <rect>
@@ -171,215 +428,6 @@
                  </font>
                 </property>
                </widget>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QWidget" name="widget_12" native="true">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>800</height>
-                </size>
-               </property>
-               <widget class="QLabel" name="label_3">
-                <property name="geometry">
-                 <rect>
-                  <x>30</x>
-                  <y>60</y>
-                  <width>181</width>
-                  <height>80</height>
-                 </rect>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>80</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>18</pointsize>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Wall Type</string>
-                </property>
-               </widget>
-               <widget class="QComboBox" name="comboBox_2">
-                <property name="geometry">
-                 <rect>
-                  <x>30</x>
-                  <y>160</y>
-                  <width>221</width>
-                  <height>40</height>
-                 </rect>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>40</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>14</pointsize>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>Wood</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>ConcreteWithoutWindows</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>ConcreteWithWindows</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>StoneBlocks</string>
-                 </property>
-                </item>
-               </widget>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>40</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>14</pointsize>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="value">
-                <double>5.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0" colspan="3">
-              <widget class="QLabel" name="label">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>60</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>80</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>18</pointsize>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>Building Boundaries   (0,0,0)min-(X,Y,Z)max</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QWidget" name="widget_10" native="true">
-               <widget class="QLabel" name="label_2">
-                <property name="geometry">
-                 <rect>
-                  <x>20</x>
-                  <y>50</y>
-                  <width>274</width>
-                  <height>80</height>
-                 </rect>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>80</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>18</pointsize>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Building Type</string>
-                </property>
-               </widget>
-               <widget class="QComboBox" name="comboBox">
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>160</y>
-                  <width>274</width>
-                  <height>40</height>
-                 </rect>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>40</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>14</pointsize>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="mouseTracking">
-                 <bool>false</bool>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>Residential</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Office</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Commercial</string>
-                 </property>
-                </item>
-               </widget>
-              </widget>
-             </item>
-             <item row="4" column="0" colspan="2">
-              <widget class="QCommandLinkButton" name="commandLinkButton">
-               <property name="font">
-                <font>
-                 <pointsize>18</pointsize>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>Draw the rooms</string>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>30</width>
-                 <height>40</height>
-                </size>
-               </property>
               </widget>
              </item>
             </layout>
@@ -574,9 +622,15 @@
              <widget class="QWidget" name="widget" native="true">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>17</horstretch>
-                <verstretch>0</verstretch>
+                <horstretch>1</horstretch>
+                <verstretch>1</verstretch>
                </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>1500</height>
+               </size>
               </property>
               <widget class="QWidget" name="widget_2" native="true">
                <property name="geometry">
@@ -595,59 +649,6 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_2">
                 <item>
-                 <widget class="QWidget" name="widget_5" native="true">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QWidget" name="widget_6" native="true">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QWidget" name="widget_7" native="true">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QWidget" name="widget_8" native="true">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="verticalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
                  <spacer name="verticalSpacer">
                   <property name="orientation">
                    <enum>Qt::Orientation::Vertical</enum>
@@ -662,6 +663,12 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButton_8">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>1</horstretch>
+                    <verstretch>1</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
@@ -694,33 +701,6 @@
                     <height>53</height>
                    </size>
                   </property>
-                  <widget class="QCheckBox" name="checkBox">
-                   <property name="geometry">
-                    <rect>
-                     <x>0</x>
-                     <y>10</y>
-                     <width>231</width>
-                     <height>36</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>36</height>
-                    </size>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <pointsize>16</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Presenting All PPDU</string>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
                  </widget>
                 </item>
                 <item>
@@ -738,6 +718,12 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButton_9">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>1</horstretch>
+                    <verstretch>1</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
@@ -757,6 +743,45 @@
                   </property>
                  </widget>
                 </item>
+                <item>
+                 <spacer name="verticalSpacer_6">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_5">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
                </layout>
               </widget>
               <widget class="QWidget" name="widget_3" native="true">
@@ -765,7 +790,7 @@
                  <x>10</x>
                  <y>10</y>
                  <width>241</width>
-                 <height>461</height>
+                 <height>331</height>
                 </rect>
                </property>
                <property name="minimumSize">
@@ -774,11 +799,17 @@
                  <height>40</height>
                 </size>
                </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>700</height>
+                </size>
+               </property>
                <widget class="QLabel" name="label_4">
                 <property name="geometry">
                  <rect>
-                  <x>40</x>
-                  <y>190</y>
+                  <x>20</x>
+                  <y>50</y>
                   <width>121</width>
                   <height>40</height>
                  </rect>
@@ -805,8 +836,8 @@
                <widget class="QLCDNumber" name="lcdNumber">
                 <property name="geometry">
                  <rect>
-                  <x>40</x>
-                  <y>230</y>
+                  <x>20</x>
+                  <y>110</y>
                   <width>81</width>
                   <height>31</height>
                  </rect>
@@ -823,8 +854,8 @@
                <widget class="QLabel" name="label_5">
                 <property name="geometry">
                  <rect>
-                  <x>40</x>
-                  <y>380</y>
+                  <x>20</x>
+                  <y>200</y>
                   <width>121</width>
                   <height>17</height>
                  </rect>
@@ -846,8 +877,8 @@
                <widget class="QLCDNumber" name="lcdNumber_2">
                 <property name="geometry">
                  <rect>
-                  <x>40</x>
-                  <y>420</y>
+                  <x>20</x>
+                  <y>250</y>
                   <width>81</width>
                   <height>31</height>
                  </rect>
@@ -868,14 +899,20 @@
                </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                 <horstretch>6</horstretch>
-                 <verstretch>6</verstretch>
+                 <horstretch>1</horstretch>
+                 <verstretch>1</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
                 <size>
                  <width>140</width>
-                 <height>140</height>
+                 <height>120</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>700</height>
                 </size>
                </property>
               </widget>

@@ -9,7 +9,7 @@ namespace Ui
     class Edca_config;
 }
 
-class Edca_config : public QDialog
+class Edca_config : public QDialog,public ResettableBase
 {
     Q_OBJECT
 
@@ -64,6 +64,12 @@ public:
     qint16 MaxAMpduSize = 65;
     qint32 Density = 40;
 
+    bool is_ap;
+    bool is_sta;
+
+    void resetPage() override;
+signals:
+    void BackToLastPage();
 private slots:
     void on_buttonBox_accepted();
 

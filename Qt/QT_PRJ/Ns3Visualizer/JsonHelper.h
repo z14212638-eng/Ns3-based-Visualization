@@ -16,6 +16,7 @@
 #include <QDebug>
 #include <QJsonParseError>
 #include <QLoggingCategory>
+#include <QObject>
 
 // This class is used to save the configuration of the network to a JSON file.
 
@@ -62,79 +63,44 @@ struct Antenna_Config
     qint16 Beamwidth = 30;
 };
 
-class EDCA_Traffic_Config
-{
-public:
-    EDCA_Traffic_Config() = default;
-    virtual ~EDCA_Traffic_Config() = default;
-};
-
-class AC_VI_Traffic : public EDCA_Traffic_Config
-{
-public:
-    AC_VI_Traffic() = default;
-    ~AC_VI_Traffic() = default;
-    QString Type = "AC_VI";
-    bool enabled = false;
-    QString trafficType = "CBR";
-    qint32 packetSize = 1200;
-    qint32 meanDataRate = 0;
-    qint32 peakDataRate = 0;
-};
-
-class AC_VO_Traffic : public EDCA_Traffic_Config
-{
-public:
-    AC_VO_Traffic() = default;
-    ~AC_VO_Traffic() = default;
-    QString Type = "AC_VO";
-    bool enabled = false;
-    QString trafficType = "CBR";
-    qint32 packetSize = 0;
-    double interval = 20;
-};
-
-class AC_BE_Traffic : public EDCA_Traffic_Config
-{
-public:
-    AC_BE_Traffic() = default;
-    ~AC_BE_Traffic() = default;
-    QString Type = "AC_BE";
-    bool enabled = false;
-    QString trafficType = "CBR";
-    qint32 packetSize = 0;
-    qint32 DataRate = 0;
-};
-
-class AC_BK_Traffic : public EDCA_Traffic_Config
-{
-public:
-    AC_BK_Traffic() = default;
-    ~AC_BK_Traffic() = default;
-    QString Type = "AC_BK";
-    bool enabled = false;
-    QString trafficType = "CBR";
-    qint32 packetSize = 0;
-    qint32 DataRate = 0;
-};
 
 class TrafficConfig
 {
 public:
     TrafficConfig()
     {
-        m_edca[AcType::BE] = std::make_shared<AC_BE_Traffic>();
-        m_edca[AcType::BK] = std::make_shared<AC_BK_Traffic>();
-        m_edca[AcType::VI] = std::make_shared<AC_VI_Traffic>();
-        m_edca[AcType::VO] = std::make_shared<AC_VO_Traffic>();
+
     }
+    
     ~TrafficConfig() = default;
+    
+    // 基本配置
     QString Flow_id = "";
     QString Protocol = "UDP";
-    QString Direction = "uplink";
-    qint32 StartTime = 0;
-    qint32 EndTime = 0;
-    QMap<AcType, std::shared_ptr<EDCA_Traffic_Config>> m_edca;
+    QString Destination = "AP_1";
+    double StartTime = 0;
+    double EndTime = 0;
+    int Tos = 0;
+    
+    // 流量类型标识
+    enum FlowType { OnOff, CBR, Bulk } flowType = OnOff;
+    
+    // OnOff 特有参数
+    double dataRate = 1.0;  // Mbps
+    int packetSize = 512;   // Bytes
+    QString ontimeType = "Constant";
+    QMap<QString, double> ontimeParams;
+    QString offtimeType = "Constant";
+    QMap<QString, double> offtimeParams;
+    int maxBytes = 0;
+    
+    // CBR 特有参数
+    double interval = 0.001;  // 秒
+    int maxPackets = 0;
+
+    // Bulk 特有参数
+    // (目前没有额外参数)
+    
 };
 
 class Ap
@@ -330,19 +296,25 @@ public:
     bool SetBuildingToJson(const BuildingConfig *);
     bool SetStaToJson(const Sta *, qint8);
     bool SetApToJson(const Ap *, qint8);
-
     bool SaveJsonObjToRoute(const QJsonObject, const QString);
+    void ensureRunDirectories();
+    void reset();
 
     QJsonObject m_building_config;
     QJsonObject *m_sta_config = nullptr;
     QJsonObject *m_ap_config = nullptr;
     std::shared_ptr<BuildingConfig> m_building = std::make_shared<BuildingConfig>();
-    QString Ap_file_path = "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/Test_Design_1/ApConfigJson/Ap_";
-    QString Sta_file_path = "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/Test_Design_1/StaConfigJson/Sta_";
-    QString General_file_path = "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/Test_Design_1/GeneralJson/";
+    QString Base_dir = "~/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/";
+    QString Run_dir = "";
+    QString Ap_file_path = "";
+    QString Sta_file_path = "";
+    QString General_file_path = "";
 
     QVector<QJsonObject> m_sta_config_list = {};
     QVector<QJsonObject> m_ap_config_list = {};
+
+private:
+    bool run_dir_initialized = false;
 };
 
 double get_true_random_double(double, double);

@@ -1,5 +1,8 @@
 #pragma once
 #include <QWidget>
+#include <QGuiApplication>
+#include <QScreen> 
+
 
 class PpduInfoOverlay : public QWidget
 {

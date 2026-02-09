@@ -1,0 +1,32 @@
+#! /usr/bin/env python3
+
+launch_dir = '/home/mcx/project/Ns3-based-Visualization/ns-3.46'
+run_dir = '/home/mcx/project/Ns3-based-Visualization/ns-3.46'
+top_dir = '/home/mcx/project/Ns3-based-Visualization/ns-3.46'
+out_dir = '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build'
+
+
+NS3_ENABLED_MODULES = ['ns3-zigbee', 'ns3-wifi', 'ns3-virtual-net-device', 'ns3-uan', 'ns3-traffic-control', 'ns3-topology-read', 'ns3-tap-bridge', 'ns3-stats', 'ns3-spectrum', 'ns3-sixlowpan', 'ns3-propagation', 'ns3-point-to-point-layout', 'ns3-point-to-point', 'ns3-olsr', 'ns3-nix-vector-routing', 'ns3-network', 'ns3-netanim', 'ns3-mobility', 'ns3-mesh', 'ns3-lte', 'ns3-lr-wpan', 'ns3-internet-apps', 'ns3-internet', 'ns3-flow-monitor', 'ns3-fd-net-device', 'ns3-energy', 'ns3-dsr', 'ns3-dsdv', 'ns3-csma-layout', 'ns3-csma', 'ns3-core', 'ns3-config-store', 'ns3-buildings', 'ns3-bridge', 'ns3-applications', 'ns3-aodv', 'ns3-antenna', ]
+NS3_ENABLED_CONTRIBUTED_MODULES = ['ns3-SniffUtils', 'ns3-QNs3', ]
+NS3_MODULE_PATH = ['/opt/Qt/6.10.2/gcc_64//bin', '/usr/local/cuda-12.8/bin', '/home/mcx/.config/Code/User/globalStorage/github.copilot-chat/debugCommand', '/home/mcx/.config/Code/User/globalStorage/github.copilot-chat/copilotCli', '/opt/Qt/6.10.2/gcc_64/bin', '/usr/local/cuda-12.8/bin', '/home/mcx/miniconda3/bin', '/home/mcx/miniconda3/condabin', '/usr/local/cuda-12.8/bin', '/usr/local/cuda-12.8/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/snap/bin', '/snap/bin', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/lib']
+ENABLE_EXAMPLES = False
+ENABLE_TESTS = False
+ENABLE_OPENFLOW = False
+NSCLICK = False
+ENABLE_BRITE = False
+ENABLE_SUDO = False
+ENABLE_PYTHON_BINDINGS = False
+FETCH_NETANIM_VISUALIZER = False
+EXAMPLE_DIRECTORIES = []
+APPNAME = 'ns'
+BUILD_PROFILE = 'release'
+VERSION = '3.46' 
+BUILD_VERSION_STRING = '' 
+PYTHON = ['/home/mcx/miniconda3/bin/python3']
+VALGRIND_FOUND = False 
+
+
+ns3_runnable_programs = ['/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/utils/perf/ns3.46-perf-io', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/utils/ns3.46-print-introspected-doxygen', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/utils/ns3.46-bench-packets', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/utils/ns3.46-bench-scheduler', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/subdir/ns3.46-scratch-subdir', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/nested-subdir/ns3.46-scratch-nested-subdir-executable', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/ns3.46-wifi-txop-aggregation', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/ns3.46-timeline_test', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/ns3.46-timeline_pressure', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/ns3.46-timeline_crossing', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/ns3.46-third', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/ns3.46-second', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/ns3.46-scratch-simulator', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/ns3.46-queue-discs-benchmark', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/ns3.46-first', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/ns3.46-clickme', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/scratch/ns3.46-QNs3-example', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/src/tap-bridge/ns3.46-tap-creator', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/src/fd-net-device/ns3.46-tap-device-creator', '/home/mcx/project/Ns3-based-Visualization/ns-3.46/build/src/fd-net-device/ns3.46-raw-sock-creator', ]
+
+ns3_runnable_scripts = []
+

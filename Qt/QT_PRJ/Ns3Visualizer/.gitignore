@@ -80,3 +80,12 @@ CMakeLists.txt.user*
 .rcc/
 .uic/
 /build*/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+cmake-build-*/
+compile_commands.json
+*.cmake
+!CMakeLists.txt

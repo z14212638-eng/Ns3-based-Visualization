@@ -7,7 +7,7 @@ LegendOverlay::LegendOverlay(QWidget *parent)
               Qt::FramelessWindowHint |
               Qt::BypassWindowManagerHint)
 {
-    setFixedSize(220, 120);
+    setFixedSize(240, 180);
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_ShowWithoutActivating);
 }
@@ -32,7 +32,48 @@ void LegendOverlay::paintEvent(QPaintEvent *)
         y += 22;
     };
 
-    drawItem(QColor("#1f77b4"), "PPDU");
-    drawItem(QColor("#ff7f0e"), "Overlap");
-    drawItem(Qt::red, "Hovered");
+    auto drawArrowItem = [&](const QString &txt)
+    {
+        // Draw horizontal arrow example (indicating data flow)
+        p.setPen(QPen(QColor(255, 255, 255, 220), 2));
+        p.setBrush(QColor(255, 255, 255, 220));
+        // Draw arrow line
+        p.drawLine(12, y - 5, 22, y - 5);
+        // Draw arrow head (pointing right)
+        QPolygonF arrowHead;
+        arrowHead << QPointF(22, y - 5)
+                  << QPointF(18, y - 8)
+                  << QPointF(18, y - 2);
+        p.drawPolygon(arrowHead);
+        p.drawText(36, y, txt);
+        y += 22;
+    };
+
+    // Title
+    p.setPen(QColor(255, 255, 255));
+    p.setFont(QFont("Arial", 10, QFont::Bold));
+    p.drawText(12, 18, "Legend");
+    p.setFont(QFont("Arial", 9));
+    p.setPen(QColor(220, 220, 220));
+    y = 36;
+
+    // PPDU colors
+    drawItem(QColor("#1f77b4"), "Normal PPDU");
+    
+    // Collision PPDU (with overlay effect)
+    p.setBrush(QColor("#1f77b4"));
+    p.drawRect(12, y - 10, 14, 10);
+    p.setBrush(QColor(255, 127, 14, 180)); // Semi-transparent orange overlay
+    p.drawRect(12, y - 10, 14, 10);
+    p.setPen(QColor(220, 220, 220));
+    p.setBrush(Qt::NoBrush);
+    p.drawRect(12, y - 10, 14, 10);
+    p.drawText(36, y, "Collision PPDU");
+    y += 22;
+    
+    // Hovered
+    drawItem(Qt::red, "Hovered PPDU");
+    
+    // Data flow
+    drawArrowItem("Data Flow");
 }

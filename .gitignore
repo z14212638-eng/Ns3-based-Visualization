@@ -1,4 +1,8 @@
 *.so
 *.a
 *.exe
-
+ns-3.46/build
+ns-3.46/cmake-cache
+Qt/QT_PRJ/Ns3Visualizer/build
+Qt/QT_PRJ/Ns3Visualizer/.cache
+Qt/QT_PRJ/Ns3Visualizer/.qtcreator

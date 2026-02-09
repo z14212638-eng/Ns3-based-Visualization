@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>725</width>
+    <width>830</width>
     <height>1037</height>
    </rect>
   </property>
@@ -22,7 +22,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <property name="documentMode">
       <bool>false</bool>
@@ -1012,26 +1012,33 @@
        <string>Traffic</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_26">
+       <item row="1" column="1">
+        <widget class="QPushButton" name="pushButton_3">
          <property name="font">
           <font>
-           <bold>true</bold>
+           <bold>false</bold>
           </font>
          </property>
          <property name="text">
-          <string>FlowId</string>
+          <string>Delete</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="lineEdit_2">
+       <item row="1" column="2">
+        <widget class="QPushButton" name="pushButton_2">
          <property name="text">
-          <string>flow_1</string>
+          <string>Add Tfc</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="3" rowspan="5" colspan="2">
+       <item row="2" column="2">
+        <widget class="QPushButton" name="pushButton_7">
+         <property name="text">
+          <string>Finish</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="3">
         <widget class="QTableWidget" name="tableWidget">
          <property name="font">
           <font>
@@ -1061,7 +1068,12 @@
          </column>
          <column>
           <property name="text">
-           <string>Direction</string>
+           <string>Destitation</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Application</string>
           </property>
          </column>
          <item row="0" column="0">
@@ -1089,543 +1101,6 @@
            <string/>
           </property>
          </item>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_27">
-         <property name="font">
-          <font>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Protocol</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QComboBox" name="comboBox_9">
-         <item>
-          <property name="text">
-           <string>UDP</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>TCP</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_28">
-         <property name="font">
-          <font>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Direction</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QComboBox" name="comboBox_10">
-         <item>
-          <property name="text">
-           <string>downlink</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>uplink</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QLabel" name="label_36">
-         <property name="font">
-          <font>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>StartTime(s)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox_19"/>
-       </item>
-       <item row="4" column="0" colspan="2">
-        <widget class="QLabel" name="label_37">
-         <property name="font">
-          <font>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>EndTime(s)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="2">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox_20"/>
-       </item>
-       <item row="5" column="0" colspan="3">
-        <widget class="QLabel" name="label_38">
-         <property name="font">
-          <font>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>EDCA Traffic</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="3">
-        <widget class="QPushButton" name="pushButton_3">
-         <property name="font">
-          <font>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Delete</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="4">
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>Add Tfc</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0" colspan="5">
-        <widget class="QScrollArea" name="scrollArea">
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>669</width>
-            <height>943</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QLabel" name="label_39">
-             <property name="font">
-              <font>
-               <pointsize>11</pointsize>
-               <italic>true</italic>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>AC_VI</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBox_8">
-             <property name="text">
-              <string>Enable</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_40">
-             <property name="text">
-              <string>TrafficType</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_11">
-             <item>
-              <property name="text">
-               <string>CBR</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>VBR</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>OnOff</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Poisson</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Bulk/FTP</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string/>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_41">
-             <property name="text">
-              <string>PacketSize</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_22">
-             <property name="maximum">
-              <number>2048</number>
-             </property>
-             <property name="value">
-              <number>1200</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_42">
-             <property name="text">
-              <string>MeanDataRate(Mbps)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_23">
-             <property name="maximum">
-              <number>2048</number>
-             </property>
-             <property name="value">
-              <number>0</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_43">
-             <property name="text">
-              <string>PeakDataRate(Mbps)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_24">
-             <property name="maximum">
-              <number>2048</number>
-             </property>
-             <property name="value">
-              <number>0</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_44">
-             <property name="font">
-              <font>
-               <pointsize>11</pointsize>
-               <italic>true</italic>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>AC_VO</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBox_9">
-             <property name="text">
-              <string>Enable</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_45">
-             <property name="text">
-              <string>TrafficType</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_12">
-             <item>
-              <property name="text">
-               <string>CBR</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>VBR</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>OnOff</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Poisson</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Bulk/FTP</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string/>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_46">
-             <property name="text">
-              <string>PacketSize</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_25">
-             <property name="maximum">
-              <number>2048</number>
-             </property>
-             <property name="value">
-              <number>160</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_47">
-             <property name="text">
-              <string>Interval(ms)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_21">
-             <property name="value">
-              <double>20.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_49">
-             <property name="font">
-              <font>
-               <pointsize>11</pointsize>
-               <italic>true</italic>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>AC_BE</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBox_10">
-             <property name="text">
-              <string>Enable</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_50">
-             <property name="text">
-              <string>TrafficType</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_13">
-             <item>
-              <property name="text">
-               <string>CBR</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>VBR</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>OnOff</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Poisson</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Bulk/FTP</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string/>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_51">
-             <property name="text">
-              <string>PacketSize</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_26">
-             <property name="maximum">
-              <number>2048</number>
-             </property>
-             <property name="value">
-              <number>1024</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_52">
-             <property name="text">
-              <string>DataRate(Mbps)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_27">
-             <property name="maximum">
-              <number>2048</number>
-             </property>
-             <property name="value">
-              <number>0</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_53">
-             <property name="font">
-              <font>
-               <pointsize>11</pointsize>
-               <italic>true</italic>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>AC_BK</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBox_11">
-             <property name="text">
-              <string>Enable</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_54">
-             <property name="text">
-              <string>TrafficType</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_14">
-             <item>
-              <property name="text">
-               <string>CBR</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>VBR</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>OnOff</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Poisson</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Bulk/FTP</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string/>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_55">
-             <property name="text">
-              <string>PacketSize</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_28">
-             <property name="maximum">
-              <number>2048</number>
-             </property>
-             <property name="value">
-              <number>1024</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_56">
-             <property name="text">
-              <string>DataRate(Mbps)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_29">
-             <property name="maximum">
-              <number>2048</number>
-             </property>
-             <property name="value">
-              <number>0</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-       <item row="7" column="4">
-        <widget class="QPushButton" name="pushButton_7">
-         <property name="text">
-          <string>Finish</string>
-         </property>
         </widget>
        </item>
       </layout>

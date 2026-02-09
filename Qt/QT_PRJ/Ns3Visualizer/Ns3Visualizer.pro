@@ -14,6 +14,7 @@ SOURCES += \
     ap_config.cpp \
     configgraphicsview.cpp \
     edca_config.cpp \
+    greeting.cpp \
     main.cpp \
     mainwindow.cpp \
     node_config.cpp \
@@ -26,9 +27,12 @@ SOURCES += \
     shm.cpp\
     ppdu_info_overlay.cpp\
     legend_overlay.cpp\
+    timeline_display.cpp \
     visualizer_config.cpp\
     utils.cpp\
-    indus_widget.cpp
+    indus_widget.cpp\
+    image_viewer.cpp \
+    throughput_chart.cpp
 
 HEADERS += \
     JsonHelper.h \
@@ -36,6 +40,7 @@ HEADERS += \
     ap_config.h \
     configgraphicsview.h \
     edca_config.h \
+    greeting.h \
     mainwindow.h \
     node_config.h \
     page1_model_chose.h \
@@ -47,18 +52,23 @@ HEADERS += \
     shm.h\
     ppdu_info_overlay.h\
     legend_overlay.h\
+    timeline_display.h \
     visualizer_config.h\
     utils.h\
-    indus_widget.h
+    indus_widget.h\
+    image_viewer.h \
+    throughput_chart.h
 
 FORMS += \
     antennas.ui \
     ap_config.ui \
     edca_config.ui \
+    greeting.ui \
     mainwindow.ui \
     node_config.ui \
     page1_model_chose.ui \
     simu_config.ui\
+    timeline_display.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -4,52 +4,69 @@
 #include "edca_config.h"
 #include "antennas.h"
 #include "utils.h"
+#include "flow_dialog.h"
 #include <QMessageBox>
 #include <QWidget>
+#include <QVector>
 
 namespace Ui
 {
     class Ap_config;
 }
 
-class Ap_config : public QWidget
+class Ap_config : public QWidget,public ResettableBase
 {
     Q_OBJECT
 
 public:
     explicit Ap_config(QWidget *parent = nullptr);
     ~Ap_config();
-    JsonHelper *json_helper = new (JsonHelper);
-    std::shared_ptr<Ap> one_ap = std::make_shared<Ap>();
-    Edca_config *edca_page = new (Edca_config);
-    Antenna *antenna_page = new (Antenna);
     QVector<double> Building_range = {0, 0, 0};
-
+    QVector<double> m_position = {0, 0, 0};
     qint8 ApIndex = 0;
-
-    private slots : 
     
-    //Ap_Position_set
+    // 存储流量配置
+    QVector<FlowConfig> m_flowConfigs;
+
+    void setPosition(Ap &);
+    void setMobility(Ap &);
+    void Load_One_Config(Ap &);
+    void Get_Edca_Config(Ap &, Edca_config &);
+    void Get_Antenna_Config(Ap &, Antenna &);
+    void Get_Traffic_Config(Ap &);
+    void resetPage() override;
+
+signals:
+    void Finish_setting_ap();
+    void Page1();
+    void Page2();
+    void Edca_to_config();
+    void Antenna_to_config();
+    void LoadOneApConfig();
+    
+private slots:
+
+    // Ap_Position_set
     void on_pushButton_clicked();
-    //Mobility_finished
+    // Mobility_finished
     void on_pushButton_4_clicked();
-    //Random_Position_set
+    // Random_Position_set
     void on_checkBox_4_clicked(bool checked);
-    //Ap_Mobility_set
+    // Ap_Mobility_set
     void on_checkBox_3_clicked(bool checked);
-    //Beacons_set
+    // Beacons_set
     void on_checkBox_clicked(bool checked);
-    //Rts_Cts_set
+    // Rts_Cts_set
     void on_checkBox_5_clicked(bool checked);
-    //Qos_set
+    // Qos_set
     void on_checkBox_6_clicked(bool checked);
-    //edca_config
+    // edca_config
     void on_pushButton_8_clicked();
-    //antenna_config
+    // antenna_config
     void on_pushButton_9_clicked();
-    //Save_config(one ap configuration finished)
+    // Save_config(one ap configuration finished)
     void on_pushButton_6_clicked();
-    //Remained to be done
+    // Remained to be done
     bool Integrity_Check();
 
     void on_pushButton_7_clicked();
@@ -59,9 +76,6 @@ public:
     void on_pushButton_3_clicked();
 
     void Restrict_channel();
-
-signals:
-    void Finish_setting_ap();
 
 private:
     Ui::Ap_config *ui;

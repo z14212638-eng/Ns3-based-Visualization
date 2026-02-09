@@ -2,499 +2,700 @@
 #include "ui_simu_config.h"
 #include "visualizer_config.h"
 
+#include <QCheckBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFile>
+#include <QFormLayout>
+#include <QLabel>
+#include <QSpinBox>
+#include <boost/interprocess/shared_memory_object.hpp>
+
 Simu_Config::Simu_Config(QWidget *parent)
-    : QWidget(parent), ui(new Ui::Simu_Config)
-{
-    ui->setupUi(this);
+    : QWidget(parent), ui(new Ui::Simu_Config) {
+  ui->setupUi(this);
 
-    centerWindow(this);
+  centerWindow(this);
 
-    scene = new QGraphicsScene(this);
-    ui->graphicsView->setScene(scene);
-    ui->frame->setObjectName("myFrame");    
-    QString frameQss = R"(
+  ui->tabWidget->setCurrentIndex(0);
+  scene = new QGraphicsScene(this);
+  ui->graphicsView->setScene(scene);
+  ui->frame->setObjectName("myFrame");
+  QString frameQss = R"(
 QFrame#myFrame {
     border: 1px solid #BFBFBF;
     border-radius: 4px;
     background-color: #FFFFFF;
 }
+    
 )";
-
-    connect(this->node_config_page, &node_config::Finish_setting_sta, this, [=]()
-            {
-        ui->tabWidget->setCurrentIndex(2);
-        this->node_config_page->close();
-        on_pushButton_8_clicked();
-        this->show(); });
-
-    connect(this->ap_config_page, &Ap_config::Finish_setting_ap, this, [=]()
-            {
-        ui->tabWidget->setCurrentIndex(1);
-        this->ap_config_page->close();
-        on_pushButton_8_clicked();
-        this->show(); });
-
-    jsonHelper = new JsonHelper();
 }
 
-Simu_Config::~Simu_Config()
-{
-    delete ui;
+Simu_Config::~Simu_Config() {
+  qDebug() << "Destroying Simu_Config";
+  delete ui; // 最后 delete UI
 }
 
 // Add a Sta
-void Simu_Config::on_pushButton_clicked()
-{
-    this->node_config_page->show();
-}
+void Simu_Config::on_pushButton_clicked() { emit AddSta(); }
 
 // Add an AP
-void Simu_Config::on_pushButton_4_clicked()
-{
-    this->ap_config_page->show();
-}
+void Simu_Config::on_pushButton_4_clicked() { emit AddAp(); }
 
 // Draw the frame of the building
-void Simu_Config::Write_building_into_config()
-{
-    jsonHelper->m_building->m_range[0] = ui->doubleSpinBox->value();
-    jsonHelper->m_building->m_range[1] = ui->doubleSpinBox_2->value();
-    jsonHelper->m_building->m_range[2] = ui->doubleSpinBox_3->value();
+void Simu_Config::Write_building_into_config(BuildingConfig &building,
+                                             Ap_config &ap, node_config &sta) {
+  /*Fill the local data*/
+  building_range = {ui->doubleSpinBox->value(), ui->doubleSpinBox_2->value(),
+                    ui->doubleSpinBox_3->value()};
 
-    jsonHelper->m_building->m_building_type = ui->comboBox->currentText();
-    jsonHelper->m_building->m_wall_type = ui->comboBox_2->currentText();
+  /*load the data in mainwindow*/
+  building.m_range[0] = ui->doubleSpinBox->value();
+  building.m_range[1] = ui->doubleSpinBox_2->value();
+  building.m_range[2] = ui->doubleSpinBox_3->value();
+  ap.Building_range = building.m_range;
+  sta.Building_range = building.m_range;
+  building.m_building_type = ui->comboBox->currentText();
+  building.m_wall_type = ui->comboBox_2->currentText();
 
-    this->ap_config_page->Building_range = {jsonHelper->m_building->m_range[0], jsonHelper->m_building->m_range[1], jsonHelper->m_building->m_range[2]};
-    this->node_config_page->Building_range = {jsonHelper->m_building->m_range[0], jsonHelper->m_building->m_range[1], jsonHelper->m_building->m_range[2]};
-
-    QJsonObject building_config;
-    building_config["range"] = QJsonArray({jsonHelper->m_building->m_range[0], jsonHelper->m_building->m_range[1], jsonHelper->m_building->m_range[2]});
-    building_config["building_type"] = jsonHelper->m_building->m_building_type;
-    building_config["wall_type"] = jsonHelper->m_building->m_wall_type;
-    jsonHelper->m_building_config["Building"] = building_config;
-
-    Draw_the_config_map();
+  /*Draw the building frame*/
+  Draw_the_config_map();
 }
 
-// Building config checked
-void Simu_Config::on_pushButton_7_clicked()
-{
-    qDebug() << "Scene pointer:" << scene;
-    qDebug() << "Scene item count:" << (scene ? scene->items().size() : -1);
-    this->Write_building_into_config();
-    ui->pushButton_7->setEnabled(false);
-    ui->pushButton_7->setText("Checked");
-    ui->tabWidget->setCurrentIndex(1);
+// Building config checked [Tab 1 Finished]
+void Simu_Config::on_pushButton_7_clicked() {
+  /*debug*/
+  qDebug() << "Scene pointer:" << scene;
+  qDebug() << "Scene item count:" << (scene ? scene->items().size() : -1);
+
+  ui->pushButton_7->setEnabled(false);
+  ui->pushButton_7->setText("Checked");
+  ui->tabWidget->setCurrentIndex(1);
+
+  emit Building_Set();
 }
 
 // Draw the building frame
-void Simu_Config::Draw_the_config_map()
-{
-    if (!scene)
-    {
-        this->scene = new QGraphicsScene(this);
+void Simu_Config::Draw_the_config_map() {
+  if (!scene) {
+    this->scene = new QGraphicsScene(this);
+  }
+  const auto items = scene->items();
+  for (QGraphicsItem *item : items) {
+    if (auto *node = dynamic_cast<NodeItem *>(item)) {
+      scene->removeItem(node);
+      delete node;
     }
-    else
-    {
-        scene->clear();
-    }
-    ui->graphicsView->setScene(scene);
-    ui->graphicsView->resetTransform();
-    // set the axis direction
-    ui->graphicsView->scale(1, -1);
-    ui->graphicsView->setRenderHint(QPainter::Antialiasing);
+  }
+  ui->graphicsView->setScene(scene);
+  ui->graphicsView->resetTransform();
+  // set the axis direction
+  ui->graphicsView->scale(1, -1);
+  ui->graphicsView->setRenderHint(QPainter::Antialiasing);
 
-    // restrict the range and set the scale
-    double width = this->ap_config_page->Building_range[0];
-    double height = this->ap_config_page->Building_range[1];
-    double scale = 40;
-    // draw the building
-    QRect sceneRect(0, 0, width * scale, height * scale);
-    scene->setSceneRect(sceneRect);
-    QGraphicsRectItem *building = scene->addRect(sceneRect, QPen(Qt::black, 2));
-    building->setZValue(0);
+  // restrict the range and set the scale
+  double width = this->building_range[0];
+  double height = this->building_range[1];
+  double scale = 40;
+  // draw the building
+  QRect sceneRect(0, 0, width * scale, height * scale);
+  scene->setSceneRect(sceneRect);
+  QGraphicsRectItem *building = scene->addRect(sceneRect, QPen(Qt::black, 2));
+  building->setZValue(0);
 }
 
-// Enable the building map and the json be updated
+// Enable the json updated
 void Simu_Config::update_json(QGraphicsScene *scene,
-                              QJsonObject &building_config)
-{
-    if (!scene)
-        return;
+                              QJsonObject &building_config) {
+  qDebug() << "updating json";
+  if (!scene)
+    return;
 
-    QJsonArray apList = building_config["Ap_pos_list"].toArray();
-    QJsonArray staList = building_config["Sta_pos_list"].toArray();
+  QJsonArray apList = building_config["Ap_pos_list"].toArray();
+  QJsonArray staList = building_config["Sta_pos_list"].toArray();
 
-    for (QGraphicsItem *item : scene->items())
-    {
-        auto *node = dynamic_cast<NodeItem *>(item);
-        if (!node)
-            continue;
+  for (QGraphicsItem *item : scene->items()) {
+    auto *node = dynamic_cast<NodeItem *>(item);
+    if (!node)
+      continue;
 
-        double x = node->pos().x() / 40.0;
-        double y = node->pos().y() / 40.0;
-        double z = node->z_sim;
+    double x = node->pos().x() / 40.0;
+    double y = node->pos().y() / 40.0;
+    double z = node->z_sim;
 
-        // update the corresponding ap
-        if (node->Type == "AP")
-        {
-            for (int i = 0; i < apList.size(); ++i)
-            {
-                QJsonObject obj = apList[i].toObject();
-                if (obj["id"].toInt() == node->m_id)
-                {
-                    obj["pos"] = QJsonArray{x, y, z};
-                    apList[i] = obj;
-                    break;
-                }
-            }
+    // update the corresponding ap
+    if (node->Type == "AP") {
+      for (int i = 0; i < apList.size(); ++i) {
+        QJsonObject obj = apList[i].toObject();
+        if (obj["id"].toInt() == node->m_id) {
+          obj["pos"] = QJsonArray{x, y, z};
+          apList[i] = obj;
+          break;
         }
-
-        // update the corresponding sta
-        else if (node->Type == "STA")
-        {
-            for (int i = 0; i < staList.size(); ++i)
-            {
-                QJsonObject obj = staList[i].toObject();
-                if (obj["id"].toInt() == node->m_id)
-                {
-                    obj["pos"] = QJsonArray{x, y, z};
-                    staList[i] = obj;
-                    break;
-                }
-            }
-        }
+      }
     }
 
-    building_config["Ap_pos_list"] = apList;
-    building_config["Sta_pos_list"] = staList;
+    // update the corresponding sta
+    else if (node->Type == "STA") {
+      for (int i = 0; i < staList.size(); ++i) {
+        QJsonObject obj = staList[i].toObject();
+        if (obj["id"].toInt() == node->m_id) {
+          obj["pos"] = QJsonArray{x, y, z};
+          staList[i] = obj;
+          break;
+        }
+      }
+    }
+  }
+
+  building_config["Ap_pos_list"] = apList;
+  building_config["Sta_pos_list"] = staList;
 }
 
 // update the config_map
-void Simu_Config::on_pushButton_8_clicked()
-{
-    // Draw_the_config_map();
-    update_json(scene, this->ap_config_page->json_helper->m_building_config);
-    update_json(scene, this->node_config_page->json_helper->m_building_config);
+void Simu_Config::on_pushButton_8_clicked() { emit update(); }
 
-    for (QGraphicsItem *item : scene->items())
-    {
-        NodeItem *node = dynamic_cast<NodeItem *>(item);
-        if (node)
-        {
-            scene->removeItem(node);
-            delete node;
-        }
+void Simu_Config::Update_json_map(JsonHelper &json_helper) {
+  json_helper.ensureRunDirectories();
+
+  update_json(scene, json_helper.m_building_config);
+
+  if (scene) {
+    const auto items = scene->items(); // 拷贝，避免遍历时修改
+    for (QGraphicsItem *item : items) {
+      if (auto *node = dynamic_cast<NodeItem *>(item)) {
+        scene->removeItem(node);
+        delete node;
+      }
     }
+  }
 
-    double width = this->ap_config_page->Building_range[0];
-    double height = this->ap_config_page->Building_range[1];
-    double scale = 40;
-    QRect sceneRect(0, 0, width * scale, height * scale);
+  double width = building_range[0];
+  double height = building_range[1];
+  double scale = 40.0;
+  QRectF sceneRect(0, 0, width * scale, height * scale);
 
-    std::cout << "update the config_map" << std::endl;
-    jsonHelper->m_building_config = this->ap_config_page->json_helper->m_building_config;
+  // ---------- AP ----------
+  QJsonArray apList = json_helper.m_building_config["Ap_pos_list"].toArray();
 
-    // std::cout << this->ap_config_page->json_helper->m_building_config["Ap_num"].toInt() << std::endl;
-    // std::cout <<jsonHelper->m_building_config["Ap_pos_list"].toArray().size() << std::endl;
-    // std::cout <<this->ap_config_page->json_helper->m_building_config["Ap_pos_list"].toArray()[0].toObject()["pos"].toArray()[0].toDouble() << std::endl;
-    QJsonArray json_ap_pos_list =
-        this->ap_config_page->json_helper->m_building_config["Ap_pos_list"].toArray();
+  for (const auto &val : apList) {
+    QJsonObject ap_pos = val.toObject();
+    QJsonArray pos = ap_pos["pos"].toArray();
+    if (pos.size() < 3)
+      continue;
 
-    // Update the json of ap
-    for (int i = 0; i < json_ap_pos_list.size(); ++i)
-    {
-        QJsonObject ap_pos = json_ap_pos_list[i].toObject();
-        qint8 id = ap_pos["id"].toInt();
-        QJsonArray pos = ap_pos["pos"].toArray();
-        if (pos.size() < 2)
-            continue;
+    double x = pos[0].toDouble();
+    double y = pos[1].toDouble();
+    double z = pos[2].toDouble();
 
-        double x = pos[0].toDouble();
-        double y = pos[1].toDouble();
-        double z = pos[2].toDouble();
+    auto *ap = new NodeItem(sceneRect, scale);
+    ap->m_id = ap_pos["id"].toInt();
+    ap->Type = "AP";
+    ap->x_sim = x;
+    ap->y_sim = y;
+    ap->z_sim = z;
 
-        NodeItem *ap = new NodeItem(sceneRect, scale);
-        ap->m_id = ap_pos["id"].toInt();
-        ap->Type = "AP";
-        ap->x_sim = x;
-        ap->y_sim = y;
-        ap->z_sim = z;
+    ap->setBrush(Qt::red);
+    ap->setZValue(10);
+    ap->setPos(x * scale, y * scale);
+    ap->finishInit();
 
-        ap->setBrush(Qt::red);
-        ap->setZValue(10);
-        ap->setPos(x * scale, y * scale);
+    scene->addItem(ap);
 
-        ap->finishInit();
-
-        scene->addItem(ap);
-
-        for (auto &item : this->ap_config_page->json_helper->m_ap_config_list)
-        {
-            if (item["Id"].toInt() == ap->m_id)
-            {
-                item["Position"] = QJsonArray{x, y, z};
-                std::cout << "update ap position" << std::endl;
-                break;
-            }
-        }
+    // 同步 ap_config_list
+    for (auto &cfg : json_helper.m_ap_config_list) {
+      if (cfg["Id"].toInt() == ap->m_id) {
+        cfg["Position"] = QJsonArray{x, y, z};
+        break;
+      }
     }
+  }
 
-    qDebug() << "AP size ="
-             << this->ap_config_page->json_helper
-                    ->m_building_config["Ap_pos_list"]
-                    .toArray()
-                    .size()
-             << "the size of the ap_config_list:"
-             << this->ap_config_page->json_helper->m_ap_config_list.size();
+  // ---------- STA ----------
+  QJsonArray staList = json_helper.m_building_config["Sta_pos_list"].toArray();
 
-    // Update the json of sta
-    jsonHelper->m_building_config = this->node_config_page->json_helper->m_building_config;
-    QJsonArray json_sta_pos_list =
-        this->node_config_page->json_helper->m_building_config["Sta_pos_list"].toArray();
+  for (const auto &val : staList) {
+    QJsonObject sta_pos = val.toObject();
+    QJsonArray pos = sta_pos["pos"].toArray();
+    if (pos.size() < 3)
+      continue;
 
-    for (int i = 0; i < json_sta_pos_list.size(); ++i)
-    {
-        QJsonObject sta_pos = json_sta_pos_list[i].toObject();
-        QJsonArray pos = sta_pos["pos"].toArray();
-        if (pos.size() < 2)
-            continue;
+    double x = pos[0].toDouble();
+    double y = pos[1].toDouble();
+    double z = pos[2].toDouble();
 
-        double x = pos[0].toDouble();
-        double y = pos[1].toDouble();
-        double z = pos[2].toDouble();
+    auto *sta = new NodeItem(sceneRect, scale);
+    sta->m_id = sta_pos["id"].toInt();
+    sta->Type = "STA";
+    sta->x_sim = x;
+    sta->y_sim = y;
+    sta->z_sim = z;
 
-        NodeItem *sta = new NodeItem(sceneRect, scale);
-        sta->m_id = sta_pos["id"].toInt();
-        sta->Type = "STA";
-        sta->x_sim = x;
-        sta->y_sim = y;
-        sta->z_sim = z;
+    sta->setBrush(Qt::blue);
+    sta->setZValue(10);
+    sta->setPos(x * scale, y * scale);
+    sta->finishInit();
 
-        sta->setBrush(Qt::blue);
-        sta->setZValue(10);
-        sta->setPos(x * scale, y * scale);
+    scene->addItem(sta);
 
-        sta->finishInit();
-
-        scene->addItem(sta);
-
-        for (auto &item : this->node_config_page->json_helper->m_sta_config_list)
-        {
-            if (item["Id"].toInt() == sta->m_id)
-            {
-                item["Position"] = QJsonArray{x, y, z};
-                std::cout << "update sta position" << std::endl;
-                break;
-            }
-        }
+    // 同步 sta_config_list
+    for (auto &cfg : json_helper.m_sta_config_list) {
+      if (cfg["Id"].toInt() == sta->m_id) {
+        cfg["Position"] = QJsonArray{x, y, z};
+        break;
+      }
     }
+  }
 
-    // Display the lcd module
-    qint16 ap_totol = this->ap_config_page->json_helper
-                          ->m_building_config["Ap_pos_list"]
-                          .toArray()
-                          .size();
-    qint16 sta_totol = this->node_config_page->json_helper
-                           ->m_building_config["Sta_pos_list"]
-                           .toArray()
-                           .size();
+  ui->lcdNumber->display(static_cast<int>(apList.size()));
+  ui->lcdNumber_2->display(static_cast<int>(staList.size()));
 
-    ui->lcdNumber->setStyleSheet("color:red");
-    ui->lcdNumber_2->setStyleSheet("color:blue");
-    ui->lcdNumber->display(ap_totol);
-    ui->lcdNumber_2->display(sta_totol);
+  for (const auto &item : json_helper.m_ap_config_list) {
+    QString path = json_helper.Ap_file_path +
+                   QString::number(item["Id"].toInt() + 1) + ".json";
+    json_helper.SaveJsonObjToRoute(item, path);
+  }
 
-    // Save the config to json file
-    for (auto item : this->ap_config_page->json_helper->m_ap_config_list)
-    {
-        QString filepath = jsonHelper->Ap_file_path + QString::number(item["Id"].toInt()) + ".json";
-        jsonHelper->SaveJsonObjToRoute(item, filepath);
-        qDebug() << "Save ap config to " << filepath.toStdString();
-    }
-
-    for (auto item : this->node_config_page->json_helper->m_sta_config_list)
-    {
-        QString filepath = jsonHelper->Sta_file_path + QString::number(item["Id"].toInt()) + ".json";
-        jsonHelper->SaveJsonObjToRoute(item, filepath);
-        qDebug() << "Save sta config to " << filepath.toStdString();
-    }
+  for (const auto &item : json_helper.m_sta_config_list) {
+    QString path = json_helper.Sta_file_path +
+                   QString::number(item["Id"].toInt() + 1) + ".json";
+    json_helper.SaveJsonObjToRoute(item, path);
+  }
 }
 
-void Simu_Config::cleanupAndExit()
-{
-    qDebug() << "Timeline closed, cleaning up...";
+void Simu_Config::cleanupAndExit() {
+  static bool cleaning = false;
+  if (cleaning)
+    return;
+  cleaning = true;
 
-    // kill PPDU reader precess(?)
-    if (m_ppduReader) {
-        m_ppduReader->stop();
-        if (m_ppduThread) {
-            m_ppduThread->quit();
-            m_ppduThread->wait();
-            m_ppduThread->deleteLater();
-            m_ppduThread = nullptr;
-        }
-        m_ppduReader->deleteLater();
-        m_ppduReader = nullptr;
-    }
+  qDebug() << "cleanupAndExit()";
 
-    // kill ns3(?)
-    if (ns3Process) {
-        ns3Process->kill();
-        ns3Process->waitForFinished(2000);
-        delete ns3Process;
-        ns3Process = nullptr;
-    }
+  // 停止 Reader
 
-    // exit the timeline view
-    if (m_timelineView) {
-        m_timelineView->close();
-        m_timelineView->deleteLater();
-        m_timelineView = nullptr;
-    }
+  if (m_ppduReader) {
+    qDebug() << "Stopping PPDU reader";
+    m_ppduReader->clearBuffer();
+    m_ppduReader->stop();
+    m_ppduReader->deleteLater();
+    m_ppduReader = nullptr;
+  }
 
-    // exit all the subwindows
-    if (node_config_page) {
-        node_config_page->close();
-        node_config_page->deleteLater();
-        node_config_page = nullptr;
-    }
+  if (m_ppduThread) {
+    qDebug() << "Stopping PPDU thread";
+    m_ppduThread->quit();
+    m_ppduThread->wait();
+    m_ppduThread->deleteLater();
+    m_ppduThread = nullptr;
+  }
 
-    if (ap_config_page) {
-        ap_config_page->close();
-        ap_config_page->deleteLater();
-        ap_config_page = nullptr;
-    }
+  // 停止 ns-3（如果还活着）
+  if (ns3Process) {
+    qDebug() << "Killing ns-3";
+    ns3Process->kill();
+    ns3Process->deleteLater();
+    ns3Process = nullptr;
+  }
 
-    // clean the scene(?)
-    if (scene) {
-        for (auto item : scene->items()) {
-            scene->removeItem(item);
-            delete item;
-        }
-        delete scene;
-        scene = nullptr;
-    }
+  if (!m_copiedScratchPath.isEmpty()) {
+    if (QFile::exists(m_copiedScratchPath))
+      QFile::remove(m_copiedScratchPath);
+    m_copiedScratchPath.clear();
+  } else if (!m_selectedScene.isEmpty() && !m_ns3Path.isEmpty()) {
+    const QString scratchPath =
+        m_ns3Path + "/scratch/" + m_selectedScene + ".cc";
+    if (QFile::exists(scratchPath))
+      QFile::remove(scratchPath);
+  }
 
-    // Closing the main window
-    qDebug() << "Closing main window...";
-    this->close();
-
-    // For debug , load the remain object tree
-    qDebug() << "===== Object tree after cleanup =====";
-    this->dumpObjectTree();
-    qDebug() << "===== Top-level widgets =====";
-    for (QWidget *w : QApplication::topLevelWidgets())
-        qDebug() << w << w->metaObject()->className();
+  close();
+  cleaning = false;
 }
 
+void Simu_Config::resetPage() {
+  qDebug() << "[Simu_Config] resetPage()";
+
+  if (m_ppduReader) {
+    m_ppduReader->clearBuffer();
+    m_ppduReader->stop();
+    m_ppduReader->deleteLater();
+    m_ppduReader = nullptr;
+  }
+
+  if (m_ppduThread) {
+    m_ppduThread->quit();
+    m_ppduThread->wait();
+    m_ppduThread->deleteLater();
+    m_ppduThread = nullptr;
+  }
+
+  if (ns3Process) {
+    ns3Process->kill();
+    ns3Process->deleteLater();
+    ns3Process = nullptr;
+  }
+
+  if (scene) {
+    const auto items = scene->items();
+    for (QGraphicsItem *item : items) {
+      scene->removeItem(item);
+      delete item;
+    }
+    scene->clear();
+  }
+
+  ui->tabWidget->setCurrentIndex(0);
+
+  ui->doubleSpinBox->setValue(10);
+  ui->doubleSpinBox_2->setValue(10);
+  ui->doubleSpinBox_3->setValue(5);
+  ui->doubleSpinBox_4->setValue(0);
+
+  ui->comboBox->setCurrentIndex(0);
+  ui->comboBox_2->setCurrentIndex(0);
+
+  ui->lcdNumber->display(0);
+  ui->lcdNumber_2->display(0);
+
+  ui->pushButton_7->setEnabled(true);
+  ui->pushButton_7->setText("Check");
+
+  Num_ap = 0;
+  Num_sta = 0;
+  building_range = {0, 0, 0};
+  m_hasPpdu.store(false);
+  m_selectedScene.clear();
+
+  ui->graphicsView->resetTransform();
+  ui->graphicsView->setScene(scene);
+
+  // rebuildScene();
+  qDebug() << "[Simu_Config] resetPage() done";
+}
+
+void Simu_Config::setNs3Path(const QString &path) { m_ns3Path = path; }
+
+void Simu_Config::setSelectedScene(const QString &sceneName) {
+  m_selectedScene = sceneName;
+}
+
+void Simu_Config::resetSimuScene() { m_selectedScene.clear(); }
+
+void Simu_Config::rebuildScene() {
+  if (!scene)
+    scene = new QGraphicsScene(this);
+
+  scene->clear();
+
+  if (building_range[0] <= 0 || building_range[1] <= 0) {
+    qDebug() << "[Simu_Config] skip draw building (invalid range)";
+    return;
+  }
+
+  Draw_the_config_map();
+}
+
+void Simu_Config::requestCleanup() {
+  QTimer::singleShot(0, this, &Simu_Config::cleanupAndExit);
+}
+
+void Simu_Config::Load_General_Json(JsonHelper &json_helper) {
+  json_helper.ensureRunDirectories();
+  QJsonObject Building;
+  double x_range = ui->doubleSpinBox->value();
+  double y_range = ui->doubleSpinBox_2->value();
+  double z_range = ui->doubleSpinBox_3->value();
+  QJsonArray range = {x_range, y_range, z_range};
+
+  json_helper.m_building_config["Building"] =
+      QJsonObject{{"range", range},
+                  {"building_type", ui->comboBox->currentText()},
+                  {"wall_type", ui->comboBox_2->currentText()}};
+  json_helper.m_building_config["Ap_num"] = ui->lcdNumber->intValue();
+  json_helper.m_building_config["Sta_num"] = ui->lcdNumber_2->intValue();
+  json_helper.m_building_config["SimulationTime"] =
+      ui->doubleSpinBox_4->value();
+
+  QString filepath = json_helper.General_file_path + "General.json";
+  json_helper.SaveJsonObjToRoute(json_helper.m_building_config, filepath);
+  qDebug() << "Save general config to " << filepath;
+
+  this->Num_ap = ui->lcdNumber->intValue();
+  this->Num_sta = ui->lcdNumber_2->intValue();
+
+  emit CreateAndStartThread();
+}
+
+void Simu_Config::Create_And_StartThread() {
+
+  if (m_ppduReader) {
+    m_ppduReader->stop();
+    m_ppduReader->clearBuffer();
+    m_ppduReader->deleteLater();
+    m_ppduReader = nullptr;
+  }
+
+  if (ns3Process || m_ppduThread || m_ppduReader) {
+    qWarning() << "Simulation already running";
+    return;
+  }
+
+  if (m_ns3Path.isEmpty()) {
+    qWarning() << "NS-3 path not set";
+    return;
+  }
+
+  // DIY 模式暂时硬编码为 timeline_crossing.cc
+  // 自适应场景选择逻辑先保留，待后续启用
+  // if (m_selectedScene.isEmpty()) {
+  //   qWarning() << "No scene selected";
+  //   return;
+  // }
+
+  m_hasPpdu.store(false);
+
+  m_copiedScratchPath.clear();
+
+  if (!m_selectedScene.isEmpty()) {
+    const QString scratchPath =
+        m_ns3Path + "/scratch/" + m_selectedScene + ".cc";
+    if (!QFile::exists(scratchPath)) {
+      const QString simplePath =
+          m_ns3Path + "/contrib/SniffUtils/Simulation/Default/Simple/" +
+          m_selectedScene + "/" + m_selectedScene + ".cc";
+      const QString complexPath =
+          m_ns3Path + "/contrib/SniffUtils/Simulation/Default/Complex/" +
+          m_selectedScene + "/" + m_selectedScene + ".cc";
+
+      QString sourcePath;
+      if (QFile::exists(simplePath)) {
+        sourcePath = simplePath;
+      } else if (QFile::exists(complexPath)) {
+        sourcePath = complexPath;
+      }
+
+      if (sourcePath.isEmpty()) {
+        qWarning() << "Scene source not found in Default folders:"
+                   << m_selectedScene;
+        return;
+      }
+
+      if (!QFile::copy(sourcePath, scratchPath)) {
+        qWarning() << "Failed to copy scene to scratch:" << scratchPath;
+        return;
+      }
+
+      m_copiedScratchPath = scratchPath;
+    }
+  }
+
+  ns3Process = new QProcess(this);
+  ns3Process->setWorkingDirectory(m_ns3Path);
+
+  connect(ns3Process, &QProcess::started, this,
+          [] { qDebug() << "ns-3 started"; });
+
+  connect(ns3Process,
+          QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
+          [this](int code, QProcess::ExitStatus status) {
+            qDebug() << "ns-3 finished:" << code << status;
+            ns3Process->deleteLater();
+            ns3Process = nullptr;
+            if (m_ppduReader)
+              m_ppduReader->stop();
+
+            if (!m_copiedScratchPath.isEmpty()) {
+              if (QFile::exists(m_copiedScratchPath))
+                QFile::remove(m_copiedScratchPath);
+              m_copiedScratchPath.clear();
+            }
+
+            if (!m_hasPpdu.load())
+              emit sniffFailed();
+          });
+
+  m_ppduThread = new QThread(this);
+  m_ppduReader = new QtPpduReader;
+
+  m_ppduReader->moveToThread(m_ppduThread);
+
+  connect(m_ppduThread, &QThread::started, m_ppduReader, &QtPpduReader::run);
+
+  connect(
+      m_ppduReader, &QtPpduReader::ppduReady, this,
+      [this](const PpduVisualItem &item) {
+        m_hasPpdu.store(true);
+        emit ppduReady(item);
+      },
+      Qt::DirectConnection);
+
+  // reader 自己结束时，线程退出
+  connect(m_ppduReader, &QtPpduReader::finished, this, [this] {
+    if (m_ppduThread) {
+      m_ppduReader->clearBuffer();
+      m_ppduThread->quit();
+    }
+  });
+
+  m_ppduThread->start();
+
+  // 先清理共享内存，避免残留数据
+  boost::interprocess::shared_memory_object::remove("Ns3PpduSharedMemory");
+
+  const bool isDiy = m_selectedScene.isEmpty();
+  const QString sceneToRun =
+      isDiy ? QStringLiteral("QNs3-example.cc") : (m_selectedScene + ".cc");
+  QStringList args = {"run", sceneToRun};
+  if (isDiy) {
+    args << "--" << "--ns3path" << m_ns3Path;
+  }
+  {
+    QProcess buildProcess;
+    buildProcess.setWorkingDirectory(m_ns3Path);
+    QStringList buildArgs = {"build"};
+    if (!isDiy) {
+      buildArgs << ("scratch/" + m_selectedScene);
+    }
+
+    buildProcess.start("./ns3", buildArgs);
+    if (!buildProcess.waitForFinished(-1)) {
+      qWarning() << "ns-3 build did not finish";
+      return;
+    }
+
+    const QByteArray buildOut = buildProcess.readAllStandardOutput();
+    if (!buildOut.isEmpty()) {
+      emit ns3OutputReady(QString::fromUtf8(buildOut));
+    }
+
+    const QByteArray buildErr = buildProcess.readAllStandardError();
+    if (!buildErr.isEmpty()) {
+      emit ns3OutputReady(QString::fromUtf8(buildErr));
+    }
+
+    const int exitCode = buildProcess.exitCode();
+    if (exitCode != 0) {
+      qWarning() << "ns-3 build failed with code" << exitCode;
+      return;
+    }
+  }
+  ns3Process->start("./ns3", args);
+
+  /*LINK the Terminal */
+  connect(ns3Process, &QProcess::readyReadStandardOutput, this, [this]() {
+    QByteArray out = ns3Process->readAllStandardOutput();
+    emit ns3OutputReady(QString::fromUtf8(out));
+  });
+
+  connect(ns3Process, &QProcess::readyReadStandardError, this, [this]() {
+    QByteArray out = ns3Process->readAllStandardError();
+    emit ns3OutputReady(QString::fromUtf8(out));
+  });
+
+  // ===============================
+  // 2. Timeline View
+  // ===============================
+  // if (!m_timelineView) {
+  //   m_timelineView = new PpduTimelineView(this);
+  //   m_timelineView->Num_ap = this->Num_ap;
+  //   m_timelineView->Num_sta = this->Num_sta;
+  //   m_timelineView->setWindowTitle("PPDU Timeline");
+  //   m_timelineView->resize(1200, 400);
+  //   m_timelineView->show();
+
+  //   connect(m_timelineView, &PpduTimelineView::timelineClosed,
+  //           this, &Simu_Config::requestCleanup);
+}
 
 // Finnal Check , Run the Simulation , Load the General Json
-void Simu_Config::on_pushButton_9_clicked()
-{
-    if (ui->lcdNumber->intValue() != 0 && ui->lcdNumber_2->intValue() != 0)
-    {
-        QMessageBox::information(this, "Attention", "SIMULATION RUNNING ...");
-    }
-    else
-    {
-        QMessageBox::critical(this, "Error", "At least one AP and one STA is needed");
-        return;
-    }
+void Simu_Config::on_pushButton_9_clicked() {
+  if (ui->lcdNumber->intValue() != 0 && ui->lcdNumber_2->intValue() != 0) {
+    QMessageBox msgBox(QMessageBox::Information, "Attention",
+                       "SIMULATION RUNNING ...", QMessageBox::Ok, this);
 
-    QJsonObject Building;
-    double x_range = ui->doubleSpinBox->value();
-    double y_range = ui->doubleSpinBox_2->value();
-    double z_range = ui->doubleSpinBox_3->value();
-    QJsonArray range = {x_range, y_range, z_range};
-    Building["range"] = range;
-    Building["building_type"] = ui->comboBox->currentText();
-    Building["wall_type"] = ui->comboBox_2->currentText();
-    this->jsonHelper->m_building_config["Building"] = Building;
-    this->jsonHelper->m_building_config["Ap_num"] = ui->lcdNumber->intValue();
-    this->jsonHelper->m_building_config["Sta_num"] = ui->lcdNumber_2->intValue();
-    this->jsonHelper->m_building_config["Ap_pos_list"] = this->ap_config_page->json_helper->m_building_config["Ap_pos_list"].toArray();
-    this->jsonHelper->m_building_config["Sta_pos_list"] = this->node_config_page->json_helper->m_building_config["Sta_pos_list"].toArray();
-    this->jsonHelper->m_building_config["SimulationTime"] = ui->doubleSpinBox_4->value();
+    msgBox.setWindowModality(Qt::WindowModal);
 
-    QString filepath = this->jsonHelper->General_file_path + "General.json";
-    this->jsonHelper->SaveJsonObjToRoute(this->jsonHelper->m_building_config, filepath);
-    qDebug() << "Save general config to " << filepath.toStdString();
+    // 在窗口真正 show 之后再 move
+    QTimer::singleShot(0, this, [this, &msgBox]() {
+      QRect parentRect = this->frameGeometry();
+      QRect boxRect = msgBox.frameGeometry();
 
-    if (ns3Process)
-    {
-        ns3Process->kill();
-        delete ns3Process;
-    }
+      QPoint center = parentRect.center() - boxRect.center();
 
-    ns3Process = new QProcess(this);
+      msgBox.move(center);
+    });
 
-    // ns-3 working directory
-    ns3Process->setWorkingDirectory("/home/zk/Visualization/ns-3.46");
+    msgBox.exec();
+  } else {
+    QMessageBox msgBox(QMessageBox::Critical, "Error",
+                       "At least one AP and one STA is needed", QMessageBox::Ok,
+                       this);
 
-    QString program = "./ns3";
-    QStringList arguments;
-    arguments << "run" << "timeline_pressure.cc";
+    msgBox.setWindowModality(Qt::WindowModal);
 
-    connect(ns3Process, &QProcess::started, this, []
-            { qDebug() << "ns-3 started"; });
+    QTimer::singleShot(0, this, [this, &msgBox]() {
+      QRect parentRect = this->frameGeometry();
+      QRect boxRect = msgBox.frameGeometry();
 
-    connect(ns3Process, &QProcess::errorOccurred, this,
-            [](QProcess::ProcessError e)
-            {
-                qDebug() << "ns-3 error:" << e;
-            });
+      QPoint center = parentRect.center() - boxRect.center();
 
-    ns3Process->start(program, arguments);
+      msgBox.move(center);
+    });
 
-    // ==============================
-    // 1. create the timeline view
-    // ==============================
-    if (!m_timelineView)
-    {
-        m_timelineView = new PpduTimelineView;
-        m_timelineView->setWindowTitle("PPDU Timeline");
-        m_timelineView->resize(1200, 400);
-        m_timelineView->show();
-    }
+    msgBox.exec();
+    return;
+  }
 
-    // connect the timeline view
-    connect(m_timelineView, &PpduTimelineView::timelineClosed, this, &Simu_Config::cleanupAndExit);
+  QDialog dialog(this);
+  dialog.setWindowTitle(tr("PPDU Settings"));
+  dialog.setModal(true);
 
+  QVBoxLayout *mainLayout = new QVBoxLayout(&dialog);
 
-    // ===============================
-    // 2. create the ppdu reader
-    // ===============================
-    m_ppduThread = new QThread(this);
-    m_ppduReader = new QtPpduReader;
+  QLabel *title =
+      new QLabel(tr("Choose precise mode and sampling rate"), &dialog);
+  mainLayout->addWidget(title);
 
-    m_ppduReader->moveToThread(m_ppduThread);
+  QCheckBox *preciseCheck = new QCheckBox(tr("Enable precise mode"), &dialog);
+  preciseCheck->setChecked(g_ppduViewConfig.preciseMode.load());
+  mainLayout->addWidget(preciseCheck);
 
-    // load  → reader.run()
-    connect(m_ppduThread, &QThread::started,
-            m_ppduReader, &QtPpduReader::run);
+  QFormLayout *formLayout = new QFormLayout();
+  QSpinBox *sampleSpin = new QSpinBox(&dialog);
+  sampleSpin->setRange(1, 1000);
+  const int currentRate = g_ppduViewConfig.sampleRate.load();
+  sampleSpin->setValue(currentRate > 0 ? currentRate : 10);
+  formLayout->addRow(tr("Sample rate (1/N)"), sampleSpin);
+  mainLayout->addLayout(formLayout);
 
-    // Reader → Timeline
-    connect(m_ppduReader, &QtPpduReader::ppduReady,
-            m_timelineView, &PpduTimelineView::append,
-            Qt::QueuedConnection);
+  auto updateSampleEnabled = [=](bool precise) {
+    sampleSpin->setEnabled(!precise);
+  };
+  updateSampleEnabled(preciseCheck->isChecked());
+  connect(preciseCheck, &QCheckBox::toggled, this, updateSampleEnabled);
 
-    // recycle the thread
-    connect(qApp, &QCoreApplication::aboutToQuit, [=]
-            {
-        m_ppduReader->stop();
-        m_ppduThread->quit();
-        m_ppduThread->wait();
-        m_ppduReader->deleteLater(); });
+  QDialogButtonBox *buttons = new QDialogButtonBox(
+      QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
+  mainLayout->addWidget(buttons);
+  connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+  connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
 
-    m_ppduThread->start();
+  if (dialog.exec() != QDialog::Accepted)
+    return;
+
+  const bool precise = preciseCheck->isChecked();
+  g_ppduViewConfig.preciseMode.store(precise);
+  g_ppduViewConfig.absoluteRate.store(precise);
+  g_ppduViewConfig.sampleRate.store(precise ? 1 : sampleSpin->value());
+
+  emit LoadGeneralConfig();
 }
 
-void Simu_Config::on_checkBox_checkStateChanged(const Qt::CheckState &state)
-{
-    bool checked = (state == Qt::Checked);
+//嗯嗯这个按钮没有必要复活了,因为采样专门有弹窗了
+void Simu_Config::on_checkBox_checkStateChanged(const Qt::CheckState &state) {
+  bool checked = (state == Qt::Checked);
 
-    g_ppduViewConfig.absoluteRate.store(checked);
-    g_ppduViewConfig.preciseMode.store(checked);
-    g_ppduViewConfig.sampleRate.store(checked ? 1 : 10); // 默认降采样 1/10
+  g_ppduViewConfig.absoluteRate.store(checked);
+  g_ppduViewConfig.preciseMode.store(checked);
+  g_ppduViewConfig.sampleRate.store(checked ? 1 : 10); // 默认降采样 1/10
 }

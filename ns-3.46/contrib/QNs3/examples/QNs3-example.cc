@@ -1,91 +1,269 @@
 #include "ns3/QNs3-helper.h"
+#include "ns3/QNs3.h"
+#include "ns3/SniffUtils.h"
+#include "ns3/applications-module.h"
+#include "ns3/buildings-module.h"
 #include "ns3/core-module.h"
-#inlcude "ns3/QNs3.h"
-
-/**
- * @file
- *
- * Explain here what the example does.
- */
+#include "ns3/internet-module.h"
+#include "ns3/mobility-module.h"
+#include "ns3/network-module.h"
+#include "ns3/wifi-module.h"
 
 using namespace ns3;
 
 int
 main(int argc, char* argv[])
 {
-    auto generalConfig = ns3::GetGeneralConfig(generalConfigFolder);
-    auto stas = ns3::GetApConfigs(staFolder);
-    auto aps = ns3::GetApConfigs(apFolder);
+    // ========= Config =========
+    GeneralConfig helper;
+    std::string ns3Path;
+    for (int i = 1; i + 1 < argc; ++i)
+    {
+        if (std::string(argv[i]) == "--ns3path")
+        {
+            ns3Path = argv[i + 1];
+            break;
+        }
+    }
 
-    Ptr<Building> building;
-    building = CreateObject<Building>();
-    building->SetBoundaries(Box(0,generalConfig.range[0],0,generalConfig.range[1],0,generalConfig.range[2]));
-    building->SetBuildingType(generalConfig.buildingType);
-    building->SetExtWallsType(generalConfig.WallType);
-    double durations = generalConfig.SimulationTime;    
+    if (!ns3Path.empty() && ns3Path.back() != '/')
+    {
+        ns3Path.push_back('/');
+    }
 
+    helper.ns3Path = ns3Path;
+    helper.path = helper.ns3Path + helper.jsonPath;
+
+    std::string basePath = helper.path;
+    if (argc > 1 && argv[1] != nullptr)
+    {
+        const std::string arg1 = argv[1];
+        if (!arg1.empty() && arg1 != "--" && arg1.rfind("--", 0) != 0)
+        {
+            basePath = arg1;
+            if (!basePath.empty() && basePath.back() != '/')
+            {
+                basePath.push_back('/');
+            }
+        }
+    }
+
+    std::string generalConfigFolder = basePath + "GeneralJson/";
+    std::string staFolder = basePath + "StaConfigJson/";
+    std::string apFolder = basePath + "ApConfigJson/";
+
+    auto generalConfig = GetGeneralConfig(generalConfigFolder);
+    auto stas = GetStaConfigs(staFolder);
+    auto aps = GetApConfigs(apFolder);
+
+    // PrintNodeConfig(aps.front(), std::cout);
+    double duration = generalConfig.SimulationTime;
+
+    // ========= Building =========
+    Ptr<Building> building = CreateObject<Building>();
+    building->SetBoundaries(
+        Box(0, generalConfig.range[0], 0, generalConfig.range[1], 0, generalConfig.range[2]));
+
+    building->SetBuildingType(QNs3Helper::GetBuildingType(generalConfig));
+    building->SetExtWallsType(QNs3Helper::GetBuildingExtWallsType(generalConfig));
+
+    // ========= Nodes =========
     NodeContainer apNodes;
-    apNodes.Create(apConfigs.size());
+    apNodes.Create(aps.size());
+
     NodeContainer staNodes;
-    staNodes.Create(staConfigs.size());
+    staNodes.Create(stas.size());
 
-    uint16_t duration = generalConfig.SimulationTime;
-
+    // ========= Wi-Fi =========
     WifiHelper wifi;
-    wifi.SetStandard(Configure_WifiStandard(apConfigs.front().Standard));
-
-    YansWifiChannelHelper channel = YansWifiChannelHelper::Default();
-    auto channelPtr = channel.Create();
-
-    YansWifiPhyHelper phy;
-    phy.SetChannel(channelPtr);
-    phy.Set("ChannelSettings", StringValue(Configure_BandChannel(apConfigs.front())));
-
     WifiMacHelper mac;
-    Ssid ssid(apConfigs.front().Ssid);
 
-    wifi.SetRemoteStationManager(
-        Configure_RateCtrlManager(apConfigs.front().Rate_ctr_algo, apConfigs.front().Standard));
-    mac.SetType("ns3::ApWifiMac",
-                "Ssid",
-                SsidValue(ssid),
-                "EnableBeaconJitter",
-                BooleanValue(apConfigs.front().beacon ? apConfigs.front().beacon->EnableBeaconJitter
-                                                      : false));
-    NetDeviceContainer apDevices = wifi.Install(phy, mac, apNodes);
+    const uint32_t apCount = apNodes.GetN();
+    std::vector<YansWifiPhyHelper> phys;
+    phys.reserve(apCount);
 
-    ConfigureMobility(apConfigs, apNodes);
-    ConfigureMobility(staConfigs, staNodes);
+    for (uint32_t i = 0; i < apCount; ++i)
+    {
+        YansWifiChannelHelper channel = YansWifiChannelHelper::Default();
+        Ptr<YansWifiChannel> channelPtr = channel.Create();
 
-    ApplyDeviceConfigs(apConfigs, apDevices);
-    ApplyDeviceConfigs(staConfigs, staDevices);
+        YansWifiPhyHelper phy;
+        phy.SetChannel(channelPtr);
+        phys.push_back(phy);
+    }
 
+    NetDeviceContainer apDevices;
+    NetDeviceContainer staDevices;
+
+    for (uint32_t i = 0; i < apCount; ++i)
+    {
+        const auto &apCfg = aps[i];
+        wifi.SetStandard(QNs3Helper::Configure_WifiStandard(apCfg.Standard));
+        wifi.SetRemoteStationManager(
+            QNs3Helper::Configure_RateCtrlManager(apCfg.Rate_ctrl_algo, apCfg.Standard));
+
+        Ssid ssid(apCfg.Ssid);
+        mac.SetType("ns3::ApWifiMac",
+                    "Ssid",
+                    SsidValue(ssid),
+                    "QosSupported",
+                    BooleanValue(true),
+                    "EnableBeaconJitter",
+                    BooleanValue(apCfg.beacon ? apCfg.beacon->EnableBeaconJitter : false));
+
+        NetDeviceContainer apDev = wifi.Install(phys[i], mac, apNodes.Get(i));
+        apDevices.Add(apDev);
+    }
+
+    for (uint32_t i = 0; i < staNodes.GetN(); ++i)
+    {
+        const uint32_t apIdx = apCount == 0 ? 0 : (i % apCount);
+        const auto &apCfg = aps[apIdx];
+        const auto &staCfg = stas[i];
+
+        wifi.SetStandard(QNs3Helper::Configure_WifiStandard(apCfg.Standard));
+        wifi.SetRemoteStationManager(
+            QNs3Helper::Configure_RateCtrlManager(staCfg.Rate_ctrl_algo, staCfg.Standard));
+
+        Ssid ssid(apCfg.Ssid);
+        mac.SetType("ns3::StaWifiMac",
+                    "Ssid",
+                    SsidValue(ssid),
+                    "QosSupported",
+                    BooleanValue(true),
+                    "ActiveProbing",
+                    BooleanValue(staCfg.ActiveProbing.value_or(true)));
+
+        NetDeviceContainer staDev = wifi.Install(phys[apIdx], mac, staNodes.Get(i));
+        staDevices.Add(staDev);
+    }
+
+    // ========= Mobility =========
+    QNs3Helper::ConfigureMobility(aps, apNodes);
+    QNs3Helper::ConfigureMobility(stas, staNodes);
+
+    // ========= Buildings =========
+    BuildingsHelper::Install(apNodes);
+    BuildingsHelper::Install(staNodes);
+
+    // ========= PHY / MAC / QoS =========
+    QNs3Helper::ApplyDeviceConfigs(aps, apDevices);
+    QNs3Helper::ApplyDeviceConfigs(stas, staDevices);
+
+    // ========= Internet =========
     InternetStackHelper stack;
     stack.Install(apNodes);
     stack.Install(staNodes);
 
     Ipv4AddressHelper address;
-    address.SetBase("10.0.0.0", "255.255.255.0");
-    auto apIfaces = address.Assign(apDevices);
-    auto staIfaces = address.Assign(staDevices);
+    Ipv4InterfaceContainer apIfaces;
+    Ipv4InterfaceContainer staIfaces;
+    std::vector<Ipv4Address> staAddrs(staNodes.GetN());
 
-    uint16_t port = 9000;
-    UdpServerHelper server(port);
-    ApplicationContainer serverApps = server.Install(apNodes.Get(0));
-    serverApps.Start(Seconds(0.0));
-    serverApps.Stop(Seconds(duration));
+    for (uint32_t i = 0; i < apCount; ++i)
+    {
+        std::string base = "10.1." + std::to_string(i + 1) + ".0";
+        address.SetBase(Ipv4Address(base.c_str()), "255.255.255.0");
 
-    UdpClientHelper client(staIfaces.GetAddress(0), port);
-    client.SetAttribute("MaxPackets", UintegerValue(0));
-    client.SetAttribute("Interval", TimeValue(MilliSeconds(10)));
-    client.SetAttribute("PacketSize", UintegerValue(512));
-    ApplicationContainer clientApps = client.Install(staNodes.Get(0));
-    clientApps.Start(Seconds(1.0));
-    clientApps.Stop(Seconds(duration));
+        NetDeviceContainer devs;
+        devs.Add(apDevices.Get(i));
 
+        std::vector<uint32_t> staIndices;
+        for (uint32_t j = 0; j < staNodes.GetN(); ++j)
+        {
+            if (apCount != 0 && (j % apCount) == i)
+            {
+                devs.Add(staDevices.Get(j));
+                staIndices.push_back(j);
+            }
+        }
+
+        auto ifaces = address.Assign(devs);
+        apIfaces.Add(ifaces.Get(0));
+        for (uint32_t k = 0; k < staIndices.size(); ++k)
+        {
+            staIfaces.Add(ifaces.Get(k + 1));
+            staAddrs[staIndices[k]] = ifaces.GetAddress(k + 1);
+        }
+    }
+
+    Ipv4GlobalRoutingHelper::PopulateRoutingTables();
+
+    // ========= App =========
+    const uint16_t basePort = 9000;
+    const uint16_t basePortUp = 10000;
+
+    // One server per STA (AP sends downlink to every STA)
+    for (uint32_t i = 0; i < staNodes.GetN(); ++i)
+    {
+        const uint16_t port = basePort + i;
+        UdpServerHelper server(port);
+        auto serverApps = server.Install(staNodes.Get(i));
+        serverApps.Start(Seconds(0.5));
+        serverApps.Stop(Seconds(duration));
+    }
+
+    // One server per AP (STAs send uplink to APs)
+    for (uint32_t i = 0; i < apNodes.GetN(); ++i)
+    {
+        const uint16_t port = basePortUp + i;
+        UdpServerHelper server(port);
+        auto serverApps = server.Install(apNodes.Get(i));
+        serverApps.Start(Seconds(0.5));
+        serverApps.Stop(Seconds(duration));
+    }
+
+    // Each AP sends to all its associated STAs (downlink)
+    for (uint32_t apIdx = 0; apIdx < apNodes.GetN(); ++apIdx)
+    {
+        for (uint32_t staIdx = 0; staIdx < staNodes.GetN(); ++staIdx)
+        {
+            if (apNodes.GetN() != 0 && (staIdx % apNodes.GetN()) != apIdx)
+            {
+                continue;
+            }
+
+            const uint16_t port = basePort + staIdx;
+            const Ipv4Address staAddr = staAddrs[staIdx];
+
+            UdpClientHelper client(staAddr, port);
+            client.SetAttribute("MaxPackets", UintegerValue(0xFFFFFFFF));
+            client.SetAttribute("Interval", TimeValue(MilliSeconds(80)));
+            client.SetAttribute("PacketSize", UintegerValue(1200));
+
+            auto clientApps = client.Install(apNodes.Get(apIdx));
+            clientApps.Start(Seconds(1.0 + 0.001 * staIdx));
+            clientApps.Stop(Seconds(duration));
+        }
+    }
+
+    // Each STA sends to its associated AP (uplink), creating cross traffic
+    for (uint32_t staIdx = 0; staIdx < staNodes.GetN(); ++staIdx)
+    {
+        const uint32_t apIdx = apNodes.GetN() == 0 ? 0 : (staIdx % apNodes.GetN());
+        const uint16_t port = basePortUp + apIdx;
+        const Ipv4Address apAddr = apIfaces.GetAddress(apIdx);
+
+        UdpClientHelper client(apAddr, port);
+        client.SetAttribute("MaxPackets", UintegerValue(0xFFFFFFFF));
+        client.SetAttribute("Interval", TimeValue(MilliSeconds(80)));
+        client.SetAttribute("PacketSize", UintegerValue(1000));
+
+        auto clientApps = client.Install(staNodes.Get(staIdx));
+        clientApps.Start(Seconds(1.0 + 0.002 * staIdx));
+        clientApps.Stop(Seconds(duration));
+    }
+
+    //========= Sniff =========
+    using namespace boost::interprocess;
+    shared_memory_object::remove("Ns3PpduSharedMemory");
+
+    Ptr<SniffUtils> Sniff_Utils = CreateObject<SniffUtils>();
+    Sniff_Utils->Initialize(staDevices, apDevices, duration);
+    // ========= Run =========
     Simulator::Stop(Seconds(duration));
-
     Simulator::Run();
     Simulator::Destroy();
+
     return 0;
 }

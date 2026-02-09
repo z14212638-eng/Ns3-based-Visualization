@@ -1,4 +1,5 @@
 #include "JsonHelper.h"
+#include <QDateTime>
 
 
 double get_true_random_double(double min, double max)
@@ -46,6 +47,29 @@ bool JsonHelper::SaveJsonObjToRoute(const QJsonObject jsonObj, const QString fil
     file.close();
 
     return true;
+}
+
+void JsonHelper::ensureRunDirectories()
+{
+    if (run_dir_initialized)
+        return;
+
+    const QString timestamp = QDateTime::currentDateTime().toString("yy_M_d_HHmm");
+    Run_dir = Base_dir + "Designed_" + timestamp + "/";
+
+    const QString apDir = Run_dir + "ApConfigJson";
+    const QString staDir = Run_dir + "StaConfigJson";
+    const QString generalDir = Run_dir + "GeneralJson";
+
+    QDir().mkpath(apDir);
+    QDir().mkpath(staDir);
+    QDir().mkpath(generalDir);
+
+    Ap_file_path = apDir + "/Ap_";
+    Sta_file_path = staDir + "/Sta_";
+    General_file_path = generalDir + "/";
+
+    run_dir_initialized = true;
 }
 
 bool JsonHelper::SetApToJson(const Ap *ap, qint8 id)
@@ -173,53 +197,57 @@ bool JsonHelper::SetApToJson(const Ap *ap, qint8 id)
         QJsonObject Flow;
         Flow["FlowId"] = flow.Flow_id;
         Flow["Protocol"] = flow.Protocol;
-        Flow["Direction"] = flow.Direction;
+        Flow["Destination"] = flow.Destination;
         Flow["StartTime"] = flow.StartTime;
         Flow["EndTime"] = flow.EndTime;
-        QJsonArray EDCA_Traffic;
-
-        // AC_VI
-        QJsonObject one_edca_vi;
-        auto viTraffic = std::dynamic_pointer_cast<AC_VI_Traffic>(flow.m_edca[AcType::VI]);
-        one_edca_vi["type"] = viTraffic->Type;
-        one_edca_vi["enabled"] = viTraffic->enabled;
-        one_edca_vi["trafficType"] = viTraffic->trafficType;
-        one_edca_vi["packetSize"] = viTraffic->packetSize;
-        one_edca_vi["meanDataRate"] = viTraffic->meanDataRate;
-        one_edca_vi["peakDataRate"] = viTraffic->peakDataRate;
-        EDCA_Traffic.append(one_edca_vi);
-
-        // AC_VO
-        QJsonObject one_edca_vo;
-        auto voTraffic = std::dynamic_pointer_cast<AC_VO_Traffic>(flow.m_edca[AcType::VO]);
-        one_edca_vo["type"] = voTraffic->Type;
-        one_edca_vo["enabled"] = voTraffic->enabled;
-        one_edca_vo["trafficType"] = voTraffic->trafficType;
-        one_edca_vo["packetSize"] = voTraffic->packetSize;
-        one_edca_vo["interval"] = voTraffic->interval;
-        EDCA_Traffic.append(one_edca_vo);
-
-        // AC_BE
-        QJsonObject one_edca_be;
-        auto beTraffic = std::dynamic_pointer_cast<AC_BE_Traffic>(flow.m_edca[AcType::BE]);
-        one_edca_be["type"] = beTraffic->Type;
-        one_edca_be["enabled"] = beTraffic->enabled;
-        one_edca_be["trafficType"] = beTraffic->trafficType;
-        one_edca_be["packetSize"] = beTraffic->packetSize;
-        one_edca_be["DataRate"] = beTraffic->DataRate;
-        EDCA_Traffic.append(one_edca_be);
-
-        // AC_BK
-        QJsonObject one_edca_bk;
-        auto bkTraffic = std::dynamic_pointer_cast<AC_BK_Traffic>(flow.m_edca[AcType::BK]);
-        one_edca_bk["type"] = bkTraffic->Type;
-        one_edca_bk["enabled"] = bkTraffic->enabled;
-        one_edca_bk["trafficType"] = bkTraffic->trafficType;
-        one_edca_bk["packetSize"] = bkTraffic->packetSize;
-        one_edca_bk["DataRate"] = bkTraffic->DataRate;
-        EDCA_Traffic.append(one_edca_bk);
-
-        Flow["EDCA_Traffic"] = EDCA_Traffic;
+        Flow["Tos"] = flow.Tos;
+        
+        // 流量类型
+        QString flowTypeStr;
+        switch (flow.flowType) {
+            case TrafficConfig::OnOff:
+            {
+                flowTypeStr = "OnOff";
+                Flow["DataRate"] = flow.dataRate;
+                Flow["PacketSize"] = flow.packetSize;
+                Flow["OntimeType"] = flow.ontimeType;
+                Flow["OfftimeType"] = flow.offtimeType;
+                Flow["MaxBytes"] = flow.maxBytes;
+                
+                // OnTime 参数
+                QJsonObject ontimeParams;
+                for (auto it = flow.ontimeParams.begin(); it != flow.ontimeParams.end(); ++it) {
+                    ontimeParams[it.key()] = it.value();
+                }
+                Flow["OntimeParams"] = ontimeParams;
+                
+                // OffTime 参数
+                QJsonObject offtimeParams;
+                for (auto it = flow.offtimeParams.begin(); it != flow.offtimeParams.end(); ++it) {
+                    offtimeParams[it.key()] = it.value();
+                }
+                Flow["OfftimeParams"] = offtimeParams;
+                break;
+            }
+                
+            case TrafficConfig::CBR:
+            {
+                flowTypeStr = "CBR";
+                Flow["PacketSize"] = flow.packetSize;
+                Flow["Interval"] = flow.interval;
+                Flow["MaxPackets"] = flow.maxPackets;
+                break;
+            }
+                
+            case TrafficConfig::Bulk:
+            {
+                flowTypeStr = "Bulk";
+                Flow["MaxBytes"] = flow.maxBytes;
+                break;
+            }
+        }
+        Flow["FlowType"] = flowTypeStr;
+        
         Flows.append(Flow);
     }
     Traffic["Flows"] = Flows;
@@ -383,53 +411,57 @@ bool JsonHelper::SetStaToJson(const Sta *sta, qint8 id)
         QJsonObject Flow;
         Flow["FlowId"] = flow.Flow_id;
         Flow["Protocol"] = flow.Protocol;
-        Flow["Direction"] = flow.Direction;
+        Flow["Destination"] = flow.Destination;
         Flow["StartTime"] = flow.StartTime;
         Flow["EndTime"] = flow.EndTime;
-        QJsonArray EDCA_Traffic;
-
-        // AC_VI
-        QJsonObject one_edca_vi;
-        auto viTraffic = std::dynamic_pointer_cast<AC_VI_Traffic>(flow.m_edca[AcType::VI]);
-        one_edca_vi["type"] = viTraffic->Type;
-        one_edca_vi["enabled"] = viTraffic->enabled;
-        one_edca_vi["trafficType"] = viTraffic->trafficType;
-        one_edca_vi["packetSize"] = viTraffic->packetSize;
-        one_edca_vi["meanDataRate"] = viTraffic->meanDataRate;
-        one_edca_vi["peakDataRate"] = viTraffic->peakDataRate;
-        EDCA_Traffic.append(one_edca_vi);
-
-        // AC_VO
-        QJsonObject one_edca_vo;
-        auto voTraffic = std::dynamic_pointer_cast<AC_VO_Traffic>(flow.m_edca[AcType::VO]);
-        one_edca_vo["type"] = voTraffic->Type;
-        one_edca_vo["enabled"] = voTraffic->enabled;
-        one_edca_vo["trafficType"] = voTraffic->trafficType;
-        one_edca_vo["packetSize"] = voTraffic->packetSize;
-        one_edca_vo["interval"] = voTraffic->interval;
-        EDCA_Traffic.append(one_edca_vo);
-
-        // AC_BE
-        QJsonObject one_edca_be;
-        auto beTraffic = std::dynamic_pointer_cast<AC_BE_Traffic>(flow.m_edca[AcType::BE]);
-        one_edca_be["type"] = beTraffic->Type;
-        one_edca_be["enabled"] = beTraffic->enabled;
-        one_edca_be["trafficType"] = beTraffic->trafficType;
-        one_edca_be["packetSize"] = beTraffic->packetSize;
-        one_edca_be["DataRate"] = beTraffic->DataRate;
-        EDCA_Traffic.append(one_edca_be);
-
-        // AC_BK
-        QJsonObject one_edca_bk;
-        auto bkTraffic = std::dynamic_pointer_cast<AC_BK_Traffic>(flow.m_edca[AcType::BK]);
-        one_edca_bk["type"] = bkTraffic->Type;
-        one_edca_bk["enabled"] = bkTraffic->enabled;
-        one_edca_bk["trafficType"] = bkTraffic->trafficType;
-        one_edca_bk["packetSize"] = bkTraffic->packetSize;
-        one_edca_bk["DataRate"] = bkTraffic->DataRate;
-        EDCA_Traffic.append(one_edca_bk);
-
-        Flow["EDCA_Traffic"] = EDCA_Traffic;
+        Flow["Tos"] = flow.Tos;
+        
+        // 流量类型
+        QString flowTypeStr;
+        switch (flow.flowType) {
+            case TrafficConfig::OnOff:
+            {
+                flowTypeStr = "OnOff";
+                Flow["DataRate"] = flow.dataRate;
+                Flow["PacketSize"] = flow.packetSize;
+                Flow["OntimeType"] = flow.ontimeType;
+                Flow["OfftimeType"] = flow.offtimeType;
+                Flow["MaxBytes"] = flow.maxBytes;
+                
+                // OnTime 参数
+                QJsonObject ontimeParams;
+                for (auto it = flow.ontimeParams.begin(); it != flow.ontimeParams.end(); ++it) {
+                    ontimeParams[it.key()] = it.value();
+                }
+                Flow["OntimeParams"] = ontimeParams;
+                
+                // OffTime 参数
+                QJsonObject offtimeParams;
+                for (auto it = flow.offtimeParams.begin(); it != flow.offtimeParams.end(); ++it) {
+                    offtimeParams[it.key()] = it.value();
+                }
+                Flow["OfftimeParams"] = offtimeParams;
+                break;
+            }
+                
+            case TrafficConfig::CBR:
+            {
+                flowTypeStr = "CBR";
+                Flow["PacketSize"] = flow.packetSize;
+                Flow["Interval"] = flow.interval;
+                Flow["MaxPackets"] = flow.maxPackets;
+                break;
+            }
+                
+            case TrafficConfig::Bulk:
+            {
+                flowTypeStr = "Bulk";
+                Flow["MaxBytes"] = flow.maxBytes;
+                break;
+            }
+        }
+        Flow["FlowType"] = flowTypeStr;
+        
         Flows.append(Flow);
     }
     Traffic["Flows"] = Flows;
@@ -476,4 +508,46 @@ bool JsonHelper::SetStaToJson(const Sta *sta, qint8 id)
     m_sta_config_list.append(jsonObj);
     std::cout << "m_sta_config_list  appended  ,number:" << m_sta_config_list.size() << std::endl;
     return true;
+}
+
+void JsonHelper::reset()
+{
+    qDebug() << "[JsonHelper] reset()";
+
+    // 1️⃣ 清空 building json
+    m_building_config = QJsonObject();
+
+    // 2️⃣ 释放动态分配的 json（避免泄漏）
+    if (m_sta_config)
+    {
+        delete m_sta_config;
+        m_sta_config = nullptr;
+    }
+
+    if (m_ap_config)
+    {
+        delete m_ap_config;
+        m_ap_config = nullptr;
+    }
+
+    // 3️⃣ 清空配置列表
+    m_sta_config_list.clear();
+    m_ap_config_list.clear();
+
+    // 4️⃣ 重建 building 配置（而不是 clear）
+    m_building.reset();
+    m_building = std::make_shared<BuildingConfig>();
+
+    // 5️⃣ （可选）初始化 building json 的基础字段
+    m_building_config["Sta_num"] = 0;
+    m_building_config["Ap_num"]  = 0;
+    m_building_config["Sta_pos_list"] = QJsonArray();
+    m_building_config["Ap_pos_list"]  = QJsonArray();
+
+    // 6️⃣ reset run directory (next run will create a new folder)
+    run_dir_initialized = false;
+    Run_dir.clear();
+    Ap_file_path.clear();
+    Sta_file_path.clear();
+    General_file_path.clear();
 }
