@@ -1,6 +1,6 @@
 # Ns-3 PPDU Visualizer
 
-[English](README_en.md) | [中文](README_ch.md)
+[English](utils/doc/README_en.md) | [中文](utils/doc/README_ch.md)
 
 A Qt-based visualization tool for **ns-3 PHY/MAC PPDU activity**, designed to provide **interactive, time-aligned PPDU-level analysis** for wireless simulations.
 
