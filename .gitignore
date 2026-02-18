@@ -3,6 +3,13 @@
 *.exe
 ns-3.46/build
 ns-3.46/cmake-cache
-Qt/QT_PRJ/Ns3Visualizer/build
-Qt/QT_PRJ/Ns3Visualizer/.cache
-Qt/QT_PRJ/Ns3Visualizer/.qtcreator
+build/
+build-cmake/
+*_autogen/
+*.o
+*.user
+moc_*
+ui_*.h
+ns-3.46/
+*.tar.bz2
+
