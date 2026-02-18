@@ -1,8 +1,7 @@
 *.so
 *.a
 *.exe
-ns-3.46/build
-ns-3.46/cmake-cache
+
 build/
 build-cmake/
 *_autogen/
@@ -10,6 +9,8 @@ build-cmake/
 *.user
 moc_*
 ui_*.h
-ns-3.46/
-*.tar.bz2
 
+*.tar.bz2
+ns-3.46/*
+!ns-3.46/contrib/
+!ns-3.46/contrib/**
