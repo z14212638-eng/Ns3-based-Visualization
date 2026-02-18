@@ -11,6 +11,8 @@ moc_*
 ui_*.h
 
 *.tar.bz2
-ns-3.46/*
+# ns-3.46/*
 !ns-3.46/contrib/
-!ns-3.46/contrib/**
+!ns-3.46/contrib/*
+.vscode
+.github
