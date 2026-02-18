@@ -1,0 +1,19 @@
+{
+    "ap_config_files": [
+        "Ap_0.json"
+    ],
+    "ap_config_folder": "ApConfigJson",
+    "ap_count": 1,
+    "created_time": "2026-02-14 17:53:47",
+    "general_config_file": "General.json",
+    "general_config_folder": "GeneralJson",
+    "last_modified": "2026-02-14 17:53:47",
+    "ns3_directory": "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/",
+    "project_name": "sm1",
+    "sta_config_files": [
+        "Sta_0.json"
+    ],
+    "sta_config_folder": "StaConfigJson",
+    "sta_count": 1,
+    "work_directory": "/home/zk/Visualization/ns-3.46/contrib/SniffUtils/Simulation/Designed/sm1"
+}
