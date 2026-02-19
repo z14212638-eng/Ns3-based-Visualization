@@ -52,7 +52,7 @@
             </font>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <property name="iconSize">
             <size>
@@ -426,6 +426,9 @@
                   <pointsize>14</pointsize>
                   <bold>false</bold>
                  </font>
+                </property>
+                <property name="value">
+                 <double>10.000000000000000</double>
                 </property>
                </widget>
                <zorder>doubleSpinBox_4</zorder>

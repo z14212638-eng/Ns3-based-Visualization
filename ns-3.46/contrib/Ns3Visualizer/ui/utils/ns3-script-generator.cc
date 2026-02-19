@@ -807,7 +807,10 @@ NS_LOG_COMPONENT_DEFINE("GeneratedSimulation");
     shared_memory_object::remove("Ns3PpduSharedMemory");
 
     Ptr<SniffUtils> Sniff_Utils = CreateObject<SniffUtils>();
-    Sniff_Utils->Initialize(staDevices, apDevices, duration);
+    NetDeviceContainer allDevices;
+    allDevices.Add(apDevices);
+    allDevices.Add(staDevices);
+    Sniff_Utils->Initialize(allDevices,allDevices, duration);
 )";
     }
 
