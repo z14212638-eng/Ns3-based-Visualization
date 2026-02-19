@@ -757,9 +757,10 @@ void Simu_Config::Create_And_StartThread() {
 }
 
 QString Simu_Config::resolveUtilsBuildScriptPath() const {
-  QDir dir(QCoreApplication::applicationDirPath());
+  // QDir dir(QCoreApplication::applicationDirPath());
+  QDir dir(m_ns3Path);
   for (int i = 0; i < 5; ++i) {
-    const QString candidate = dir.absoluteFilePath("utils/build.sh");
+    const QString candidate = dir.absoluteFilePath("contrib/Ns3Visualizer/ui/utils/build.sh");
     if (QFileInfo::exists(candidate)) {
       return candidate;
     }
@@ -780,40 +781,41 @@ Simu_Config::resolveScriptGeneratorPath(const QString &buildScriptPath) const {
 }
 
 bool Simu_Config::ensureScriptGeneratorBuilt(QString &outGeneratorPath) {
-  const QString buildScript = resolveUtilsBuildScriptPath();
-  if (buildScript.isEmpty()) {
-    const QString msg =
-        tr("Cannot locate utils/build.sh. Please check installation.");
-    emit ns3OutputReady(msg);
-    qWarning() << msg;
-    return false;
-  }
+  // const QString buildScript = resolveUtilsBuildScriptPath();
+  // if (buildScript.isEmpty()) {
+  //   const QString msg =
+  //       tr("Cannot locate utils/build.sh. Please check installation.");
+  //   emit ns3OutputReady(msg);
+  //   qWarning() << msg;
+  //   return false;
+  // }
 
-  const QDir utilsDir = QFileInfo(buildScript).dir();
-  QProcess buildProcess;
-  buildProcess.setWorkingDirectory(utilsDir.path());
-  buildProcess.start("bash", {buildScript, m_ns3Path});
-  if (!buildProcess.waitForFinished(-1)) {
-    qWarning() << "Generator build did not finish";
-    return false;
-  }
+  // const QDir utilsDir = QFileInfo(buildScript).dir();
+  // QProcess buildProcess;
+  // buildProcess.setWorkingDirectory(utilsDir.path());
+  // buildProcess.start("bash", {buildScript, m_ns3Path});
+  // if (!buildProcess.waitForFinished(-1)) {
+  //   qWarning() << "Generator build did not finish";
+  //   return false;
+  // }
 
-  const QByteArray buildOut = buildProcess.readAllStandardOutput();
-  if (!buildOut.isEmpty()) {
-    emit ns3OutputReady(QString::fromUtf8(buildOut));
-  }
+  // const QByteArray buildOut = buildProcess.readAllStandardOutput();
+  // if (!buildOut.isEmpty()) {
+  //   emit ns3OutputReady(QString::fromUtf8(buildOut));
+  // }
 
-  const QByteArray buildErr = buildProcess.readAllStandardError();
-  if (!buildErr.isEmpty()) {
-    emit ns3OutputReady(QString::fromUtf8(buildErr));
-  }
+  // const QByteArray buildErr = buildProcess.readAllStandardError();
+  // if (!buildErr.isEmpty()) {
+  //   emit ns3OutputReady(QString::fromUtf8(buildErr));
+  // }
 
-  if (buildProcess.exitCode() != 0) {
-    qWarning() << "Generator build failed with code" << buildProcess.exitCode();
-    return false;
-  }
+  // if (buildProcess.exitCode() != 0) {
+  //   qWarning() << "Generator build failed with code" << buildProcess.exitCode();
+  //   return false;
+  // }
 
-  const QString generatorPath = resolveScriptGeneratorPath(buildScript);
+  const QString generatorPath = m_ns3Path + "/build/ns3-script-generator";
+
   if (!QFileInfo::exists(generatorPath)) {
     qWarning() << "Generator executable not found:" << generatorPath;
     return false;
@@ -851,6 +853,7 @@ bool Simu_Config::generateStandaloneScript(QString &outSceneFileName) {
 
   QProcess genProcess;
   genProcess.setWorkingDirectory(QFileInfo(generatorPath).dir().path());
+  std::cout<< "Running generator: " << generatorPath.toStdString() <<" "<< projectPath.toStdString() <<" "<< outputPath.toStdString() << std::endl;
   genProcess.start(generatorPath, {projectPath, outputPath});
   if (!genProcess.waitForFinished(-1)) {
     qWarning() << "Script generation did not finish";

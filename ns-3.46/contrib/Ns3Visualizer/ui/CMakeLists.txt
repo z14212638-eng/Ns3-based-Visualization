@@ -114,6 +114,11 @@ target_include_directories(Ns3VisualizerApp PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+# Expose the ns-3 source root at compile time
+target_compile_definitions(Ns3VisualizerApp PRIVATE
+    NS3_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+)
+
 # Set target properties
 set_target_properties(Ns3VisualizerApp PROPERTIES
     WIN32_EXECUTABLE TRUE
@@ -124,6 +129,11 @@ set_target_properties(Ns3VisualizerApp PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(Ns3VisualizerApp)
 endif()
+
+# Build ns3-script-generator utility together with the main app
+set(NS3_ROOT "${CMAKE_SOURCE_DIR}" CACHE PATH "Path to ns-3 root directory" FORCE)
+add_subdirectory(utils)
+add_dependencies(Ns3VisualizerApp ns3-script-generator)
 
 # Installation rules
 install(TARGETS Ns3VisualizerApp

@@ -12,6 +12,10 @@ Greeting::Greeting(QWidget *parent)
     ui->lineEdit->setReadOnly(true);
     ui->lineEdit->setFocusPolicy(Qt::NoFocus);
 
+#ifdef NS3_SOURCE_DIR
+    setNs3Path(QString(NS3_SOURCE_DIR));
+#endif
+
     QLabel *title = ui->title; // objectName = title
 
     title->setFont(QFont("Inter", 50, QFont::DemiBold));

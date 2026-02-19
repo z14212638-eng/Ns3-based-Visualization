@@ -27,13 +27,37 @@ flow_dialog::~flow_dialog()
 
 void flow_dialog::setupConnections()
 {
-    // 连接 OnTime 类型变化信号
-    connect(ui->comboBox_ontime_type, QOverload<int>::of(&QComboBox::currentIndexChanged),
+    // 使用 activated 信号：即使重新选中同一项也会触发，解决默认 Constant 无法弹出对话框的问题
+    connect(ui->comboBox_ontime_type, QOverload<int>::of(&QComboBox::activated),
             this, &flow_dialog::onOntimeTypeChanged);
     
-    // 连接 OffTime 类型变化信号
-    connect(ui->comboBox_offtime_type, QOverload<int>::of(&QComboBox::currentIndexChanged),
+    connect(ui->comboBox_offtime_type, QOverload<int>::of(&QComboBox::activated),
             this, &flow_dialog::onOfftimeTypeChanged);
+
+    // 允许用户直接在 lineEdit 中编辑 Constant 类型的数值
+    connect(ui->lineEdit_ontime_value, &QLineEdit::editingFinished,
+            this, [this]() {
+                if (ui->comboBox_ontime_type->currentText() == "Constant") {
+                    bool ok;
+                    double val = ui->lineEdit_ontime_value->text().trimmed().toDouble(&ok);
+                    if (ok) {
+                        m_ontimeParams.clear();
+                        m_ontimeParams["Value"] = val;
+                    }
+                }
+            });
+
+    connect(ui->lineEdit_offtime_value, &QLineEdit::editingFinished,
+            this, [this]() {
+                if (ui->comboBox_offtime_type->currentText() == "Constant") {
+                    bool ok;
+                    double val = ui->lineEdit_offtime_value->text().trimmed().toDouble(&ok);
+                    if (ok) {
+                        m_offtimeParams.clear();
+                        m_offtimeParams["Value"] = val;
+                    }
+                }
+            });
 }
 
 void flow_dialog::onOntimeTypeChanged(int index)
@@ -62,11 +86,16 @@ void flow_dialog::showRandomVariableDialog(const QString &type, QMap<QString, do
     if (dialog.exec() == QDialog::Accepted) {
         params = dialog.getParameters();
         
-        // 更新显示值（可选：在 lineEdit 中显示参数摘要）
+        // 更新显示值
         QString summary;
-        for (auto it = params.begin(); it != params.end(); ++it) {
-            if (!summary.isEmpty()) summary += ", ";
-            summary += QString("%1=%2").arg(it.key()).arg(it.value());
+        if (type == "Constant" && params.contains("Value")) {
+            // Constant 类型只显示数值，便于用户直接编辑
+            summary = QString::number(params["Value"]);
+        } else {
+            for (auto it = params.begin(); it != params.end(); ++it) {
+                if (!summary.isEmpty()) summary += ", ";
+                summary += QString("%1=%2").arg(it.key()).arg(it.value());
+            }
         }
         
         // 根据是 OnTime 还是 OffTime 更新对应的 lineEdit
@@ -94,6 +123,22 @@ FlowConfig flow_dialog::getFlowConfig() const
         config.ontimeParams = m_ontimeParams;
         config.offtimeType = ui->comboBox_offtime_type->currentText();
         config.offtimeParams = m_offtimeParams;
+
+        // 对 Constant 类型，从 lineEdit 读取最新数值（用户可能直接编辑了 lineEdit）
+        if (config.ontimeType == "Constant") {
+            bool ok;
+            double val = ui->lineEdit_ontime_value->text().trimmed().toDouble(&ok);
+            if (ok) {
+                config.ontimeParams["Value"] = val;
+            }
+        }
+        if (config.offtimeType == "Constant") {
+            bool ok;
+            double val = ui->lineEdit_offtime_value->text().trimmed().toDouble(&ok);
+            if (ok) {
+                config.offtimeParams["Value"] = val;
+            }
+        }
         config.maxBytes = ui->spinBox_maxbytes->value();
         config.protocol = ui->comboBox_protocol->currentText();
         config.tos = ui->spinBox_tos->value();

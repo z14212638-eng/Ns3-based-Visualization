@@ -10,8 +10,8 @@ class Greeting;
 
 struct Ns3VersionInfo {
     bool valid = false;
-    QString version;   // "3.39" / "dev"
-    QString display;   // "ns-3.39 (Release)"
+    QString version;   
+    QString display;   
 };
 
 

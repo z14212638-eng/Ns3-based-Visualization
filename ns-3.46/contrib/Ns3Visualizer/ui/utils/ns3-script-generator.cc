@@ -506,6 +506,7 @@ NS_LOG_COMPONENT_DEFINE("GeneratedSimulation");
             {
                 destType = dest.substr(0, pos);
                 destIdx = dest.substr(pos + 1);
+                destIdx = std::to_string((std::stoi(destIdx)-1<=0)?0:std::stoi(destIdx));
             }
             
             if (destType == "STA")
@@ -543,6 +544,7 @@ NS_LOG_COMPONENT_DEFINE("GeneratedSimulation");
             {
                 destType = flowInfo.dest.substr(0, pos);
                 destIdx = flowInfo.dest.substr(pos + 1);
+                destIdx = std::to_string((std::stoi(destIdx)-1<=0)?0:std::stoi(destIdx));
             }
             
             std::string flowType = flowInfo.flow.value("FlowType", "CBR");
@@ -607,8 +609,8 @@ NS_LOG_COMPONENT_DEFINE("GeneratedSimulation");
                 
                 std::string onTimeType = "ConstantRandomVariable";
                 std::string offTimeType = "ConstantRandomVariable";
-                std::string onTimeParams = "Constant, 1.0";
-                std::string offTimeParams = "Constant, 0.0"; // 解析 OnTime 参数
+                std::string onTimeParams = "Constant=1.0";
+                std::string offTimeParams = "Constant=0.0"; // 解析 OnTime 参数
                 if (flowInfo.flow.contains("OntimeType"))
                 {
                     std::string ontimeType = flowInfo.flow["OntimeType"].get<std::string>();
@@ -616,9 +618,9 @@ NS_LOG_COMPONENT_DEFINE("GeneratedSimulation");
                     {
                         onTimeType = "ConstantRandomVariable";
                         if (flowInfo.flow.contains("OntimeParams") && 
-                            flowInfo.flow["OntimeParams"].contains("Mean"))
+                            flowInfo.flow["OntimeParams"].contains("Value"))
                         {
-                            double mean = flowInfo.flow["OntimeParams"]["Mean"].get<double>();
+                            double mean = flowInfo.flow["OntimeParams"]["Value"].get<double>();
                             onTimeParams = "Constant=" + std::to_string(mean);
                         }
                     }
@@ -664,9 +666,9 @@ NS_LOG_COMPONENT_DEFINE("GeneratedSimulation");
                     {
                         offTimeType = "ConstantRandomVariable";
                         if (flowInfo.flow.contains("OfftimeParams") && 
-                            flowInfo.flow["OfftimeParams"].contains("Mean"))
+                            flowInfo.flow["OfftimeParams"].contains("Value"))
                         {
-                            double mean = flowInfo.flow["OfftimeParams"]["Mean"].get<double>();
+                            double mean = flowInfo.flow["OfftimeParams"]["Value"].get<double>();
                             offTimeParams = "Constant=" + std::to_string(mean);
                         }
                     }

@@ -25,7 +25,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>2</number>
      </property>
      <property name="documentMode">
       <bool>false</bool>
@@ -497,6 +497,11 @@
          <item>
           <property name="text">
            <string>ThomsonSampling</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>MinstrelHt</string>
           </property>
          </item>
         </widget>

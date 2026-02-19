@@ -277,6 +277,21 @@ MainWindow::MainWindow(QWidget *parent)
   setStatusBar(status);
   status->showMessage("Ready");
 
+  /*Default NS-3 path (injected at build time)*/
+#ifdef NS3_SOURCE_DIR
+  {
+    const QString defaultNs3Path = QString(NS3_SOURCE_DIR);
+    jsonhelper.Base_dir = defaultNs3Path + "/contrib/Ns3Visualizer/Simulation/Designed/";
+    if (simuConfig)
+      simuConfig->setNs3Path(defaultNs3Path);
+    if (page1) {
+      page1->ns3Path = defaultNs3Path;
+      page1->refreshModelLists();
+    }
+    ns3PathValid = true;
+  }
+#endif
+
   showMaximized();
 }
 MainWindow::~MainWindow() {

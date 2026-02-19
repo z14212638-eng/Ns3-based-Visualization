@@ -94,16 +94,16 @@ void Ap_config::Restrict_channel()
             {
                 return name == "Aarf" || name == "Amrr" || name == "Arf" ||
                        name == "Cara" || name == "Onoe" || name == "Rraa" ||
-                       name == "Ideal" || name == "Constant";
+                       name == "Ideal" || name == "Constant" || name == "MinstrelHt";
             }
             if (standard == Standard_MAP::k80211a || standard == Standard_MAP::k80211g)
             {
                 return name == "Aarf" || name == "Amrr" || name == "Arf" ||
                        name == "Cara" || name == "Onoe" || name == "Rraa" ||
-                       name == "Minstrel" || name == "Ideal" || name == "Constant";
+                       name == "Minstrel" || name == "Ideal" || name == "Constant"||name == "MinstrelHt";
             }
             // 802.11n/ac/ax
-            return name == "Minstrel" || name == "Ideal" || name == "Constant" ||
+            return name == "MinstrelHt" || name == "Ideal" || name == "Constant" ||
                    name == "ThomsonSampling";
         };
 
@@ -112,7 +112,7 @@ void Ap_config::Restrict_channel()
         {
             const QString item = ui->comboBox_7->itemText(i);
             const bool allowed = is_allowed(item);
-            ui->comboBox_7->setItemData(i, QVariant(allowed ? 1 : 0), Qt::UserRole - 1);
+            ui->comboBox_7->setItemData(i, allowed ? QVariant() : QVariant(0), Qt::UserRole - 1);
             if (allowed && firstAllowed == -1)
             {
                 firstAllowed = i;
