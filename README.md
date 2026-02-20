@@ -74,6 +74,7 @@ It is intended as a **research and debugging tool**, not a full simulator or Net
 - **Headless executable package**  
 
 ```bash
+# place Ns3Visualizer/ under contrib/
 ./ns3 configure
 ./ns3 build
 ./build/Ns3VisualizerApp
