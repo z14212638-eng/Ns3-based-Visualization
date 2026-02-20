@@ -74,6 +74,7 @@
 
 ```bash
 # 下载源码后，进入ns3根目录
+# 将Ns3Visualizer文件夹放置于contrib文件夹下
 ./ns3 configure
 ./ns3 build
 ./build/Ns3VisualizerApp
