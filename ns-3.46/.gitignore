@@ -19,6 +19,7 @@ contrib/Ns3Visualizer/Simulation
 
 CMakeCache.txt
 CMakeFiles/
+.cache/
 cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
