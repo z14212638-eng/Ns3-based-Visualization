@@ -28,6 +28,120 @@ static constexpr int kRangeBarHeight = 16;
 static constexpr int kRangeHandleW = 8;
 static constexpr int kRangeBarMargin = 10;
 
+static constexpr uint64_t kBroadcastMac = 0xFFFFFFFFFFFFULL;
+
+static inline bool isBroadcastMac(uint64_t addr)
+{
+    uint64_t low48 = addr & 0xFFFFFFFFFFFFULL;
+    uint64_t high48 = (addr >> 16) & 0xFFFFFFFFFFFFULL;
+    if (low48 == kBroadcastMac || high48 == kBroadcastMac)
+        return true;
+
+    uint8_t bytesLE[6];
+    uint8_t bytesBE[6];
+    for (int i = 0; i < 6; ++i)
+    {
+        bytesLE[i] = (addr >> (i * 8)) & 0xFF;
+        bytesBE[5 - i] = bytesLE[i];
+    }
+
+    auto isAllFF = [](const uint8_t *b) {
+        for (int i = 0; i < 6; ++i)
+        {
+            if (b[i] != 0xFF)
+                return false;
+        }
+        return true;
+    };
+
+    if (isAllFF(bytesLE) || isAllFF(bytesBE))
+        return true;
+
+    auto isFFWithLeadingZeros = [](const uint8_t *b) {
+        return b[0] == 0x00 && b[1] == 0x00 &&
+               b[2] == 0xFF && b[3] == 0xFF &&
+               b[4] == 0xFF && b[5] == 0xFF;
+    };
+
+    auto isFFWithTrailingZeros = [](const uint8_t *b) {
+        return b[0] == 0xFF && b[1] == 0xFF &&
+               b[2] == 0xFF && b[3] == 0xFF &&
+               b[4] == 0x00 && b[5] == 0x00;
+    };
+
+    return isFFWithLeadingZeros(bytesBE) || isFFWithTrailingZeros(bytesLE);
+}
+
+static inline QString formatMac(uint64_t addr)
+{
+    if (isBroadcastMac(addr))
+        return "FF:FF:FF:FF:FF:FF";
+
+    uint8_t bytesLE[6];
+    uint8_t bytesBE[6];
+
+    for (int i = 0; i < 6; ++i)
+    {
+        bytesLE[i] = (addr >> (i * 8)) & 0xFF;
+        bytesBE[5 - i] = bytesLE[i];
+    }
+
+    auto countNonZero = [](const uint8_t *b) {
+        int c = 0;
+        for (int i = 0; i < 6; ++i)
+            c += (b[i] != 0);
+        return c;
+    };
+
+    auto isTrailingSingleByte = [](const uint8_t *b) {
+        for (int i = 0; i < 5; ++i)
+        {
+            if (b[i] != 0)
+                return false;
+        }
+        return b[5] != 0;
+    };
+
+    const uint8_t *chosen = bytesBE; // default: standard MAC order
+
+    if (isTrailingSingleByte(bytesLE) || isTrailingSingleByte(bytesBE))
+    {
+        chosen = isTrailingSingleByte(bytesLE) ? bytesLE : bytesBE;
+    }
+    else
+    {
+        int nzLE = countNonZero(bytesLE);
+        int nzBE = countNonZero(bytesBE);
+        if (nzLE == 1 && nzBE == 1)
+        {
+            uint8_t value = 0;
+            for (int i = 0; i < 6; ++i)
+            {
+                if (bytesLE[i] != 0)
+                {
+                    value = bytesLE[i];
+                    break;
+                }
+            }
+            bytesBE[0] = 0;
+            bytesBE[1] = 0;
+            bytesBE[2] = 0;
+            bytesBE[3] = 0;
+            bytesBE[4] = 0;
+            bytesBE[5] = value;
+            chosen = bytesBE;
+        }
+    }
+
+    QStringList parts;
+    for (int i = 0; i < 6; ++i)
+    {
+        parts << QString("%1")
+                     .arg(chosen[i], 2, 16, QChar('0'));
+    }
+    return parts.join(":").toUpper();
+}
+
 /* ======================== Constructor ======================== */
 
 PpduTimelineView::PpduTimelineView(QWidget *parent)
@@ -52,16 +166,16 @@ PpduTimelineView::PpduTimelineView(QWidget *parent)
             this, &PpduTimelineView::onSetTimeRange);
 
     // Channel View Button
-    m_btnChannel = new QPushButton("C", this);
-    m_btnChannel->setFixedSize(32, 26);
+    m_btnChannel = new QPushButton("CH", this);
+    m_btnChannel->setFixedSize(50, 50);
     m_btnChannel->move(76, 8);
     connect(m_btnChannel, &QPushButton::clicked,
             this, &PpduTimelineView::onToggleChannelView);
 
     quitButton = new QPushButton("quit", this);
 
-    quitButton->setFixedSize(120, 30);
-    quitButton->move(112, 8);
+    quitButton->setFixedSize(120, 50);
+    quitButton->move(142, 8);
 
     connect(quitButton, &QPushButton::clicked,
             this, &PpduTimelineView::quit_simulation);
@@ -323,6 +437,14 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
     }
 
     painter.setPen(Qt::black);
+
+    QMap<uint64_t, int> nodeIndexMap;
+    int nodeCounter = 0;
+    for (auto it = addrRowMap.constBegin(); it != addrRowMap.constEnd(); ++it)
+    {
+        if (!isBroadcastMac(it.key()))
+            nodeIndexMap[it.key()] = ++nodeCounter;
+    }
     for (auto it = addrRowMap.constBegin(); it != addrRowMap.constEnd(); ++it)
     {
         int row = it.value();
@@ -334,8 +456,17 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
             painter.drawText(8, y + 5,
                              QString("CH %1").arg(it.key()));
         else
-            painter.drawText(8, y + 5,
-                             QString("NODE %1").arg(row + 1));
+        {
+            if (isBroadcastMac(it.key()))
+            {
+                painter.drawText(8, y + 5, QString("Broadcast"));
+            }
+            else
+            {
+                painter.drawText(8, y + 5,
+                                 QString("NODE %1").arg(nodeIndexMap.value(it.key())));
+            }
+        }
 
         // -------- hover 显示信息（AP: MAC；Channel: 频段） --------
         QRect labelRect(0, y - rowH / 2, m_leftMargin - 10, rowH);
@@ -362,16 +493,8 @@ void PpduTimelineView::paintEvent(QPaintEvent *)
             }
             else
             {
-                // 按 AP 视图：保持原来的 MAC 地址显示
-                QString mac;
-                uint64_t addr = it.key();
-                QStringList parts;
-                for (int i = 5; i >= 0; --i)
-                {
-                    parts << QString("%1")
-                                 .arg((addr >> (i * 8)) & 0xFF, 2, 16, QChar('0'));
-                }
-                mac = parts.join(":").toUpper();
+                // 按 AP 视图：显示 MAC 地址（广播显示 Broadcast）
+                QString mac = isBroadcastMac(it.key()) ? "Broadcast" : formatMac(it.key());
 
                 QToolTip::showText(
                     mapToGlobal(QPoint(8, y)),
@@ -819,19 +942,8 @@ void PpduTimelineView::mouseMoveEvent(QMouseEvent *e)
     {
         const auto &it = m_items[idx];
 
-        // Format MAC addresses
-        auto formatMac = [](uint64_t addr) -> QString {
-            QStringList parts;
-            for (int i = 5; i >= 0; --i)
-            {
-                parts << QString("%1")
-                             .arg((addr >> (i * 8)) & 0xFF, 2, 16, QChar('0'));
-            }
-            return parts.join(":").toUpper();
-        };
-
         QString senderMac = formatMac(it.sender);
-        QString receiverMac = formatMac(it.receiver);
+        QString receiverMac = isBroadcastMac(it.receiver) ? "Broadcast" : formatMac(it.receiver);
 
         QString text =
             QString("Node ID: %1\n"

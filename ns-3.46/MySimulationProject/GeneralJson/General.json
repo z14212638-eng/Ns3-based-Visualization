@@ -10,6 +10,16 @@
             ]
         }
     ],
+    "Building": {
+        "building_type": "Residential",
+        "range": [
+            10,
+            10,
+            5
+        ],
+        "wall_type": "Wood"
+    },
+    "SimulationTime": 10,
     "Sta_num": 1,
     "Sta_pos_list": [
         {

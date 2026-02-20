@@ -665,125 +665,97 @@
        </item>
        <item row="0" column="4" rowspan="4" colspan="3">
         <widget class="QFrame" name="frame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>150</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>300</height>
+          </size>
+         </property>
          <property name="frameShape">
           <enum>QFrame::Shape::StyledPanel</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Shadow::Raised</enum>
          </property>
-         <widget class="QLabel" name="label_21">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>20</y>
-            <width>101</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Beacon</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="checkBox">
-          <property name="geometry">
-           <rect>
-            <x>220</x>
-            <y>20</y>
-            <width>81</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Set</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_22">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>50</y>
-            <width>171</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>BeaconInterval</string>
-          </property>
-         </widget>
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_12">
-          <property name="geometry">
-           <rect>
-            <x>200</x>
-            <y>50</y>
-            <width>81</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="maximum">
-           <double>65535.989999999997963</double>
-          </property>
-          <property name="value">
-           <double>100.000000000000000</double>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_23">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>90</y>
-            <width>151</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Beacon_Rate</string>
-          </property>
-         </widget>
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_13">
-          <property name="geometry">
-           <rect>
-            <x>200</x>
-            <y>90</y>
-            <width>81</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="value">
-           <double>1.000000000000000</double>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_24">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>180</y>
-            <width>151</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>BeaconJitter</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="checkBox_2">
-          <property name="geometry">
-           <rect>
-            <x>220</x>
-            <y>170</y>
-            <width>61</width>
-            <height>41</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Set</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_21">
+            <property name="text">
+             <string>Beacon</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="checkBox">
+            <property name="text">
+             <string>Set</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_22">
+            <property name="text">
+             <string>BeaconInterval</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_12">
+            <property name="maximum">
+             <double>65535.989999999997963</double>
+            </property>
+            <property name="value">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_23">
+            <property name="text">
+             <string>Beacon_Rate</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_13">
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_24">
+            <property name="text">
+             <string>BeaconJitter</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QCheckBox" name="checkBox_2">
+            <property name="text">
+             <string>Set</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item row="8" column="0" colspan="2">
@@ -809,76 +781,72 @@
        </item>
        <item row="4" column="4" rowspan="3" colspan="3">
         <widget class="QFrame" name="frame_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>150</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>300</height>
+          </size>
+         </property>
          <property name="frameShape">
           <enum>QFrame::Shape::StyledPanel</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Shadow::Raised</enum>
          </property>
-         <widget class="QLabel" name="label_29">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>10</y>
-            <width>91</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Rts/Cts</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="checkBox_5">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>10</y>
-            <width>81</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Set</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_30">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>120</y>
-            <width>101</width>
-            <height>41</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Threshold</string>
-          </property>
-         </widget>
-         <widget class="QSpinBox" name="spinBox_3">
-          <property name="geometry">
-           <rect>
-            <x>160</x>
-            <y>120</y>
-            <width>101</width>
-            <height>40</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximum">
-           <number>65535</number>
-          </property>
-          <property name="value">
-           <number>65535</number>
-          </property>
-         </widget>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_29">
+            <property name="text">
+             <string>Rts/Cts</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="checkBox_5">
+            <property name="text">
+             <string>Set</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_30">
+            <property name="text">
+             <string>Threshold</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="spinBox_3">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="maximum">
+             <number>65535</number>
+            </property>
+            <property name="value">
+             <number>65535</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item row="15" column="3">
@@ -960,97 +928,87 @@
        </item>
        <item row="7" column="4" rowspan="3" colspan="3">
         <widget class="QFrame" name="frame_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>150</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>300</height>
+          </size>
+         </property>
          <property name="frameShape">
           <enum>QFrame::Shape::StyledPanel</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Shadow::Raised</enum>
          </property>
-         <widget class="QLabel" name="label_31">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>20</y>
-            <width>41</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Qos</string>
-          </property>
-         </widget>
-         <widget class="QCheckBox" name="checkBox_6">
-          <property name="geometry">
-           <rect>
-            <x>60</x>
-            <y>20</y>
-            <width>21</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_32">
-          <property name="geometry">
-           <rect>
-            <x>150</x>
-            <y>10</y>
-            <width>71</width>
-            <height>41</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Edca</string>
-          </property>
-         </widget>
-         <widget class="QComboBox" name="comboBox_6">
-          <property name="geometry">
-           <rect>
-            <x>240</x>
-            <y>10</y>
-            <width>111</width>
-            <height>41</height>
-           </rect>
-          </property>
-          <item>
-           <property name="text">
-            <string>AC_VO</string>
-           </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_31">
+            <property name="text">
+             <string>Qos</string>
+            </property>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>AC_VI</string>
-           </property>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="checkBox_6">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>AC_BE</string>
-           </property>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_32">
+            <property name="text">
+             <string>Edca</string>
+            </property>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>AC_BK</string>
-           </property>
+          <item row="0" column="3">
+           <widget class="QComboBox" name="comboBox_6">
+            <item>
+             <property name="text">
+              <string>AC_VO</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AC_VI</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AC_BE</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AC_BK</string>
+             </property>
+            </item>
+           </widget>
           </item>
-         </widget>
-         <widget class="QPushButton" name="pushButton_8">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>70</y>
-            <width>251</width>
-            <height>41</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Edca Config</string>
-          </property>
-         </widget>
+          <item row="1" column="0" colspan="4">
+           <widget class="QPushButton" name="pushButton_8">
+            <property name="text">
+             <string>Edca Config</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item row="5" column="0">
