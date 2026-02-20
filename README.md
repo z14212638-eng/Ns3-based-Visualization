@@ -75,6 +75,7 @@ It is intended as a **research and debugging tool**, not a full simulator or Net
 
 ```bash
 # place Ns3Visualizer/ under contrib/
+cp Ns3Visualizer your_ns3_path/contrib/
 ./ns3 configure
 ./ns3 build
 ./build/Ns3VisualizerApp
