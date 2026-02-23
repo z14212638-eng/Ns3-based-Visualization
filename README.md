@@ -131,7 +131,7 @@ The Ns3Visualizer UI will load the project file and display the corresponding si
 ```
 
 > The Qt app only handles visualization; it does **not** build or run ns-3.
-> If you want to know more about how to use this tool, please refer to the [User Guide](Tutorial_en.md) or [用户指南](Tutorial_ch.md).
+> If you want to know more about how to use this tool, please refer to the [User Guide](doc/Tutorial_en.md) or [用户指南](doc/Tutorial_ch.md).
 
 ---
 
