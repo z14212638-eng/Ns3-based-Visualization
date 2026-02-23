@@ -1,0 +1,119 @@
+{
+	"BUILD_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/utils/ns3-script-generator_autogen",
+	"CMAKE_BINARY_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/utils",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46/contrib/Ns3Visualizer/ui/utils",
+	"CMAKE_EXECUTABLE" : "/usr/bin/cmake",
+	"CMAKE_LIST_FILES" : 
+	[
+		"/home/zk/algorithm/ns-3.46/ns-3.46/contrib/Ns3Visualizer/ui/utils/CMakeLists.txt",
+		"/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/CMakeFiles/3.28.3/CMakeCCompiler.cmake",
+		"/usr/share/cmake-3.28/Modules/CMakeCInformation.cmake",
+		"/usr/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake",
+		"/usr/share/cmake-3.28/Modules/Compiler/GNU-C.cmake",
+		"/usr/share/cmake-3.28/Modules/Compiler/GNU.cmake",
+		"/usr/share/cmake-3.28/Modules/Platform/Linux-GNU-C.cmake",
+		"/usr/share/cmake-3.28/Modules/Platform/Linux-GNU.cmake",
+		"/usr/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake",
+		"/usr/share/cmake/nlohmann_json/nlohmann_jsonConfigVersion.cmake",
+		"/usr/share/cmake/nlohmann_json/nlohmann_jsonConfig.cmake",
+		"/usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake",
+		"/usr/share/cmake-3.28/Modules/FindPackageMessage.cmake",
+		"/usr/share/cmake/nlohmann_json/nlohmann_jsonTargets.cmake"
+	],
+	"CMAKE_SOURCE_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46",
+	"DEP_FILE" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/utils/ns3-script-generator_autogen/deps",
+	"DEP_FILE_RULE_NAME" : "ns3-script-generator_autogen/timestamp",
+	"HEADERS" : [],
+	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
+	"INCLUDE_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/utils/ns3-script-generator_autogen/include",
+	"MOC_COMPILATION_FILE" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/utils/ns3-script-generator_autogen/mocs_compilation.cpp",
+	"MOC_DEFINITIONS" : 
+	[
+		"EIGEN_MPL2_ONLY",
+		"HAVE_EIGEN3",
+		"HAVE_GSL",
+		"HAVE_LIBXML2",
+		"HAVE_SQLITE3",
+		"HAVE_STDINT_H",
+		"NS3_ASSERT_ENABLE",
+		"NS3_BUILD_PROFILE_DEBUG",
+		"NS3_LOG_ENABLE",
+		"PROJECT_SOURCE_PATH=\"/home/zk/algorithm/ns-3.46/ns-3.46\"",
+		"STACKTRACE_LIBRARY_IS_LINKED=1",
+		"__LINUX__"
+	],
+	"MOC_DEPEND_FILTERS" : 
+	[
+		[
+			"Q_PLUGIN_METADATA",
+			"[\n][ \t]*Q_PLUGIN_METADATA[ \t]*\\([^\\)]*FILE[ \t]*\"([^\"]+)\""
+		]
+	],
+	"MOC_INCLUDES" : 
+	[
+		"/home/zk/algorithm/ns-3.46/ns-3.46/build/include",
+		"/usr/include/eigen3",
+		"/usr/include/freetype2",
+		"/usr/include/glib-2.0",
+		"/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+		"/usr/include/gdk-pixbuf-2.0",
+		"/usr/include/gtk-3.0",
+		"/usr/include/cairo",
+		"/usr/include/pango-1.0",
+		"/usr/include/harfbuzz",
+		"/usr/include/atk-1.0",
+		"/usr/include/libxml2",
+		"/usr/include",
+		"/usr/include/c++/13",
+		"/usr/include/x86_64-linux-gnu/c++/13",
+		"/usr/include/c++/13/backward",
+		"/usr/lib/gcc/x86_64-linux-gnu/13/include",
+		"/usr/local/include",
+		"/usr/include/x86_64-linux-gnu"
+	],
+	"MOC_MACRO_NAMES" : 
+	[
+		"Q_OBJECT",
+		"Q_GADGET",
+		"Q_NAMESPACE",
+		"Q_NAMESPACE_EXPORT",
+		"Q_GADGET_EXPORT",
+		"Q_ENUM_NS"
+	],
+	"MOC_OPTIONS" : [],
+	"MOC_PATH_PREFIX" : false,
+	"MOC_PREDEFS_CMD" : 
+	[
+		"/usr/bin/c++",
+		"-std=c++17",
+		"-dM",
+		"-E",
+		"-c",
+		"/usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp"
+	],
+	"MOC_PREDEFS_FILE" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/utils/ns3-script-generator_autogen/moc_predefs.h",
+	"MOC_RELAXED_MODE" : false,
+	"MOC_SKIP" : [],
+	"MULTI_CONFIG" : false,
+	"PARALLEL" : 4,
+	"PARSE_CACHE_FILE" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/utils/CMakeFiles/ns3-script-generator_autogen.dir/ParseCache.txt",
+	"QT_MOC_EXECUTABLE" : "/home/zk/app/Qt6/6.10.2/gcc_64/libexec/moc",
+	"QT_UIC_EXECUTABLE" : "/home/zk/app/Qt6/6.10.2/gcc_64/libexec/uic",
+	"QT_VERSION_MAJOR" : 6,
+	"QT_VERSION_MINOR" : 10,
+	"SETTINGS_FILE" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/utils/CMakeFiles/ns3-script-generator_autogen.dir/AutogenUsed.txt",
+	"SOURCES" : 
+	[
+		[
+			"/home/zk/algorithm/ns-3.46/ns-3.46/contrib/Ns3Visualizer/ui/utils/ns3-script-generator.cc",
+			"MU",
+			null
+		]
+	],
+	"UIC_OPTIONS" : [],
+	"UIC_SEARCH_PATHS" : [],
+	"UIC_SKIP" : [],
+	"UIC_UI_FILES" : [],
+	"VERBOSITY" : 0
+}
