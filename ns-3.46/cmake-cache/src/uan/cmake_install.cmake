@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/uan
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/uan
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-uan-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-uan-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-uan-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-uan-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-uan-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-uan-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-uan-default.so")
@@ -67,30 +67,30 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/helper/acoustic-modem-energy-model-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/helper/uan-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/acoustic-modem-energy-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-channel.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-header-common.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-header-rc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-mac-aloha.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-mac-cw.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-mac-rc-gw.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-mac-rc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-mac.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-net-device.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-noise-model-default.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-noise-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-phy-dual.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-phy-gen.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-phy.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-prop-model-ideal.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-prop-model-thorp.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-prop-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-transducer-hd.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-transducer.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/uan/model/uan-tx-mode.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/uan-module.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/helper/acoustic-modem-energy-model-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/helper/uan-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/acoustic-modem-energy-model.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-channel.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-header-common.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-header-rc.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-mac-aloha.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-mac-cw.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-mac-rc-gw.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-mac-rc.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-mac.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-net-device.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-noise-model-default.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-noise-model.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-phy-dual.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-phy-gen.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-phy.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-prop-model-ideal.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-prop-model-thorp.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-prop-model.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-transducer-hd.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-transducer.h"
+    "/home/zk/Visualization/ns-3.46/src/uan/model/uan-tx-mode.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/uan-module.h"
     )
 endif()
 

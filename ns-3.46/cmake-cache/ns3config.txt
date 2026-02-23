@@ -1,6 +1,6 @@
 ---- Summary of ns-3 settings:
 Build profile                 : default
-Build directory               : /home/zk/algorithm/ns-3.46/ns-3.46/build
+Build directory               : /home/zk/Visualization/ns-3.46/build
 Build with runtime asserts    : [32mON[0m
 Build with runtime logging    : [32mON[0m
 Build version embedding       : OFF (not requested)

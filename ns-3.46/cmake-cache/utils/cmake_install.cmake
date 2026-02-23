@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/utils
+# Install script for directory: /home/zk/Visualization/ns-3.46/utils
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

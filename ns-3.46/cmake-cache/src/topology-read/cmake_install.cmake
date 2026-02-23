@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/topology-read
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/topology-read
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-topology-read-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-topology-read-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-topology-read-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-topology-read-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-topology-read-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-topology-read-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-topology-read-default.so")
@@ -67,12 +67,12 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/topology-read/helper/topology-reader-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/topology-read/model/inet-topology-reader.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/topology-read/model/orbis-topology-reader.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/topology-read/model/rocketfuel-topology-reader.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/topology-read/model/topology-reader.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/topology-read-module.h"
+    "/home/zk/Visualization/ns-3.46/src/topology-read/helper/topology-reader-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/topology-read/model/inet-topology-reader.h"
+    "/home/zk/Visualization/ns-3.46/src/topology-read/model/orbis-topology-reader.h"
+    "/home/zk/Visualization/ns-3.46/src/topology-read/model/rocketfuel-topology-reader.h"
+    "/home/zk/Visualization/ns-3.46/src/topology-read/model/topology-reader.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/topology-read-module.h"
     )
 endif()
 

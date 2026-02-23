@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/buildings
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/buildings
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-buildings-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-buildings-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-buildings-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-buildings-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-buildings-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-buildings-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-buildings-default.so")
@@ -67,21 +67,21 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/helper/building-allocator.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/helper/building-container.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/helper/building-position-allocator.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/helper/buildings-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/model/building-list.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/model/building.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/model/buildings-channel-condition-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/model/buildings-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/model/hybrid-buildings-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/model/itu-r-1238-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/model/mobility-building-info.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/model/oh-buildings-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/model/random-walk-2d-outdoor-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/buildings/model/three-gpp-v2v-channel-condition-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/buildings-module.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/helper/building-allocator.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/helper/building-container.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/helper/building-position-allocator.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/helper/buildings-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/model/building-list.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/model/building.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/model/buildings-channel-condition-model.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/model/buildings-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/model/hybrid-buildings-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/model/itu-r-1238-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/model/mobility-building-info.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/model/oh-buildings-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/model/random-walk-2d-outdoor-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/buildings/model/three-gpp-v2v-channel-condition-model.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/buildings-module.h"
     )
 endif()
 

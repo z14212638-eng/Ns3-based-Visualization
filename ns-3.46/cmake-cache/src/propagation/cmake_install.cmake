@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/propagation
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/propagation
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-propagation-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-propagation-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-propagation-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-propagation-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-propagation-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-propagation-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-propagation-default.so")
@@ -67,22 +67,22 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/channel-condition-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/cost231-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/itu-r-1411-los-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/itu-r-1411-nlos-over-rooftop-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/jakes-process.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/jakes-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/kun-2600-mhz-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/okumura-hata-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/probabilistic-v2v-channel-condition-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/propagation-cache.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/propagation-delay-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/propagation-environment.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/three-gpp-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/propagation/model/three-gpp-v2v-propagation-loss-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/propagation-module.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/channel-condition-model.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/cost231-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/itu-r-1411-los-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/itu-r-1411-nlos-over-rooftop-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/jakes-process.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/jakes-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/kun-2600-mhz-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/okumura-hata-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/probabilistic-v2v-channel-condition-model.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/propagation-cache.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/propagation-delay-model.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/propagation-environment.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/three-gpp-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/src/propagation/model/three-gpp-v2v-propagation-loss-model.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/propagation-module.h"
     )
 endif()
 

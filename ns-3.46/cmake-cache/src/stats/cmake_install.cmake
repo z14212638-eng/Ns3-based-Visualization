@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/stats
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/stats
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-stats-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-stats-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-stats-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-stats-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-stats-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-stats-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-stats-default.so")
@@ -66,37 +66,37 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/sqlite-output.h")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES "/home/zk/Visualization/ns-3.46/src/stats/model/sqlite-output.h")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/sqlite-data-output.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/helper/file-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/helper/gnuplot-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/average.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/basic-data-calculators.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/boolean-probe.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/data-calculator.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/data-collection-object.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/data-collector.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/data-output-interface.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/double-probe.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/file-aggregator.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/get-wildcard-matches.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/gnuplot-aggregator.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/gnuplot.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/histogram.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/omnet-data-output.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/probe.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/stats.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/time-data-calculators.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/time-probe.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/time-series-adaptor.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/uinteger-16-probe.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/uinteger-32-probe.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/stats/model/uinteger-8-probe.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/stats-module.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/sqlite-data-output.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/helper/file-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/helper/gnuplot-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/average.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/basic-data-calculators.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/boolean-probe.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/data-calculator.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/data-collection-object.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/data-collector.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/data-output-interface.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/double-probe.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/file-aggregator.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/get-wildcard-matches.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/gnuplot-aggregator.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/gnuplot.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/histogram.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/omnet-data-output.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/probe.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/stats.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/time-data-calculators.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/time-probe.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/time-series-adaptor.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/uinteger-16-probe.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/uinteger-32-probe.h"
+    "/home/zk/Visualization/ns-3.46/src/stats/model/uinteger-8-probe.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/stats-module.h"
     )
 endif()
 

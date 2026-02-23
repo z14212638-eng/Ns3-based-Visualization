@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/zigbee
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-zigbee-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-zigbee-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-zigbee-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-zigbee-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-zigbee-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-zigbee-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-zigbee-default.so")
@@ -67,19 +67,19 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/helper/zigbee-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/helper/zigbee-stack-container.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/model/zigbee-aps-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/model/zigbee-aps-tables.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/model/zigbee-aps.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/model/zigbee-group-table.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/model/zigbee-nwk-fields.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/model/zigbee-nwk.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/model/zigbee-stack.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/model/zigbee-nwk-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/model/zigbee-nwk-payload-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/zigbee/model/zigbee-nwk-tables.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/zigbee-module.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/helper/zigbee-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/helper/zigbee-stack-container.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/model/zigbee-aps-header.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/model/zigbee-aps-tables.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/model/zigbee-aps.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/model/zigbee-group-table.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/model/zigbee-nwk-fields.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/model/zigbee-nwk.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/model/zigbee-stack.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/model/zigbee-nwk-header.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/model/zigbee-nwk-payload-header.h"
+    "/home/zk/Visualization/ns-3.46/src/zigbee/model/zigbee-nwk-tables.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/zigbee-module.h"
     )
 endif()
 

@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/internet-apps
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-internet-apps-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-internet-apps-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-internet-apps-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-internet-apps-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-internet-apps-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-internet-apps-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-internet-apps-default.so")
@@ -67,25 +67,25 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/helper/dhcp-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/helper/dhcp6-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/helper/ping-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/helper/radvd-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/helper/v4traceroute-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/dhcp-client.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/dhcp-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/dhcp-server.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/dhcp6-client.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/dhcp6-duid.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/dhcp6-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/dhcp6-options.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/dhcp6-server.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/ping.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/radvd-interface.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/radvd-prefix.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/radvd.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/internet-apps/model/v4traceroute.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/internet-apps-module.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/helper/dhcp-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/helper/dhcp6-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/helper/ping-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/helper/radvd-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/helper/v4traceroute-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/dhcp-client.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/dhcp-header.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/dhcp-server.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/dhcp6-client.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/dhcp6-duid.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/dhcp6-header.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/dhcp6-options.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/dhcp6-server.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/ping.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/radvd-interface.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/radvd-prefix.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/radvd.h"
+    "/home/zk/Visualization/ns-3.46/src/internet-apps/model/v4traceroute.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/internet-apps-module.h"
     )
 endif()
 

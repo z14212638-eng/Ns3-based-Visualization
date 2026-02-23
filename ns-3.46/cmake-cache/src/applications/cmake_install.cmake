@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/applications
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/applications
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-applications-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-applications-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-applications-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-applications-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-applications-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-applications-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-applications-default.so")
@@ -67,32 +67,32 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/helper/bulk-send-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/helper/on-off-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/helper/packet-sink-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/helper/three-gpp-http-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/helper/udp-client-server-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/helper/udp-echo-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/application-packet-probe.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/bulk-send-application.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/onoff-application.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/packet-loss-counter.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/packet-sink.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/seq-ts-echo-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/seq-ts-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/seq-ts-size-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/sink-application.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/source-application.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/three-gpp-http-client.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/three-gpp-http-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/three-gpp-http-server.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/three-gpp-http-variables.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/udp-client.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/udp-echo-client.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/udp-echo-server.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/udp-server.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/applications/model/udp-trace-client.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/applications-module.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/helper/bulk-send-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/helper/on-off-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/helper/packet-sink-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/helper/three-gpp-http-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/helper/udp-client-server-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/helper/udp-echo-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/application-packet-probe.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/bulk-send-application.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/onoff-application.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/packet-loss-counter.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/packet-sink.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/seq-ts-echo-header.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/seq-ts-header.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/seq-ts-size-header.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/sink-application.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/source-application.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/three-gpp-http-client.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/three-gpp-http-header.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/three-gpp-http-server.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/three-gpp-http-variables.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/udp-client.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/udp-echo-client.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/udp-echo-server.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/udp-server.h"
+    "/home/zk/Visualization/ns-3.46/src/applications/model/udp-trace-client.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/applications-module.h"
     )
 endif()
 

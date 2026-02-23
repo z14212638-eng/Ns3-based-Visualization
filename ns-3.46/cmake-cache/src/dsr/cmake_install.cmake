@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/dsr
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/dsr
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-dsr-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-dsr-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-dsr-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-dsr-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-dsr-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-dsr-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-dsr-default.so")
@@ -67,21 +67,21 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/helper/dsr-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/helper/dsr-main-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-errorbuff.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-fs-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-gratuitous-reply-table.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-maintain-buff.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-network-queue.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-option-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-options.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-passive-buff.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-rcache.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-routing.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-rreq-table.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/dsr/model/dsr-rsendbuff.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/dsr-module.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/helper/dsr-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/helper/dsr-main-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-errorbuff.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-fs-header.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-gratuitous-reply-table.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-maintain-buff.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-network-queue.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-option-header.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-options.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-passive-buff.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-rcache.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-routing.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-rreq-table.h"
+    "/home/zk/Visualization/ns-3.46/src/dsr/model/dsr-rsendbuff.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/dsr-module.h"
     )
 endif()
 

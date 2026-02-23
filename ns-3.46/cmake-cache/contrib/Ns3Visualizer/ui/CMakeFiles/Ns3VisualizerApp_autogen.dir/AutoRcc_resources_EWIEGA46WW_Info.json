@@ -1,24 +1,24 @@
 {
-	"BUILD_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/Ns3VisualizerApp_autogen",
-	"CMAKE_BINARY_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache",
-	"CMAKE_CURRENT_BINARY_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui",
-	"CMAKE_CURRENT_SOURCE_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46/contrib/Ns3Visualizer/ui",
-	"CMAKE_SOURCE_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46",
+	"BUILD_DIR" : "/home/zk/Visualization/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/Ns3VisualizerApp_autogen",
+	"CMAKE_BINARY_DIR" : "/home/zk/Visualization/ns-3.46/cmake-cache",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/zk/Visualization/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/zk/Visualization/ns-3.46/contrib/Ns3Visualizer/ui",
+	"CMAKE_SOURCE_DIR" : "/home/zk/Visualization/ns-3.46",
 	"GENERATOR" : "Ninja",
-	"INCLUDE_DIR" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/Ns3VisualizerApp_autogen/include",
+	"INCLUDE_DIR" : "/home/zk/Visualization/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/Ns3VisualizerApp_autogen/include",
 	"INPUTS" : 
 	[
-		"/home/zk/algorithm/ns-3.46/ns-3.46/contrib/Ns3Visualizer/ui/qss/dark.qss",
-		"/home/zk/algorithm/ns-3.46/ns-3.46/contrib/Ns3Visualizer/ui/icons/folder.svg"
+		"/home/zk/Visualization/ns-3.46/contrib/Ns3Visualizer/ui/qss/dark.qss",
+		"/home/zk/Visualization/ns-3.46/contrib/Ns3Visualizer/ui/icons/folder.svg"
 	],
-	"LOCK_FILE" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/CMakeFiles/Ns3VisualizerApp_autogen.dir/AutoRcc_resources_EWIEGA46WW_Lock.lock",
+	"LOCK_FILE" : "/home/zk/Visualization/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/CMakeFiles/Ns3VisualizerApp_autogen.dir/AutoRcc_resources_EWIEGA46WW_Lock.lock",
 	"MULTI_CONFIG" : false,
 	"OPTIONS" : [ "-name", "resources" ],
 	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
 	"OUTPUT_NAME" : "qrc_resources.cpp",
 	"RCC_EXECUTABLE" : "/home/zk/app/Qt6/6.10.2/gcc_64/libexec/rcc",
 	"RCC_LIST_OPTIONS" : [ "--list" ],
-	"SETTINGS_FILE" : "/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/CMakeFiles/Ns3VisualizerApp_autogen.dir/AutoRcc_resources_EWIEGA46WW_Used.txt",
-	"SOURCE" : "/home/zk/algorithm/ns-3.46/ns-3.46/contrib/Ns3Visualizer/ui/resources.qrc",
+	"SETTINGS_FILE" : "/home/zk/Visualization/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/CMakeFiles/Ns3VisualizerApp_autogen.dir/AutoRcc_resources_EWIEGA46WW_Used.txt",
+	"SOURCE" : "/home/zk/Visualization/ns-3.46/contrib/Ns3Visualizer/ui/resources.qrc",
 	"VERBOSITY" : 0
 }

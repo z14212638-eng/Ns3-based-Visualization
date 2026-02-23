@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/scratch
+# Install script for directory: /home/zk/Visualization/ns-3.46/scratch
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,6 +44,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/scratch/nested-subdir/cmake_install.cmake")
+  include("/home/zk/Visualization/ns-3.46/cmake-cache/scratch/nested-subdir/cmake_install.cmake")
 endif()
 

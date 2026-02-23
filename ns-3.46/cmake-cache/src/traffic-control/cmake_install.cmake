@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/traffic-control
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-traffic-control-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-traffic-control-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-traffic-control-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-traffic-control-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-traffic-control-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-traffic-control-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-traffic-control-default.so")
@@ -67,24 +67,24 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/helper/queue-disc-container.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/helper/traffic-control-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/cobalt-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/codel-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/fifo-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/fq-cobalt-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/fq-codel-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/fq-pie-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/mq-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/packet-filter.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/pfifo-fast-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/pie-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/prio-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/red-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/tbf-queue-disc.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/traffic-control/model/traffic-control-layer.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/traffic-control-module.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/helper/queue-disc-container.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/helper/traffic-control-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/cobalt-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/codel-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/fifo-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/fq-cobalt-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/fq-codel-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/fq-pie-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/mq-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/packet-filter.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/pfifo-fast-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/pie-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/prio-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/red-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/tbf-queue-disc.h"
+    "/home/zk/Visualization/ns-3.46/src/traffic-control/model/traffic-control-layer.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/traffic-control-module.h"
     )
 endif()
 

@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/mobility
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/mobility
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-mobility-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-mobility-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-mobility-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-mobility-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-mobility-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-mobility-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-mobility-default.so")
@@ -67,29 +67,29 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/helper/group-mobility-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/helper/mobility-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/helper/ns2-mobility-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/box.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/constant-acceleration-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/constant-position-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/constant-velocity-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/constant-velocity-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/gauss-markov-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/geocentric-constant-position-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/geographic-positions.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/hierarchical-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/position-allocator.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/random-direction-2d-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/random-walk-2d-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/random-waypoint-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/rectangle.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/steady-state-random-waypoint-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/waypoint-mobility-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/mobility/model/waypoint.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/mobility-module.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/mobility-export.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/helper/group-mobility-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/helper/mobility-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/helper/ns2-mobility-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/box.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/constant-acceleration-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/constant-position-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/constant-velocity-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/constant-velocity-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/gauss-markov-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/geocentric-constant-position-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/geographic-positions.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/hierarchical-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/position-allocator.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/random-direction-2d-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/random-walk-2d-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/random-waypoint-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/rectangle.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/steady-state-random-waypoint-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/waypoint-mobility-model.h"
+    "/home/zk/Visualization/ns-3.46/src/mobility/model/waypoint.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/mobility-module.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/mobility-export.h"
     )
 endif()
 

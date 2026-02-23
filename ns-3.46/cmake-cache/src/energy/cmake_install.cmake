@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/energy
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/energy
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-energy-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-energy-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-energy-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-energy-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-energy-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-energy-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-energy-default.so")
@@ -67,25 +67,25 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/helper/basic-energy-harvester-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/helper/basic-energy-source-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/helper/energy-harvester-container.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/helper/energy-harvester-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/helper/energy-model-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/helper/energy-source-container.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/helper/generic-battery-model-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/helper/li-ion-energy-source-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/helper/rv-battery-model-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/model/basic-energy-harvester.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/model/basic-energy-source.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/model/device-energy-model-container.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/model/device-energy-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/model/energy-harvester.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/model/energy-source.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/model/generic-battery-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/model/rv-battery-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/energy/model/simple-device-energy-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/energy-module.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/helper/basic-energy-harvester-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/helper/basic-energy-source-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/helper/energy-harvester-container.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/helper/energy-harvester-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/helper/energy-model-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/helper/energy-source-container.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/helper/generic-battery-model-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/helper/li-ion-energy-source-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/helper/rv-battery-model-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/model/basic-energy-harvester.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/model/basic-energy-source.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/model/device-energy-model-container.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/model/device-energy-model.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/model/energy-harvester.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/model/energy-source.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/model/generic-battery-model.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/model/rv-battery-model.h"
+    "/home/zk/Visualization/ns-3.46/src/energy/model/simple-device-energy-model.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/energy-module.h"
     )
 endif()
 

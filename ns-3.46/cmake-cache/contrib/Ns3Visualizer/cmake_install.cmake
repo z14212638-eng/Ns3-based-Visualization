@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/contrib/Ns3Visualizer
+# Install script for directory: /home/zk/Visualization/ns-3.46/contrib/Ns3Visualizer
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-Ns3Visualizer-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-Ns3Visualizer-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-Ns3Visualizer-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-Ns3Visualizer-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-Ns3Visualizer-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-Ns3Visualizer-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-Ns3Visualizer-default.so")
@@ -67,15 +67,15 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/contrib/Ns3Visualizer/model/QNs3.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/contrib/Ns3Visualizer/model/SniffUtils.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/contrib/Ns3Visualizer/helper/QNs3-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/Ns3Visualizer-module.h"
+    "/home/zk/Visualization/ns-3.46/contrib/Ns3Visualizer/model/QNs3.h"
+    "/home/zk/Visualization/ns-3.46/contrib/Ns3Visualizer/model/SniffUtils.h"
+    "/home/zk/Visualization/ns-3.46/contrib/Ns3Visualizer/helper/QNs3-helper.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/Ns3Visualizer-module.h"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/zk/algorithm/ns-3.46/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/cmake_install.cmake")
+  include("/home/zk/Visualization/ns-3.46/cmake-cache/contrib/Ns3Visualizer/ui/cmake_install.cmake")
 endif()
 

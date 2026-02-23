@@ -1,4 +1,4 @@
-# Install script for directory: /home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan
+# Install script for directory: /home/zk/Visualization/ns-3.46/src/lr-wpan
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,12 +49,12 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-lr-wpan-default.so"
          RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib/libns3.46-lr-wpan-default.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/home/zk/Visualization/ns-3.46/build/lib/libns3.46-lr-wpan-default.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-lr-wpan-default.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-lr-wpan-default.so")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-lr-wpan-default.so"
-         OLD_RPATH "/home/zk/algorithm/ns-3.46/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::"
+         OLD_RPATH "/home/zk/Visualization/ns-3.46/build/lib:::::::::::::::::::::::::::::::::::::::::"
          NEW_RPATH "/usr/local/lib:\$ORIGIN/:\$ORIGIN/../lib:/usr/local/lib64:\$ORIGIN/:\$ORIGIN/../lib64")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libns3.46-lr-wpan-default.so")
@@ -67,23 +67,23 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/ns3" TYPE FILE FILES
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/helper/lr-wpan-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-constants.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-csmaca.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-error-model.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-fields.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-interference-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-lqi-tag.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-mac-header.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-mac-pl-headers.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-mac-trailer.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-mac-base.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-mac.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-net-device.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-phy.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-spectrum-signal-parameters.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/src/lr-wpan/model/lr-wpan-spectrum-value-helper.h"
-    "/home/zk/algorithm/ns-3.46/ns-3.46/build/include/ns3/lr-wpan-module.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/helper/lr-wpan-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-constants.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-csmaca.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-error-model.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-fields.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-interference-helper.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-lqi-tag.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-mac-header.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-mac-pl-headers.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-mac-trailer.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-mac-base.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-mac.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-net-device.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-phy.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-spectrum-signal-parameters.h"
+    "/home/zk/Visualization/ns-3.46/src/lr-wpan/model/lr-wpan-spectrum-value-helper.h"
+    "/home/zk/Visualization/ns-3.46/build/include/ns3/lr-wpan-module.h"
     )
 endif()
 
